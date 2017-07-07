@@ -51,7 +51,7 @@ image = tf.placeholder(tf.float32, shape = shape)
 net = vgg.net_preloaded(vgg_weights, image, pooling)
 
 #    batch_files = dataset[idx*batch_size:(idx+1)*batch_size]
-#    batch_data = [utils.imread(batchfile).astype(np.float32)
+#    batch_data = [common.imread(batchfile).astype(np.float32)
 #               for batchfile in batch_files]
 #    print (batch_data)
 

@@ -50,6 +50,7 @@ print(len(data_real))
 inputs = tf.placeholder(tf.float32, [batch_size, out_height, out_width, out_channel],
                                  name='real_images')
 
+
 # 是否在训练阶段
 train_phase = tf.placeholder(tf.bool)
     #        sample_inputs = self.sample_inputs
@@ -57,6 +58,7 @@ if in_height == 1:
     z = tf.placeholder(tf.float32, [None, in_channel], name='z')
 else:
     z = tf.placeholder(tf.float32, [None, in_height, in_width, in_channel], name='z')
+
 
 def leaky_relu(x, alpha=0.1, name='lrelu'):
     with tf.variable_scope(name):
@@ -100,6 +102,7 @@ discriminator_variables_dict = {
     "b_4": tf.Variable(tf.constant(0.0, shape=[1]), name='Discriminator/b_4'),
 }
 
+
 def discriminator(in_data):
     with tf.variable_scope("Discriminator"):
         out_1 = tf.nn.conv2d(in_data, discriminator_variables_dict['W_1'], strides=[1, 2, 2, 1],
@@ -123,12 +126,10 @@ def discriminator(in_data):
                            scope='bn_3')
         out_3 = leaky_relu(out_3, alpha=0.2, name="l_relu_3")
 
-
         re = tf.reshape(out_3, [-1, 3*3*1024])
         out_4 = tf.matmul(re, discriminator_variables_dict['W_4']) + discriminator_variables_dict['b_4']
 
-        return (tf.sigmoid(out_4))
-
+        return tf.sigmoid(out_4)
 
 
 '''生成'''
