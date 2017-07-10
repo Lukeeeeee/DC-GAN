@@ -2,6 +2,7 @@ import math
 
 
 class DiscriminatorConfig(object):
+
     IN_HEIGHT = 24
     IN_WIDTH = 24
     IN_CHANNEL = 256

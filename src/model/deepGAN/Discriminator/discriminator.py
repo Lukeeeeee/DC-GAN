@@ -2,7 +2,7 @@ import tensorflow as tf
 
 from src.common.ops import ops
 from src.data.dataConfig import DataConfig
-from src.model.deepGAN.Discriminator.discriminatorConfig import DiscriminatorConfig
+from src.model.deepGAN.Discriminator.discriminatorConfig import DiscriminatorConfig as d_config
 from src.model.model import Model
 
 
@@ -11,74 +11,78 @@ class Discriminator(Model):
         super(Discriminator, self).__init__(sess, data)
         self.name = 'Discriminator'
 
-        self.variable_dict = {
-            "W_1": tf.Variable(tf.truncated_normal([DiscriminatorConfig.FILTER_SIZE, DiscriminatorConfig.FILTER_SIZE,
-                                                    DiscriminatorConfig.IN_CHANNEL,
-                                                    DiscriminatorConfig.CONV_LAYER_1_OUT_CHANNEL],
-                                                   stddev=DiscriminatorConfig.VARIABLE_RANDOM_STANDARD_DEVIATION),
-                               name='W_1'),
+        with tf.variable_scope('Discriminator'):
+            self.variable_dict = {
+                "W_1": tf.Variable(tf.truncated_normal([d_config.FILTER_SIZE, d_config.FILTER_SIZE,
+                                                        d_config.IN_CHANNEL,
+                                                        d_config.CONV_LAYER_1_OUT_CHANNEL],
+                                                       stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                                   name='W_1'),
 
-            "B_1": tf.Variable(tf.constant(0.0, shape=[DiscriminatorConfig.CONV_LAYER_1_OUT_CHANNEL]),
-                               name='B_1'),
+                "B_1": tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_1_OUT_CHANNEL]),
+                                   name='B_1'),
 
-            'BETA_1': tf.Variable(tf.constant(0.0, shape=[DiscriminatorConfig.CONV_LAYER_1_OUT_CHANNEL]),
-                                  name='BETA_1'),
+                'BETA_1': tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_1_OUT_CHANNEL]),
+                                      name='BETA_1'),
 
-            'GAMMA_1': tf.Variable(tf.random_normal(shape=[DiscriminatorConfig.CONV_LAYER_1_OUT_CHANNEL],
-                                                    mean=DiscriminatorConfig.BATCH_NORM_MEAN,
-                                                    stddev=DiscriminatorConfig.BATCH_STANDARD_DEVIATION),
-                                   name='GAMMA_1'),
+                'GAMMA_1': tf.Variable(tf.random_normal(shape=[d_config.CONV_LAYER_1_OUT_CHANNEL],
+                                                        mean=d_config.BATCH_NORM_MEAN,
+                                                        stddev=d_config.BATCH_STANDARD_DEVIATION),
+                                       name='GAMMA_1'),
 
-            "W_2": tf.Variable(tf.truncated_normal([DiscriminatorConfig.FILTER_SIZE, DiscriminatorConfig.FILTER_SIZE,
-                                                    DiscriminatorConfig.CONV_LAYER_1_OUT_CHANNEL,
-                                                    DiscriminatorConfig.CONV_LAYER_2_OUT_CHANNEL],
-                                                   stddev=DiscriminatorConfig.VARIABLE_RANDOM_STANDARD_DEVIATION),
-                               name='W_2'),
+                "W_2": tf.Variable(tf.truncated_normal([d_config.FILTER_SIZE, d_config.FILTER_SIZE,
+                                                        d_config.CONV_LAYER_1_OUT_CHANNEL,
+                                                        d_config.CONV_LAYER_2_OUT_CHANNEL],
+                                                       stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                                   name='W_2'),
 
-            "B_2": tf.Variable(tf.constant(0.0, shape=[DiscriminatorConfig.CONV_LAYER_2_OUT_CHANNEL]),
-                               name='B_2'),
+                "B_2": tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_2_OUT_CHANNEL]),
+                                   name='B_2'),
 
-            'BETA_2': tf.Variable(tf.constant(0.0, shape=[DiscriminatorConfig.CONV_LAYER_2_OUT_CHANNEL]),
-                                  name='BETA_2'),
+                'BETA_2': tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_2_OUT_CHANNEL]),
+                                      name='BETA_2'),
 
-            'GAMMA_2': tf.Variable(tf.random_normal(shape=[DiscriminatorConfig.CONV_LAYER_2_OUT_CHANNEL],
-                                                    mean=DiscriminatorConfig.BATCH_NORM_MEAN,
-                                                    stddev=DiscriminatorConfig.BATCH_STANDARD_DEVIATION),
-                                   name='GAMMA_2'),
+                'GAMMA_2': tf.Variable(tf.random_normal(shape=[d_config.CONV_LAYER_2_OUT_CHANNEL],
+                                                        mean=d_config.BATCH_NORM_MEAN,
+                                                        stddev=d_config.BATCH_STANDARD_DEVIATION),
+                                       name='GAMMA_2'),
 
-            "W_3": tf.Variable(tf.truncated_normal([DiscriminatorConfig.FILTER_SIZE, DiscriminatorConfig.FILTER_SIZE,
-                                                    DiscriminatorConfig.CONV_LAYER_2_OUT_CHANNEL,
-                                                    DiscriminatorConfig.CONV_LAYER_3_OUT_CHANNEL],
-                                                   stddev=DiscriminatorConfig.VARIABLE_RANDOM_STANDARD_DEVIATION),
-                               name='W_3'),
+                "W_3": tf.Variable(tf.truncated_normal([d_config.FILTER_SIZE, d_config.FILTER_SIZE,
+                                                        d_config.CONV_LAYER_2_OUT_CHANNEL,
+                                                        d_config.CONV_LAYER_3_OUT_CHANNEL],
+                                                       stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                                   name='W_3'),
 
-            "B_3": tf.Variable(tf.constant(0.0, shape=[DiscriminatorConfig.CONV_LAYER_3_OUT_CHANNEL]),
-                               name='B_3'),
+                "B_3": tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_3_OUT_CHANNEL]),
+                                   name='B_3'),
 
-            'BETA_3': tf.Variable(tf.constant(0.0, shape=[DiscriminatorConfig.CONV_LAYER_3_OUT_CHANNEL]),
-                                  name='BETA_3'),
+                'BETA_3': tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_3_OUT_CHANNEL]),
+                                      name='BETA_3'),
 
-            'GAMMA_3': tf.Variable(tf.random_normal(shape=[DiscriminatorConfig.CONV_LAYER_3_OUT_CHANNEL],
-                                                    mean=DiscriminatorConfig.BATCH_NORM_MEAN,
+                'GAMMA_3': tf.Variable(tf.random_normal(shape=[d_config.CONV_LAYER_3_OUT_CHANNEL],
+                                                        mean=d_config.BATCH_NORM_MEAN,
 
-                                                    stddev=DiscriminatorConfig.BATCH_STANDARD_DEVIATION),
-                                   name='GAMMA_3'),
+                                                        stddev=d_config.BATCH_STANDARD_DEVIATION),
+                                       name='GAMMA_3'),
 
-            "W_4": tf.Variable(tf.truncated_normal([(DiscriminatorConfig.CONV_OUT_HEIGHT *
-                                                     DiscriminatorConfig.CONV_OUT_WIDTH *
-                                                     DiscriminatorConfig.CONV_LAYER_3_OUT_CHANNEL),
-                                                    DiscriminatorConfig.OUTPUT_SIZE],
-                                                   stddev=DiscriminatorConfig.VARIABLE_RANDOM_STANDARD_DEVIATION),
-                               name='W_4'),
+                "W_4": tf.Variable(tf.truncated_normal([(d_config.CONV_OUT_HEIGHT *
+                                                         d_config.CONV_OUT_WIDTH *
+                                                         d_config.CONV_LAYER_3_OUT_CHANNEL),
+                                                        d_config.OUTPUT_SIZE],
+                                                       stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                                   name='W_4'),
 
-            "B_4": tf.Variable(tf.constant(0.0, shape=[DiscriminatorConfig.OUTPUT_SIZE]), name='b_4')
-        }
+                "B_4": tf.Variable(tf.constant(0.0, shape=[d_config.OUTPUT_SIZE]), name='b_4')
+            }
+        with tf.variable_scope('Discriminator'):
 
-        self.input = tf.placeholder(dtype=tf.float32,
-                                    shape=[DataConfig.BATCH_SIZE, DiscriminatorConfig.IN_WIDTH,
-                                           DiscriminatorConfig.IN_HEIGHT, DiscriminatorConfig.IN_CHANNEL])
-        self.label = tf.placeholder(dtype=tf.float32,
-                                    shape=[DataConfig.BATCH_SIZE, DiscriminatorConfig.OUTPUT_SIZE])
+            self.input = tf.placeholder(dtype=tf.float32,
+                                        shape=[None, d_config.IN_WIDTH,
+                                               d_config.IN_HEIGHT, d_config.IN_CHANNEL],
+                                        name='INPUT')
+            self.label = tf.placeholder(dtype=tf.float32,
+                                        shape=[None, d_config.OUTPUT_SIZE],
+                                        name='LABEL')
 
         self.var_list = []
         for key, value in self.variable_dict.iteritems():
@@ -94,7 +98,7 @@ class Discriminator(Model):
         with tf.variable_scope('Discriminator'):
             conv_1 = tf.nn.conv2d(input=self.input,
                                   filter=self.variable_dict['W_1'],
-                                  strides=[1, DiscriminatorConfig.CONV_STRIDE, DiscriminatorConfig.CONV_STRIDE, 1],
+                                  strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
                                   padding='SAME')
             conv_1 = tf.nn.bias_add(conv_1, self.variable_dict['B_1'])
             conv_1 = ops.batch_norm(x=conv_1,
@@ -110,7 +114,7 @@ class Discriminator(Model):
 
             conv_2 = tf.nn.conv2d(input=conv_1,
                                   filter=self.variable_dict['W_2'],
-                                  strides=[1, DiscriminatorConfig.CONV_STRIDE, DiscriminatorConfig.CONV_STRIDE, 1],
+                                  strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
                                   padding='same')
 
             conv_2 = tf.nn.bias_add(conv_2, self.variable_dict['B_2'])
@@ -127,7 +131,7 @@ class Discriminator(Model):
 
             conv_3 = tf.nn.conv2d(input=conv_2,
                                   filter=self.variable_dict['W_3'],
-                                  strides=[1, DiscriminatorConfig.CONV_STRIDE, DiscriminatorConfig.CONV_STRIDE, 1],
+                                  strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
                                   padding='same')
 
             conv_3 = ops.batch_norm(x=conv_3,
@@ -141,8 +145,8 @@ class Discriminator(Model):
                                     name='LEAKY_RELU_3')
 
             final = tf.reshape(conv_3,
-                               [-1, DiscriminatorConfig.CONV_OUT_WIDTH * DiscriminatorConfig.CONV_OUT_HEIGHT *
-                                DiscriminatorConfig.CONV_LAYER_3_OUT_CHANNEL])
+                               [-1, d_config.CONV_OUT_WIDTH * d_config.CONV_OUT_HEIGHT *
+                                d_config.CONV_LAYER_3_OUT_CHANNEL])
 
             final = tf.add(tf.matmul(final, self.variable_dict['W_4']), self.variable_dict['B_4'])
 
@@ -155,7 +159,7 @@ class Discriminator(Model):
                                                                   name='LOSS')
             accuracy = tf.reduce_mean(tf.equal(self.label, tf.argmax(tf.nn.softmax(self.predication))))
 
-            optimizer = tf.train.RMSPropOptimizer(learning_rate=DiscriminatorConfig.LEARNING_RATE)
+            optimizer = tf.train.RMSPropOptimizer(learning_rate=d_config.LEARNING_RATE)
 
             gradients = optimizer.compute_gradients(loss=loss, var_list=self.var_list)
 
