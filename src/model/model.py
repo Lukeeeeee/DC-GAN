@@ -8,7 +8,7 @@ class Model(object):
         self.model_saver = tf.train.Saver()
         self.name = 'Model'
 
-    def train(self, epoch):
+    def train(self):
         pass
 
     def test(self):

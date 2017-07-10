@@ -74,6 +74,7 @@ class GeneratorConfig(object):
             'TRAN_CONV_LAYER_2_HEIGHT': conf.TRAN_CONV_LAYER_2_HEIGHT,
             'TRAN_CONV_LAYER_2_WIDTH': conf.TRAN_CONV_LAYER_2_WIDTH,
             'TRAN_CONV_LAYER_1_HEIGHT': conf.TRAN_CONV_LAYER_1_HEIGHT,
+            'TRAN_CONV_LAYER_1_WIDTH': conf.TRAN_CONV_LAYER_1_WIDTH,
 
             'FILTER_SIZE': conf.FILTER_SIZE,
             'CONV_STRIDE': conf.CONV_STRIDE,

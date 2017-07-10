@@ -237,8 +237,7 @@ G = generator(z)
 D = discriminator(inputs)
 D_ = discriminator(G)
 
-
-d_loss_real = tf.log(D )
+d_loss_real = tf.log(D)
 d_loss_fake = tf.log(1 - D_ +0.0001)
 g_loss = d_loss_fake
 d_loss = -(d_loss_real + d_loss_fake + 0.0001)
