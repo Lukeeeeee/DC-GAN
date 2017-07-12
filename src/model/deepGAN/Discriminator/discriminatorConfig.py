@@ -2,10 +2,9 @@ import math
 
 
 class DiscriminatorConfig(object):
-
-    IN_HEIGHT = 24
-    IN_WIDTH = 24
-    IN_CHANNEL = 256
+    IN_HEIGHT = 28
+    IN_WIDTH = 28
+    IN_CHANNEL = 1
 
     LEARNING_RATE = 0.001
 

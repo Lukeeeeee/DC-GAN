@@ -28,18 +28,47 @@ class DeepGAN(Model):
         self.G.loss = self.D.generator_loss
         self.model_saver = tf.train.Saver()
 
+        self.sess.run(tf.global_variables_initializer())
+
     def train(self):
         for i in range(ganConfig.TRAINING_EPOCH):
+            D_aver_acc = 0.0
+            D_aver_loss = 0.0
+            G_aver_loss = 0.0
             for j in range(ganConfig.BATCH_COUNT):
                 image_batch, z_batch = self.data.return_batch_data(batch_size=ganConfig.BATCH_SIZE,
                                                                    index=j)
-                D_acc, D_loss, D_gradients = self.D.update(image_batch=image_batch,
-                                                           z_batch=z_batch)
-                G_loss_1, G_gradients_1 = self.G.update(z_batch=z_batch)
-                G_loss_2, G_gradients_2 = self.G.update(z_batch=z_batch)
+                D_acc, D_loss = self.update_discriminator(image_batch=image_batch, z_batch=z_batch)
+                G_loss_1 = self.update_generator(z_batch=z_batch)
+                G_loss_2 = self.update_generator(z_batch=z_batch)
+                G_loss = (G_loss_1 + G_loss_2) / 2.0
+
+                D_aver_acc = (D_aver_acc * float(j) + D_acc) / float(j + 1)
+                D_aver_loss = (D_aver_loss * float(j) + D_loss) / float(j + 1)
+
+                G_aver_loss = (G_aver_loss * float(j) + G_loss) / float(j + 1)
+                print("Epoch %5d, Iter %5d: D acc %.3lf aver acc %.3lf, loss %.3lf aver loss %.3lf, G loss %.3lf, "
+                      "aver loss %.3lf" % (i, j, D_acc, D_aver_acc, D_loss, D_aver_loss, G_loss, G_aver_loss))
 
     def test(self):
         pass
+
+    def update_generator(self, z_batch):
+        loss, _ = self.sess.run(fetches=[self.G.loss, self.G.optimize_loss],
+                                feed_dict={self.G.input: z_batch,
+                                           self.G.is_training: True,
+                                           self.D.is_training: True})
+        return loss
+
+    def update_discriminator(self, image_batch, z_batch):
+        acc, loss, _ = self.sess.run(fetches=[self.D.accuracy,
+                                              self.D.loss,
+                                              self.D.minimize_loss],
+                                     feed_dict={self.D.input: image_batch,
+                                                self.G.input: z_batch,
+                                                self.G.is_training: True,
+                                                self.D.is_training: True})
+        return acc, loss
 
     def save_model(self, model_path, epoch):
         self.model_saver.save(sess=self.sess,

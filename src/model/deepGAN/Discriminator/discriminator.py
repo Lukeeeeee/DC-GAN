@@ -145,27 +145,26 @@ class Discriminator(Model):
 
             }
 
-        self.input = tf.placeholder(dtype=tf.float32,
-                                    shape=[None, d_config.IN_WIDTH,
-                                           d_config.IN_HEIGHT, d_config.IN_CHANNEL],
-                                    name='INPUT')
+            self.input = tf.placeholder(dtype=tf.float32,
+                                        shape=[None, d_config.IN_WIDTH,
+                                               d_config.IN_HEIGHT, d_config.IN_CHANNEL],
+                                        name='D_INPUT')
+            self.is_training = tf.placeholder(tf.bool)
 
         self.var_list = []
         for key, value in self.variable_dict.iteritems():
             self.var_list.append(value)
-
-        self.is_training = tf.placeholder(tf.bool)
 
         self.generator = generator
 
         # self read_D is a size [Batch size * 2] shape tensor
         self.real_D, self.real_D_logits = self.create_model(input=self.input)
 
-        self.real_D_predication = tf.argmax(self.real_D)
+        self.real_D_predication = tf.argmax(self.real_D, axis=1)
 
         self.fake_D, self.fake_D_logits = self.create_model(input=self.generator.output)
 
-        self.fake_D_predication = tf.argmax(self.fake_D)
+        self.fake_D_predication = tf.argmax(self.fake_D, axis=1)
 
         self.accuracy, self.loss, self.generator_loss, self.optimizer, self.gradients, self.minimize_loss = self.create_training_method()
 
@@ -173,13 +172,16 @@ class Discriminator(Model):
 
         # super(Discriminator, self).create_model()
 
-        with tf.variable_scope(self.name) as scope:
+        with tf.variable_scope(self.name):
 
             conv_1 = tf.nn.conv2d(input=input,
                                   filter=self.variable_dict['W_1'],
                                   strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
                                   padding="SAME")
             conv_1 = tf.nn.bias_add(conv_1, self.variable_dict['B_1'])
+
+            # conv_1 = tf.layers.batch_normalization(inputs=conv_1, reuse=None, name='BATCH_NORM_1')
+
             conv_1 = ops.batch_norm(x=conv_1,
                                     beta=self.variable_dict['BETA_1'],
                                     gamma=self.variable_dict['GAMMA_1'],
@@ -230,7 +232,7 @@ class Discriminator(Model):
             return tf.nn.softmax(final), final
 
     def create_training_method(self):
-        with tf.variable_scope('Discriminator'):
+        with tf.variable_scope(self.name):
             ones_label = tf.one_hot(tf.ones_like(self.real_D_predication), depth=2)
             zeros_label = tf.one_hot(tf.zeros_like(self.fake_D_predication), depth=2)
 
@@ -242,11 +244,12 @@ class Discriminator(Model):
                                                                 logits=self.fake_D_logits,
                                                                 name='FAKE_LOSS')
 
-            generator_loss = tf.nn.softmax_cross_entropy_with_logits(labels=ones_label,
-                                                                     logits=self.fake_D_logits
-                                                                     )
+            g_ones_label = tf.one_hot(tf.ones_like(self.fake_D_predication), depth=2)
 
-            loss = real_loss + fake_loss
+            generator_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=g_ones_label,
+                                                                                    logits=self.fake_D_logits))
+
+            loss = tf.reduce_mean(real_loss + fake_loss)
 
             accuracy = tf.reduce_mean(tf.cast(x=tf.equal(x=tf.ones_like(self.real_D_predication),
                                                          y=self.real_D_predication),
@@ -254,6 +257,7 @@ class Discriminator(Model):
             accuracy = accuracy + tf.reduce_mean(tf.cast(x=tf.equal(x=tf.zeros_like(self.fake_D_predication),
                                                                     y=self.fake_D_predication),
                                                          dtype=tf.float32))
+            accuracy = accuracy / 2.0
 
             optimizer = tf.train.RMSPropOptimizer(learning_rate=d_config.LEARNING_RATE)
 
@@ -263,10 +267,15 @@ class Discriminator(Model):
 
         return accuracy, loss, generator_loss, optimizer, gradients, optimize_loss
 
-    def update(self, image_batch, z_batch):
-        acc, loss, gradients, _ = self.sess.run(fetches=[self.accuracy, self.loss, self.gradients, self.minimize_loss],
-                                                feed_dict={self.input: image_batch, self.generator.input: z_batch})
-        return acc, loss, gradients
+        # def update(self, image_batch, z_batch):
+        #     acc, loss, _ = self.sess.run(fetches=[self.accuracy,
+        #                                           self.loss,
+        #                                           self.minimize_loss],
+        #                                  feed_dict={self.input: image_batch,
+        #                                             self.generator.input: z_batch,
+        #                                             self.generator.is_training: True,
+        #                                             self.is_training: True})
+        #     return acc, loss
 
 
 if __name__ == '__main__':

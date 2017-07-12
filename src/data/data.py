@@ -1,5 +1,3 @@
-import random
-
 import numpy as np
 
 
@@ -13,8 +11,8 @@ class Data(object):
         return None
 
     def return_z_batch_data(self, batch_size):
-        a = [random.uniform(0, 1) for _ in range(batch_size)]
-        return np.array(a)
+        z_batch = np.random.uniform(-1, 1, [batch_size, 1, 1, 100]).astype(np.float32)
+        return z_batch
 
     def return_batch_data(self, batch_size, index):
         image = self.return_image_batch_data(batch_size, index)

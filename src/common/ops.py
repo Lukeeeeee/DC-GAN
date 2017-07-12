@@ -9,7 +9,8 @@ class ops(object):
 
     @staticmethod
     def batch_norm(x, beta, gamma, phase_train, scope='bn', decay=0.9, eps=1e-5):
-        with tf.variable_scope(scope):
+        # TODO CHANGE BATCH NORM
+        with tf.variable_scope(tf.get_variable_scope(), reuse=None):
             # beta = tf.get_variable(name='beta', shape=[n_out], initializer=tf.constant_initializer(0.0), trainable=True)
             # gamma = tf.get_variable(name='gamma', shape=[n_out], initializer=tf.random_normal_initializer(1.0, stddev), trainable=True)
             batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2], name='moments')
@@ -23,7 +24,8 @@ class ops(object):
             mean, var = tf.cond(phase_train, mean_var_with_update,
                                 lambda: (ema.average(batch_mean), ema.average(batch_var)))
             normed = tf.nn.batch_normalization(x, mean, var, beta, gamma, eps)
-        return normed
+            # normed = tf.layers.batch_normalization(x)
+            return normed
 
     @staticmethod
     def maxpool2d(x, k=2):

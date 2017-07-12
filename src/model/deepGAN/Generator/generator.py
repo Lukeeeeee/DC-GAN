@@ -67,19 +67,19 @@ class Generator(Model):
 
                 'W_4': tf.Variable(tf.truncated_normal(shape=[g_config.FILTER_SIZE,
                                                               g_config.FILTER_SIZE,
-                                                              g_config.TRAN_CONV_LAYER_3_OUT_CHANNEL,
+                                                              g_config.OUT_CHANNEL,
                                                               g_config.TRAN_CONV_LAYER_3_IN_CHANNEL],
                                                        stddev=g_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                                    name='W_4'),
                 'B_4': tf.Variable(tf.constant(value=0.0,
-                                               shape=[g_config.TRAN_CONV_LAYER_3_OUT_CHANNEL]),
+                                               shape=[g_config.OUT_CHANNEL]),
                                    name='B_4'),
 
                 'BETA_4': tf.Variable(tf.constant(value=0.0,
-                                                  shape=[g_config.TRAN_CONV_LAYER_3_OUT_CHANNEL]),
+                                                  shape=[g_config.OUT_CHANNEL]),
                                       name='BETA_4'),
 
-                'GAMMA_4': tf.Variable(tf.random_normal(shape=[g_config.TRAN_CONV_LAYER_3_OUT_CHANNEL],
+                'GAMMA_4': tf.Variable(tf.random_normal(shape=[g_config.OUT_CHANNEL],
                                                         mean=g_config.BATCH_NORM_MEAN,
                                                         stddev=g_config.BATCH_STANDARD_DEVIATION),
                                        name='GAMMA_4')
@@ -88,7 +88,7 @@ class Generator(Model):
         with tf.variable_scope(self.name):
             self.input = tf.placeholder(dtype=tf.float32,
                                         shape=[None, g_config.IN_WIDTH, g_config.IN_HEIGHT, g_config.IN_CHANNEL],
-                                        name='INPUT')
+                                        name='G_INPUT')
             self._loss = None
 
             self.is_training = tf.placeholder(tf.bool)
@@ -108,7 +108,7 @@ class Generator(Model):
         self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
 
     def create_model(self):
-        with tf.variable_scope('Generator'):
+        with tf.variable_scope('Generator', reuse=False):
             input = tf.reshape(tensor=self.input,
                                shape=[-1, g_config.IN_HEIGHT * g_config.IN_WIDTH * g_config.IN_CHANNEL])
             tran_fc = tf.add(tf.matmul(input, self.variable_dict['W_1']), self.variable_dict['B_1'])
@@ -124,7 +124,7 @@ class Generator(Model):
 
             tran_conv_1 = tf.nn.conv2d_transpose(value=tran_fc,
                                                  filter=self.variable_dict['W_2'],
-                                                 output_shape=[-1,
+                                                 output_shape=[g_config.BATCH_SIZE,
                                                                g_config.TRAN_CONV_LAYER_2_WIDTH,
                                                                g_config.TRAN_CONV_LAYER_2_HEIGHT,
                                                                g_config.TRAN_CONV_LAYER_2_IN_CHANNEL],
@@ -141,7 +141,7 @@ class Generator(Model):
 
             tran_conv_2 = tf.nn.conv2d_transpose(value=tran_conv_1,
                                                  filter=self.variable_dict['W_3'],
-                                                 output_shape=[-1,
+                                                 output_shape=[g_config.BATCH_SIZE,
                                                                g_config.TRAN_CONV_LAYER_3_WIDTH,
                                                                g_config.TRAN_CONV_LAYER_3_HEIGHT,
                                                                g_config.TRAN_CONV_LAYER_3_IN_CHANNEL],
@@ -159,7 +159,7 @@ class Generator(Model):
 
             tran_conv_3 = tf.nn.conv2d_transpose(value=tran_conv_2,
                                                  filter=self.variable_dict['W_4'],
-                                                 output_shape=[-1,
+                                                 output_shape=[g_config.BATCH_SIZE,
                                                                g_config.OUT_HEIGHT,
                                                                g_config.OUT_WIDTH,
                                                                g_config.OUT_CHANNEL],
@@ -183,7 +183,9 @@ class Generator(Model):
 
         return optimizer, gradients, optimize_loss
 
-    def update(self, z_batch):
-        loss, _, gradients = self.sess.run(fetches=[self.loss, self.optimize_loss, self.gradients],
-                                           feed_dict={self.input: z_batch})
-        return loss, gradients
+        # def update(self, z_batch):
+        #     loss, _ = self.sess.run(fetches=[self.loss, self.optimize_loss],
+        #                             feed_dict={self.input: z_batch,
+        #                                        self.is_training: True,
+        #                                        self.discriminator.is_training: True})
+        #     return loss

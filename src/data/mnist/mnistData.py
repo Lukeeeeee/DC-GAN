@@ -6,10 +6,13 @@ from src.data.data import Data
 
 
 class MnistData(Data):
+
     def __init__(self, data_path):
         super(MnistData, self).__init__(data_path=data_path)
         self.image_set = self.load_data()
-        pass
+
+        self.HEIGHT = 28
+        self.WIDTH = 28
 
     def load_data(self):
         image_data = None
@@ -24,8 +27,11 @@ class MnistData(Data):
         return image_data
 
     def return_image_batch_data(self, batch_size, index):
-        return self.image_set[index, index + batch_size]
+        image_data = self.image_set[index: index + batch_size, ]
+        image_data = np.reshape(image_data, newshape=[batch_size, self.WIDTH, self.HEIGHT, 1]).astype(np.float32)
+        return image_data
 
 
 if __name__ == '__main__':
     d = MnistData(data_path=DATASET_PATH + '/mnist')
+    print(d.return_image_batch_data(batch_size=200, index=0))
