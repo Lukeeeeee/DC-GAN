@@ -9,14 +9,14 @@ class Discriminator(Model):
     def __init__(self, sess, data, generator):
         super(Discriminator, self).__init__(sess, data)
         self.name = 'Discriminator'
-
-        with tf.variable_scope('Discriminator'):
+        with tf.variable_scope(self.name):
             self.variable_dict = {
                 "W_1": tf.Variable(tf.truncated_normal([d_config.FILTER_SIZE, d_config.FILTER_SIZE,
                                                         d_config.IN_CHANNEL,
                                                         d_config.CONV_LAYER_1_OUT_CHANNEL],
                                                        stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                                    name='W_1'),
+
 
                 "B_1": tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_1_OUT_CHANNEL]),
                                    name='B_1'),
@@ -72,6 +72,77 @@ class Discriminator(Model):
                                    name='W_4'),
 
                 "B_4": tf.Variable(tf.constant(0.0, shape=[d_config.OUTPUT_SIZE]), name='b_4')
+
+                # "W_1": tf.get_variable(shape=[d_config.FILTER_SIZE, d_config.FILTER_SIZE,
+                #                               d_config.IN_CHANNEL,
+                #                               d_config.CONV_LAYER_1_OUT_CHANNEL],
+                #                        initializer=tf.truncated_normal_initializer(
+                #                            stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                        name='W_1'),
+                #
+                # "B_1": tf.get_variable(shape=[d_config.CONV_LAYER_1_OUT_CHANNEL],
+                #                        name='B_1',
+                #                        initializer=tf.constant_initializer(value=0.0)),
+                #
+                # 'BETA_1': tf.get_variable(shape=[d_config.CONV_LAYER_1_OUT_CHANNEL],
+                #                           name='BETA_1',
+                #                           initializer=tf.constant_initializer(value=0.0)),
+                #
+                # 'GAMMA_1': tf.get_variable(shape=[d_config.CONV_LAYER_1_OUT_CHANNEL],
+                #                            initializer=tf.random_normal_initializer(mean=d_config.BATCH_NORM_MEAN,
+                #                                                                     stddev=d_config.BATCH_STANDARD_DEVIATION),
+                #                            name='GAMMA_1'),
+                #
+                # 'W_2': tf.get_variable(shape=[d_config.FILTER_SIZE, d_config.FILTER_SIZE,
+                #                               d_config.CONV_LAYER_1_OUT_CHANNEL,
+                #                               d_config.CONV_LAYER_2_OUT_CHANNEL],
+                #                        initializer=tf.truncated_normal_initializer(
+                #                            stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                        name='W_2'),
+                #
+                # 'B_2': tf.get_variable(shape=[d_config.CONV_LAYER_2_OUT_CHANNEL],
+                #                        initializer=tf.constant_initializer(value=0.0),
+                #                        name='B_2'),
+                #
+                # 'BETA_2': tf.get_variable(shape=[d_config.CONV_LAYER_2_OUT_CHANNEL],
+                #                           initializer=tf.constant_initializer(value=0.0),
+                #                           name='BETA_2'),
+                #
+                # 'GAMMA_2': tf.get_variable(shape=[d_config.CONV_LAYER_2_OUT_CHANNEL],
+                #                            initializer=tf.random_normal_initializer(mean=d_config.BATCH_NORM_MEAN,
+                #                                                                     stddev=d_config.BATCH_STANDARD_DEVIATION),
+                #                            name='GAMMA_2'),
+                #
+                # 'W_3': tf.get_variable(shape=[d_config.FILTER_SIZE, d_config.FILTER_SIZE,
+                #                               d_config.CONV_LAYER_2_OUT_CHANNEL,
+                #                               d_config.CONV_LAYER_3_OUT_CHANNEL],
+                #                        initializer=tf.truncated_normal_initializer(
+                #                            stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                        name='W_3'),
+                #
+                # 'B_3': tf.get_variable(shape=[d_config.CONV_LAYER_3_OUT_CHANNEL],
+                #                        initializer=tf.constant_initializer(value=0.0),
+                #                        name='B_3'),
+                #
+                # 'BETA_3': tf.get_variable(shape=[d_config.CONV_LAYER_3_OUT_CHANNEL],
+                #                           initializer=tf.constant_initializer(value=0.0),
+                #                           name='BETA_3'),
+                #
+                # 'GAMMA_3': tf.get_variable(shape=[d_config.CONV_LAYER_3_OUT_CHANNEL],
+                #                            initializer=tf.random_normal_initializer(mean=d_config.BATCH_NORM_MEAN,
+                #                                                                     stddev=d_config.BATCH_STANDARD_DEVIATION),
+                #                            name='GAMMA_3'),
+                #
+                # 'W_4': tf.get_variable(shape=[(d_config.CONV_OUT_HEIGHT * d_config.CONV_OUT_WIDTH
+                #                                * d_config.CONV_LAYER_3_OUT_CHANNEL), d_config.OUTPUT_SIZE],
+                #                        initializer=tf.truncated_normal_initializer(
+                #                        stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                        name='W_4'),
+                #
+                # 'B_4': tf.get_variable(shape=[d_config.OUTPUT_SIZE],
+                #                        initializer=tf.constant_initializer(value=0.0),
+                #                        name='B_4'),
+
             }
 
         self.input = tf.placeholder(dtype=tf.float32,
@@ -88,28 +159,26 @@ class Discriminator(Model):
         self.generator = generator
 
         # self read_D is a size [Batch size * 2] shape tensor
-        self.real_D, self.real_D_logits = self.create_model(input=self.input, reuse=False)
+        self.real_D, self.real_D_logits = self.create_model(input=self.input)
 
         self.real_D_predication = tf.argmax(self.real_D)
 
-        self.fake_D, self.fake_D_logits = self.create_model(input=self.generator, reuse=True)
+        self.fake_D, self.fake_D_logits = self.create_model(input=self.generator.output)
 
         self.fake_D_predication = tf.argmax(self.fake_D)
 
         self.accuracy, self.loss, self.generator_loss, self.optimizer, self.gradients, self.minimize_loss = self.create_training_method()
 
-    def create_model(self, input, reuse):
+    def create_model(self, input):
 
         # super(Discriminator, self).create_model()
 
-        with tf.variable_scope('Discriminator') as scope:
-            if reuse:
-                scope.reuse_variables()
+        with tf.variable_scope(self.name) as scope:
 
             conv_1 = tf.nn.conv2d(input=input,
                                   filter=self.variable_dict['W_1'],
                                   strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
-                                  padding='SAME')
+                                  padding="SAME")
             conv_1 = tf.nn.bias_add(conv_1, self.variable_dict['B_1'])
             conv_1 = ops.batch_norm(x=conv_1,
                                     beta=self.variable_dict['BETA_1'],
@@ -120,12 +189,10 @@ class Discriminator(Model):
                                     alpha=0.2,
                                     name='LEAKY_RELU_1')
 
-            # conv_1 = ops.maxpool2d(x=conv_1, k=2)
-
             conv_2 = tf.nn.conv2d(input=conv_1,
                                   filter=self.variable_dict['W_2'],
                                   strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
-                                  padding='same')
+                                  padding="SAME")
 
             conv_2 = tf.nn.bias_add(conv_2, self.variable_dict['B_2'])
 
@@ -142,7 +209,7 @@ class Discriminator(Model):
             conv_3 = tf.nn.conv2d(input=conv_2,
                                   filter=self.variable_dict['W_3'],
                                   strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
-                                  padding='same')
+                                  padding="SAME")
 
             conv_3 = ops.batch_norm(x=conv_3,
                                     beta=self.variable_dict['BETA_3'],
@@ -181,10 +248,12 @@ class Discriminator(Model):
 
             loss = real_loss + fake_loss
 
-            accuracy = tf.reduce_mean(tf.equal(x=tf.ones_like(self.real_D_predication),
-                                               y=self.real_D_predication))
-            accuracy = accuracy + tf.reduce_mean(tf.equal(x=tf.zeros_like(self.fake_D_predication),
-                                                          y=self.fake_D_predication))
+            accuracy = tf.reduce_mean(tf.cast(x=tf.equal(x=tf.ones_like(self.real_D_predication),
+                                                         y=self.real_D_predication),
+                                              dtype=tf.float32))
+            accuracy = accuracy + tf.reduce_mean(tf.cast(x=tf.equal(x=tf.zeros_like(self.fake_D_predication),
+                                                                    y=self.fake_D_predication),
+                                                         dtype=tf.float32))
 
             optimizer = tf.train.RMSPropOptimizer(learning_rate=d_config.LEARNING_RATE)
 
@@ -198,3 +267,11 @@ class Discriminator(Model):
         acc, loss, gradients, _ = self.sess.run(fetches=[self.accuracy, self.loss, self.gradients, self.minimize_loss],
                                                 feed_dict={self.input: image_batch, self.generator.input: z_batch})
         return acc, loss, gradients
+
+
+if __name__ == '__main__':
+    with tf.variable_scope('a') as scope:
+        a = tf.get_variable(name='a', shape=[1, 2], initializer=tf.constant_initializer(value=0))
+        scope.reuse_variables()
+        a = tf.get_variable(name='a', shape=[2, 2], initializer=tf.constant_initializer(value=0))
+        pass

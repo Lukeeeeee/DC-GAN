@@ -1,11 +1,7 @@
-import tensorflow as tf
-
-
 class Model(object):
     def __init__(self, sess, data=None):
         self.sess = sess
         self.data = data
-        self.model_saver = tf.train.Saver()
         self.name = 'Model'
 
     def train(self):

@@ -92,6 +92,7 @@ class Generator(Model):
             self._loss = None
 
             self.is_training = tf.placeholder(tf.bool)
+        self.output = self.create_model()
         self.var_list = []
         for key, value in self.variable_dict.iteritems():
             self.var_list.append(value)
@@ -108,7 +109,9 @@ class Generator(Model):
 
     def create_model(self):
         with tf.variable_scope('Generator'):
-            tran_fc = tf.add(tf.matmul(self.input, self.variable_dict['W_1']), self.variable_dict['B_1'])
+            input = tf.reshape(tensor=self.input,
+                               shape=[-1, g_config.IN_HEIGHT * g_config.IN_WIDTH * g_config.IN_CHANNEL])
+            tran_fc = tf.add(tf.matmul(input, self.variable_dict['W_1']), self.variable_dict['B_1'])
             tran_fc = tf.reshape(tensor=tran_fc,
                                  shape=[-1, g_config.TRAN_CONV_LAYER_1_WIDTH, g_config.TRAN_CONV_LAYER_1_HEIGHT,
                                         g_config.TRAN_CONV_LAYER_1_IN_CHANNEL])
@@ -121,10 +124,10 @@ class Generator(Model):
 
             tran_conv_1 = tf.nn.conv2d_transpose(value=tran_fc,
                                                  filter=self.variable_dict['W_2'],
-                                                 output_shape=tf.stack([g_config.BATCH_SIZE,
-                                                                        g_config.TRAN_CONV_LAYER_2_WIDTH,
-                                                                        g_config.TRAN_CONV_LAYER_2_HEIGHT,
-                                                                        g_config.TRAN_CONV_LAYER_2_IN_CHANNEL]),
+                                                 output_shape=[-1,
+                                                               g_config.TRAN_CONV_LAYER_2_WIDTH,
+                                                               g_config.TRAN_CONV_LAYER_2_HEIGHT,
+                                                               g_config.TRAN_CONV_LAYER_2_IN_CHANNEL],
                                                  strides=[1, g_config.CONV_STRIDE, g_config.CONV_STRIDE, 1],
                                                  padding='SAME')
             tran_conv_1 = tf.nn.bias_add(tran_conv_1, self.variable_dict['B_2'])
@@ -138,13 +141,13 @@ class Generator(Model):
 
             tran_conv_2 = tf.nn.conv2d_transpose(value=tran_conv_1,
                                                  filter=self.variable_dict['W_3'],
-                                                 output_shape=tf.stack([g_config.BATCH_SIZE,
-                                                                        g_config.TRAN_CONV_LAYER_3_WIDTH,
-                                                                        g_config.TRAN_CONV_LAYER_3_HEIGHT,
-                                                                        g_config.TRAN_CONV_LAYER_3_IN_CHANNEL]),
+                                                 output_shape=[-1,
+                                                               g_config.TRAN_CONV_LAYER_3_WIDTH,
+                                                               g_config.TRAN_CONV_LAYER_3_HEIGHT,
+                                                               g_config.TRAN_CONV_LAYER_3_IN_CHANNEL],
                                                  strides=[1, g_config.CONV_STRIDE, g_config.CONV_STRIDE, 1],
                                                  padding='SAME')
-            tran_conv_2 = tf.nn.bias_add(tran_conv_2, self.variable_dict['BETA_3'])
+            tran_conv_2 = tf.nn.bias_add(tran_conv_2, self.variable_dict['B_3'])
 
             tran_conv_2 = ops.batch_norm(x=tran_conv_2,
                                          beta=self.variable_dict['BETA_3'],
@@ -156,17 +159,17 @@ class Generator(Model):
 
             tran_conv_3 = tf.nn.conv2d_transpose(value=tran_conv_2,
                                                  filter=self.variable_dict['W_4'],
-                                                 output_shape=tf.stack([g_config.BATCH_SIZE,
-                                                                        g_config.OUT_HEIGHT,
-                                                                        g_config.OUT_WIDTH,
-                                                                        g_config.OUT_CHANNEL]),
+                                                 output_shape=[-1,
+                                                               g_config.OUT_HEIGHT,
+                                                               g_config.OUT_WIDTH,
+                                                               g_config.OUT_CHANNEL],
                                                  strides=[1, g_config.CONV_STRIDE, g_config.CONV_STRIDE, 1],
                                                  padding='SAME')
-            tran_conv_3 = tf.nn.bias_add(tran_conv_3, self.variable_dict['B_3'])
+            tran_conv_3 = tf.nn.bias_add(tran_conv_3, self.variable_dict['B_4'])
 
             tran_conv_3 = ops.batch_norm(x=tran_conv_3,
-                                         beta=self.variable_dict['BETA_3'],
-                                         gamma=self.variable_dict['GAMMA_3'],
+                                         beta=self.variable_dict['BETA_4'],
+                                         gamma=self.variable_dict['GAMMA_4'],
                                          phase_train=self.is_training,
                                          scope='BATCH_NORM_4')
             tran_conv_3 = tf.nn.relu(tran_conv_3, name='RELU_4')

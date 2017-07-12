@@ -1,6 +1,8 @@
 import datetime
 import os
 
+import tensorflow as tf
+
 from log import LOG_PATH
 from src.model.deepGAN.Discriminator.discriminator import Discriminator
 from src.model.deepGAN.Generator.generator import Generator
@@ -20,16 +22,17 @@ class DeepGAN(Model):
 
         self.model_dir = self.log_dir + 'model/'
         if not os.path.exists(self.model_dir):
-            os.makedirs(self.log_dir)
+            os.makedirs(self.model_dir)
         self.G = Generator(sess=sess, data=None)
         self.D = Discriminator(sess=sess, data=None, generator=self.G)
         self.G.loss = self.D.generator_loss
+        self.model_saver = tf.train.Saver()
 
     def train(self):
         for i in range(ganConfig.TRAINING_EPOCH):
             for j in range(ganConfig.BATCH_COUNT):
-                image_batch, z_batch = self.data.return_one_batch(batch_size=ganConfig.BATCH_SIZE,
-                                                                  batch_index=j)
+                image_batch, z_batch = self.data.return_batch_data(batch_size=ganConfig.BATCH_SIZE,
+                                                                   index=j)
                 D_acc, D_loss, D_gradients = self.D.update(image_batch=image_batch,
                                                            z_batch=z_batch)
                 G_loss_1, G_gradients_1 = self.G.update(z_batch=z_batch)

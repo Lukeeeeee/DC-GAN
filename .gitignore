@@ -97,3 +97,5 @@ ENV/
 
 .idea/
 *.mat
+dataset/mnist
+/src/model/deepGAN/Discriminator/discriminator.py
