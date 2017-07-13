@@ -97,6 +97,6 @@ ENV/
 
 .idea/
 *.mat
-dataset/mnist
+# dataset/mnist
 /src/model/deepGAN/Discriminator/discriminator.py
 log/*-*
