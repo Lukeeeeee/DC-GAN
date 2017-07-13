@@ -106,6 +106,8 @@ class Generator(Model):
     def loss(self, new_loss):
         self._loss = new_loss
         self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
+        # ops.variable_summaries(self.gradients)
+        self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss)
 
     def create_model(self):
         with tf.variable_scope('Generator', reuse=False):

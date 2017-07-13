@@ -33,6 +33,19 @@ class ops(object):
         return tf.nn.max_pool(x, ksize=[1, k, k, 1], strides=[1, k, k, 1],
                               padding='SAME')
 
+    @staticmethod
+    def variable_summaries(var):
+        """Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
+        with tf.name_scope('Summary'):
+            scalar = tf.summary.scalar(var.name, var)
+
+            # tf.summary.scalar('mean', mean)
+            # tf.summary.scalar('max', tf.reduce_max(var))
+            # tf.summary.scalar('min', tf.reduce_min(var))
+            histogram = tf.summary.histogram(var.name, var)
+            return scalar, histogram
+
+
 # try:
 #   image_summary = tf.image_summary
 #   scalar_summary = tf.scalar_summary

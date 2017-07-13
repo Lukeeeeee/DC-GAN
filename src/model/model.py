@@ -3,6 +3,7 @@ class Model(object):
         self.sess = sess
         self.data = data
         self.name = 'Model'
+        self.model_saver = None
 
     def train(self):
         pass
@@ -25,5 +26,5 @@ class Model(object):
         print('Model at %s loaded' % model_path)
         pass
 
-    def log_config(self, config_path):
+    def log_config(self):
         pass

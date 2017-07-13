@@ -1,7 +1,9 @@
 import math
 
+from src.config import Config
 
-class DiscriminatorConfig(object):
+
+class DiscriminatorConfig(Config):
     IN_HEIGHT = 28
     IN_WIDTH = 28
     IN_CHANNEL = 1
@@ -10,11 +12,11 @@ class DiscriminatorConfig(object):
 
     CONV_LAYER_COUNT = 3
 
-    CONV_LAYER_1_OUT_CHANNEL = 512
+    CONV_LAYER_1_OUT_CHANNEL = 32
 
-    CONV_LAYER_2_OUT_CHANNEL = 512
+    CONV_LAYER_2_OUT_CHANNEL = 32
 
-    CONV_LAYER_3_OUT_CHANNEL = 1024
+    CONV_LAYER_3_OUT_CHANNEL = 64
 
     CONV_STRIDE = 2
 
@@ -30,6 +32,8 @@ class DiscriminatorConfig(object):
     CONV_OUT_WIDTH = int(math.ceil(float(IN_WIDTH) / float(math.pow(CONV_STRIDE, CONV_LAYER_COUNT))))
 
     OUTPUT_SIZE = 2
+
+    PREFIX = 'DISCRIMINATOR_'
 
     # D_VARIABLE_DICT = {
     #     "W_1": tf.Variable(tf.truncated_normal([FILTER_SIZE, FILTER_SIZE, IN_CHANNEL, CONV_LAYER_1_OUT_CHANNEL],
@@ -61,20 +65,25 @@ class DiscriminatorConfig(object):
     @staticmethod
     def save_to_json(conf):
         return {
-            'IN_HEIGHT': conf.IN_HEIGHT,
-            'IN_WIDTH': conf.IN_WIDTH,
-            'IN_CHANNEL': conf.IN_CHANNEL,
-            'LEARNING_RATE': conf.LEARNING_RATE,
-            'CONV_LAYER_COUNT': conf.CONV_LAYER_COUNT,
-            'CONV_LAYER_1_OUT_CHANNEL': conf.CONV_LAYER_1_OUT_CHANNEL,
-            'CONV_LAYER_2_OUT_CHANNEL': conf.CONV_LAYER_2_OUT_CHANNEL,
-            'CONV_LAYER_3_OUT_CHANNEL': conf.CONV_LAYER_3_OUT_CHANNEL,
-            'CONV_STRIDE': conf.CONV_STRIDE,
-            'FILTER_SIZE': conf.FILTER_SIZE,
-            'VARIABLE_RANDOM_STANDARD_DEVIATION': conf.VARIABLE_RANDOM_STANDARD_DEVIATION,
-            'BATCH_NORM_MEAN': conf.BATCH_NORM_MEAN,
-            'BATCH_STANDARD_DEVIATION': conf.BATCH_STANDARD_DEVIATION,
-            'CONV_OUT_HEIGHT': conf.CONV_OUT_HEIGHT,
-            'CONV_OUT_WIDTH': conf.CONV_OUT_WIDTH,
-            'OUTPUT_SIZE': conf.OUTPUT_SIZE
+            conf.PREFIX + 'IN_HEIGHT': conf.IN_HEIGHT,
+            conf.PREFIX + 'IN_WIDTH': conf.IN_WIDTH,
+            conf.PREFIX + 'IN_CHANNEL': conf.IN_CHANNEL,
+            conf.PREFIX + 'LEARNING_RATE': conf.LEARNING_RATE,
+            conf.PREFIX + 'CONV_LAYER_COUNT': conf.CONV_LAYER_COUNT,
+            conf.PREFIX + 'CONV_LAYER_1_OUT_CHANNEL': conf.CONV_LAYER_1_OUT_CHANNEL,
+            conf.PREFIX + 'CONV_LAYER_2_OUT_CHANNEL': conf.CONV_LAYER_2_OUT_CHANNEL,
+            conf.PREFIX + 'CONV_LAYER_3_OUT_CHANNEL': conf.CONV_LAYER_3_OUT_CHANNEL,
+            conf.PREFIX + 'CONV_STRIDE': conf.CONV_STRIDE,
+            conf.PREFIX + 'FILTER_SIZE': conf.FILTER_SIZE,
+            conf.PREFIX + 'VARIABLE_RANDOM_STANDARD_DEVIATION': conf.VARIABLE_RANDOM_STANDARD_DEVIATION,
+            conf.PREFIX + 'BATCH_NORM_MEAN': conf.BATCH_NORM_MEAN,
+            conf.PREFIX + 'BATCH_STANDARD_DEVIATION': conf.BATCH_STANDARD_DEVIATION,
+            conf.PREFIX + 'CONV_OUT_HEIGHT': conf.CONV_OUT_HEIGHT,
+            conf.PREFIX + 'CONV_OUT_WIDTH': conf.CONV_OUT_WIDTH,
+            conf.PREFIX + 'OUTPUT_SIZE': conf.OUTPUT_SIZE
         }
+
+
+if __name__ == '__main__':
+    a = DiscriminatorConfig()
+    a.log_config('1.json')

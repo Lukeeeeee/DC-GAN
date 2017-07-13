@@ -166,7 +166,12 @@ class Discriminator(Model):
 
         self.fake_D_predication = tf.argmax(self.fake_D, axis=1)
 
-        self.accuracy, self.loss, self.generator_loss, self.optimizer, self.gradients, self.minimize_loss = self.create_training_method()
+        self.accuracy, self.fake_accuracy, self.real_accuracy, self.loss, self.generator_loss, self.optimizer, \
+        self.gradients, self.minimize_loss = self.create_training_method()
+
+        self.accuracy_scalar_summary, self.accuracy_histogram_summary = ops.variable_summaries(self.accuracy)
+        self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss)
+        # ops.variable_summaries(self.gradients)
 
     def create_model(self, input):
 
@@ -233,6 +238,7 @@ class Discriminator(Model):
 
     def create_training_method(self):
         with tf.variable_scope(self.name):
+
             ones_label = tf.one_hot(tf.ones_like(self.real_D_predication), depth=2)
             zeros_label = tf.one_hot(tf.zeros_like(self.fake_D_predication), depth=2)
 
@@ -247,17 +253,20 @@ class Discriminator(Model):
             g_ones_label = tf.one_hot(tf.ones_like(self.fake_D_predication), depth=2)
 
             generator_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=g_ones_label,
-                                                                                    logits=self.fake_D_logits))
+                                                                                    logits=self.fake_D_logits),
+                                            name='G_LOSS')
 
-            loss = tf.reduce_mean(real_loss + fake_loss)
+            loss = tf.reduce_mean(real_loss + fake_loss, name='D_LOSS')
 
-            accuracy = tf.reduce_mean(tf.cast(x=tf.equal(x=tf.ones_like(self.real_D_predication),
-                                                         y=self.real_D_predication),
-                                              dtype=tf.float32))
-            accuracy = accuracy + tf.reduce_mean(tf.cast(x=tf.equal(x=tf.zeros_like(self.fake_D_predication),
-                                                                    y=self.fake_D_predication),
-                                                         dtype=tf.float32))
-            accuracy = accuracy / 2.0
+            real_accuracy = tf.reduce_mean(tf.cast(x=tf.equal(x=tf.ones_like(self.real_D_predication),
+                                                              y=self.real_D_predication),
+                                                   dtype=tf.float32),
+                                           name='REAL_ACCURACY')
+            fake_accuracy = tf.reduce_mean(tf.cast(x=tf.equal(x=tf.zeros_like(self.fake_D_predication),
+                                                              y=self.fake_D_predication),
+                                                   dtype=tf.float32),
+                                           name='FAKE_ACCURACY')
+            accuracy = tf.div(tf.add(fake_accuracy, real_accuracy), tf.constant(2.0), name='ACCURACY')
 
             optimizer = tf.train.RMSPropOptimizer(learning_rate=d_config.LEARNING_RATE)
 
@@ -265,17 +274,12 @@ class Discriminator(Model):
 
             optimize_loss = optimizer.minimize(loss=loss)
 
-        return accuracy, loss, generator_loss, optimizer, gradients, optimize_loss
+            self.fake_accuracy_scalar_summary, self.fake_accuracy_histogram_summary = ops.variable_summaries(
+                fake_accuracy)
+            self.real_accuracy_scalar_summary, self.real_accuracy_histogram_summary = ops.variable_summaries(
+                real_accuracy)
 
-        # def update(self, image_batch, z_batch):
-        #     acc, loss, _ = self.sess.run(fetches=[self.accuracy,
-        #                                           self.loss,
-        #                                           self.minimize_loss],
-        #                                  feed_dict={self.input: image_batch,
-        #                                             self.generator.input: z_batch,
-        #                                             self.generator.is_training: True,
-        #                                             self.is_training: True})
-        #     return acc, loss
+        return accuracy, fake_accuracy, real_accuracy, loss, generator_loss, optimizer, gradients, optimize_loss
 
 
 if __name__ == '__main__':

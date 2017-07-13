@@ -99,3 +99,4 @@ ENV/
 *.mat
 dataset/mnist
 /src/model/deepGAN/Discriminator/discriminator.py
+log/*-*

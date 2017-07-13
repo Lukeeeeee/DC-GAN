@@ -185,7 +185,7 @@ def visualize(sess, dcgan, config, option):
       for kdx, z in enumerate(z_sample):
         z[idx] = values[kdx]
 
-      if config.dataset == "mnist":
+      if config.dataset == "mnistTest":
         y = np.random.choice(10, config.batch_size)
         y_one_hot = np.zeros((config.batch_size, 10))
         y_one_hot[np.arange(config.batch_size), y] = 1
@@ -205,7 +205,7 @@ def visualize(sess, dcgan, config, option):
       for kdx, z in enumerate(z_sample):
         z[idx] = values[kdx]
 
-      if config.dataset == "mnist":
+      if config.dataset == "mnistTest":
         y = np.random.choice(10, config.batch_size)
         y_one_hot = np.zeros((config.batch_size, 10))
         y_one_hot[np.arange(config.batch_size), y] = 1
