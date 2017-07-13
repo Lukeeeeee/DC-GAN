@@ -40,7 +40,7 @@ class GeneratorConfig(Config):
     DATA_SOURCE = 'relu3_1'
     DATA_Z_NAME = None
 
-    BATCH_SIZE = 20
+    BATCH_SIZE = 200
 
     VARIABLE_RANDOM_STANDARD_DEVIATION = 0.02
 
