@@ -73,8 +73,8 @@ class DeepGAN(Model):
                 D_aver_fake_acc = (D_aver_fake_acc * float(j) + D_fake_acc) / float(j + 1)
                 D_aver_real_acc = (D_aver_real_acc * float(j) + D_real_acc) / float(j + 1)
 
-                print(self.eval_tensor(tensor=self.D.real_D, image_batch=image_batch, z_batch=z_batch))
-                print(self.eval_tensor(tensor=self.D.fake_D, image_batch=image_batch, z_batch=z_batch))
+                # print(self.eval_tensor(tensor=self.D.real_D, image_batch=image_batch, z_batch=z_batch))
+                # print(self.eval_tensor(tensor=self.D.fake_D, image_batch=image_batch, z_batch=z_batch))
 
                 print(
                 "Epoch %5d, Iter %5d: D acc %.3lf aver acc %.3lf Fake acc %.3lf, Real acc %.3lf, loss %.3lf aver loss %.3lf, G loss %.3lf, "
