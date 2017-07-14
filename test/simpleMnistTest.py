@@ -5,8 +5,10 @@ import tensorflow as tf
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
+PARENT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+
 sys.path.append(CURRENT_PATH)
-sys.path.append(CURRENT_PATH + '/../')
+sys.path.append(PARENT_PATH)
 from dataset import DATASET_PATH
 from src.data.mnist.mnistConfig import MnistConfig
 from src.data.mnist.mnistData import MnistData
