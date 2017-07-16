@@ -1,153 +1,151 @@
 import tensorflow as tf
 
 from src.common.ops import ops
-from src.model.deepGAN.Discriminator.discriminatorConfig import DiscriminatorConfig as d_config
 from src.model.model import Model
 
 
 class Discriminator(Model):
-    def __init__(self, sess, data, generator):
-        super(Discriminator, self).__init__(sess, data)
+    def __init__(self, sess, data, generator, config):
+        super(Discriminator, self).__init__(sess=sess, data=data, config=config)
         self.name = 'Discriminator'
         with tf.variable_scope(self.name):
             self.variable_dict = {
-                "W_1": tf.Variable(tf.truncated_normal([d_config.FILTER_SIZE, d_config.FILTER_SIZE,
-                                                        d_config.IN_CHANNEL,
-                                                        d_config.CONV_LAYER_1_OUT_CHANNEL],
-                                                       stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                "W_1": tf.Variable(tf.truncated_normal([self.config.FILTER_SIZE, self.config.FILTER_SIZE,
+                                                        self.config.IN_CHANNEL,
+                                                        self.config.CONV_LAYER_1_OUT_CHANNEL],
+                                                       stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                                    name='W_1'),
 
-
-                "B_1": tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_1_OUT_CHANNEL]),
+                "B_1": tf.Variable(tf.constant(0.0, shape=[self.config.CONV_LAYER_1_OUT_CHANNEL]),
                                    name='B_1'),
 
-                'BETA_1': tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_1_OUT_CHANNEL]),
+                'BETA_1': tf.Variable(tf.constant(0.0, shape=[self.config.CONV_LAYER_1_OUT_CHANNEL]),
                                       name='BETA_1'),
 
-                'GAMMA_1': tf.Variable(tf.random_normal(shape=[d_config.CONV_LAYER_1_OUT_CHANNEL],
-                                                        mean=d_config.BATCH_NORM_MEAN,
-                                                        stddev=d_config.BATCH_STANDARD_DEVIATION),
+                'GAMMA_1': tf.Variable(tf.random_normal(shape=[self.config.CONV_LAYER_1_OUT_CHANNEL],
+                                                        mean=self.config.BATCH_NORM_MEAN,
+                                                        stddev=self.config.BATCH_STANDARD_DEVIATION),
                                        name='GAMMA_1'),
 
-                "W_2": tf.Variable(tf.truncated_normal([d_config.FILTER_SIZE, d_config.FILTER_SIZE,
-                                                        d_config.CONV_LAYER_1_OUT_CHANNEL,
-                                                        d_config.CONV_LAYER_2_OUT_CHANNEL],
-                                                       stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                "W_2": tf.Variable(tf.truncated_normal([self.config.FILTER_SIZE, self.config.FILTER_SIZE,
+                                                        self.config.CONV_LAYER_1_OUT_CHANNEL,
+                                                        self.config.CONV_LAYER_2_OUT_CHANNEL],
+                                                       stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                                    name='W_2'),
 
-                "B_2": tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_2_OUT_CHANNEL]),
+                "B_2": tf.Variable(tf.constant(0.0, shape=[self.config.CONV_LAYER_2_OUT_CHANNEL]),
                                    name='B_2'),
 
-                'BETA_2': tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_2_OUT_CHANNEL]),
+                'BETA_2': tf.Variable(tf.constant(0.0, shape=[self.config.CONV_LAYER_2_OUT_CHANNEL]),
                                       name='BETA_2'),
 
-                'GAMMA_2': tf.Variable(tf.random_normal(shape=[d_config.CONV_LAYER_2_OUT_CHANNEL],
-                                                        mean=d_config.BATCH_NORM_MEAN,
-                                                        stddev=d_config.BATCH_STANDARD_DEVIATION),
+                'GAMMA_2': tf.Variable(tf.random_normal(shape=[self.config.CONV_LAYER_2_OUT_CHANNEL],
+                                                        mean=self.config.BATCH_NORM_MEAN,
+                                                        stddev=self.config.BATCH_STANDARD_DEVIATION),
                                        name='GAMMA_2'),
 
-                "W_3": tf.Variable(tf.truncated_normal([d_config.FILTER_SIZE, d_config.FILTER_SIZE,
-                                                        d_config.CONV_LAYER_2_OUT_CHANNEL,
-                                                        d_config.CONV_LAYER_3_OUT_CHANNEL],
-                                                       stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                "W_3": tf.Variable(tf.truncated_normal([self.config.FILTER_SIZE, self.config.FILTER_SIZE,
+                                                        self.config.CONV_LAYER_2_OUT_CHANNEL,
+                                                        self.config.CONV_LAYER_3_OUT_CHANNEL],
+                                                       stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                                    name='W_3'),
 
-                "B_3": tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_3_OUT_CHANNEL]),
+                "B_3": tf.Variable(tf.constant(0.0, shape=[self.config.CONV_LAYER_3_OUT_CHANNEL]),
                                    name='B_3'),
 
-                'BETA_3': tf.Variable(tf.constant(0.0, shape=[d_config.CONV_LAYER_3_OUT_CHANNEL]),
+                'BETA_3': tf.Variable(tf.constant(0.0, shape=[self.config.CONV_LAYER_3_OUT_CHANNEL]),
                                       name='BETA_3'),
 
-                'GAMMA_3': tf.Variable(tf.random_normal(shape=[d_config.CONV_LAYER_3_OUT_CHANNEL],
-                                                        mean=d_config.BATCH_NORM_MEAN,
+                'GAMMA_3': tf.Variable(tf.random_normal(shape=[self.config.CONV_LAYER_3_OUT_CHANNEL],
+                                                        mean=self.config.BATCH_NORM_MEAN,
 
-                                                        stddev=d_config.BATCH_STANDARD_DEVIATION),
+                                                        stddev=self.config.BATCH_STANDARD_DEVIATION),
                                        name='GAMMA_3'),
 
-                "W_4": tf.Variable(tf.truncated_normal([(d_config.CONV_OUT_HEIGHT *
-                                                         d_config.CONV_OUT_WIDTH *
-                                                         d_config.CONV_LAYER_3_OUT_CHANNEL),
-                                                        d_config.OUTPUT_SIZE],
-                                                       stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                "W_4": tf.Variable(tf.truncated_normal([(self.config.CONV_OUT_HEIGHT *
+                                                         self.config.CONV_OUT_WIDTH *
+                                                         self.config.CONV_LAYER_3_OUT_CHANNEL),
+                                                        self.config.OUTPUT_SIZE],
+                                                       stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                                    name='W_4'),
 
-                "B_4": tf.Variable(tf.constant(0.0, shape=[d_config.OUTPUT_SIZE]), name='b_4')
+                "B_4": tf.Variable(tf.constant(0.0, shape=[self.config.OUTPUT_SIZE]), name='b_4')
 
-                # "W_1": tf.get_variable(shape=[d_config.FILTER_SIZE, d_config.FILTER_SIZE,
-                #                               d_config.IN_CHANNEL,
-                #                               d_config.CONV_LAYER_1_OUT_CHANNEL],
+                # "W_1": tf.get_variable(shape=[self.config.FILTER_SIZE, self.config.FILTER_SIZE,
+                #                               self.config.IN_CHANNEL,
+                #                               self.config.CONV_LAYER_1_OUT_CHANNEL],
                 #                        initializer=tf.truncated_normal_initializer(
-                #                            stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                            stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                 #                        name='W_1'),
                 #
-                # "B_1": tf.get_variable(shape=[d_config.CONV_LAYER_1_OUT_CHANNEL],
+                # "B_1": tf.get_variable(shape=[self.config.CONV_LAYER_1_OUT_CHANNEL],
                 #                        name='B_1',
                 #                        initializer=tf.constant_initializer(value=0.0)),
                 #
-                # 'BETA_1': tf.get_variable(shape=[d_config.CONV_LAYER_1_OUT_CHANNEL],
+                # 'BETA_1': tf.get_variable(shape=[self.config.CONV_LAYER_1_OUT_CHANNEL],
                 #                           name='BETA_1',
                 #                           initializer=tf.constant_initializer(value=0.0)),
                 #
-                # 'GAMMA_1': tf.get_variable(shape=[d_config.CONV_LAYER_1_OUT_CHANNEL],
-                #                            initializer=tf.random_normal_initializer(mean=d_config.BATCH_NORM_MEAN,
-                #                                                                     stddev=d_config.BATCH_STANDARD_DEVIATION),
+                # 'GAMMA_1': tf.get_variable(shape=[self.config.CONV_LAYER_1_OUT_CHANNEL],
+                #                            initializer=tf.random_normal_initializer(mean=self.config.BATCH_NORM_MEAN,
+                #                                                                     stddev=self.config.BATCH_STANDARD_DEVIATION),
                 #                            name='GAMMA_1'),
                 #
-                # 'W_2': tf.get_variable(shape=[d_config.FILTER_SIZE, d_config.FILTER_SIZE,
-                #                               d_config.CONV_LAYER_1_OUT_CHANNEL,
-                #                               d_config.CONV_LAYER_2_OUT_CHANNEL],
+                # 'W_2': tf.get_variable(shape=[self.config.FILTER_SIZE, self.config.FILTER_SIZE,
+                #                               self.config.CONV_LAYER_1_OUT_CHANNEL,
+                #                               self.config.CONV_LAYER_2_OUT_CHANNEL],
                 #                        initializer=tf.truncated_normal_initializer(
-                #                            stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                            stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                 #                        name='W_2'),
                 #
-                # 'B_2': tf.get_variable(shape=[d_config.CONV_LAYER_2_OUT_CHANNEL],
+                # 'B_2': tf.get_variable(shape=[self.config.CONV_LAYER_2_OUT_CHANNEL],
                 #                        initializer=tf.constant_initializer(value=0.0),
                 #                        name='B_2'),
                 #
-                # 'BETA_2': tf.get_variable(shape=[d_config.CONV_LAYER_2_OUT_CHANNEL],
+                # 'BETA_2': tf.get_variable(shape=[self.config.CONV_LAYER_2_OUT_CHANNEL],
                 #                           initializer=tf.constant_initializer(value=0.0),
                 #                           name='BETA_2'),
                 #
-                # 'GAMMA_2': tf.get_variable(shape=[d_config.CONV_LAYER_2_OUT_CHANNEL],
-                #                            initializer=tf.random_normal_initializer(mean=d_config.BATCH_NORM_MEAN,
-                #                                                                     stddev=d_config.BATCH_STANDARD_DEVIATION),
+                # 'GAMMA_2': tf.get_variable(shape=[self.config.CONV_LAYER_2_OUT_CHANNEL],
+                #                            initializer=tf.random_normal_initializer(mean=self.config.BATCH_NORM_MEAN,
+                #                                                                     stddev=self.config.BATCH_STANDARD_DEVIATION),
                 #                            name='GAMMA_2'),
                 #
-                # 'W_3': tf.get_variable(shape=[d_config.FILTER_SIZE, d_config.FILTER_SIZE,
-                #                               d_config.CONV_LAYER_2_OUT_CHANNEL,
-                #                               d_config.CONV_LAYER_3_OUT_CHANNEL],
+                # 'W_3': tf.get_variable(shape=[self.config.FILTER_SIZE, self.config.FILTER_SIZE,
+                #                               self.config.CONV_LAYER_2_OUT_CHANNEL,
+                #                               self.config.CONV_LAYER_3_OUT_CHANNEL],
                 #                        initializer=tf.truncated_normal_initializer(
-                #                            stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                            stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                 #                        name='W_3'),
                 #
-                # 'B_3': tf.get_variable(shape=[d_config.CONV_LAYER_3_OUT_CHANNEL],
+                # 'B_3': tf.get_variable(shape=[self.config.CONV_LAYER_3_OUT_CHANNEL],
                 #                        initializer=tf.constant_initializer(value=0.0),
                 #                        name='B_3'),
                 #
-                # 'BETA_3': tf.get_variable(shape=[d_config.CONV_LAYER_3_OUT_CHANNEL],
+                # 'BETA_3': tf.get_variable(shape=[self.config.CONV_LAYER_3_OUT_CHANNEL],
                 #                           initializer=tf.constant_initializer(value=0.0),
                 #                           name='BETA_3'),
                 #
-                # 'GAMMA_3': tf.get_variable(shape=[d_config.CONV_LAYER_3_OUT_CHANNEL],
-                #                            initializer=tf.random_normal_initializer(mean=d_config.BATCH_NORM_MEAN,
-                #                                                                     stddev=d_config.BATCH_STANDARD_DEVIATION),
+                # 'GAMMA_3': tf.get_variable(shape=[self.config.CONV_LAYER_3_OUT_CHANNEL],
+                #                            initializer=tf.random_normal_initializer(mean=self.config.BATCH_NORM_MEAN,
+                #                                                                     stddev=self.config.BATCH_STANDARD_DEVIATION),
                 #                            name='GAMMA_3'),
                 #
-                # 'W_4': tf.get_variable(shape=[(d_config.CONV_OUT_HEIGHT * d_config.CONV_OUT_WIDTH
-                #                                * d_config.CONV_LAYER_3_OUT_CHANNEL), d_config.OUTPUT_SIZE],
+                # 'W_4': tf.get_variable(shape=[(self.config.CONV_OUT_HEIGHT * self.config.CONV_OUT_WIDTH
+                #                                * self.config.CONV_LAYER_3_OUT_CHANNEL), self.config.OUTPUT_SIZE],
                 #                        initializer=tf.truncated_normal_initializer(
-                #                        stddev=d_config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                        stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
                 #                        name='W_4'),
                 #
-                # 'B_4': tf.get_variable(shape=[d_config.OUTPUT_SIZE],
+                # 'B_4': tf.get_variable(shape=[self.config.OUTPUT_SIZE],
                 #                        initializer=tf.constant_initializer(value=0.0),
                 #                        name='B_4'),
 
             }
 
             self.input = tf.placeholder(dtype=tf.float32,
-                                        shape=[None, d_config.IN_WIDTH,
-                                               d_config.IN_HEIGHT, d_config.IN_CHANNEL],
+                                        shape=[None, self.config.IN_WIDTH,
+                                               self.config.IN_HEIGHT, self.config.IN_CHANNEL],
                                         name='D_INPUT')
             self.is_training = tf.placeholder(tf.bool)
 
@@ -181,7 +179,7 @@ class Discriminator(Model):
 
             conv_1 = tf.nn.conv2d(input=input,
                                   filter=self.variable_dict['W_1'],
-                                  strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
+                                  strides=[1, self.config.CONV_STRIDE, self.config.CONV_STRIDE, 1],
                                   padding="SAME")
             conv_1 = tf.nn.bias_add(conv_1, self.variable_dict['B_1'])
 
@@ -198,7 +196,7 @@ class Discriminator(Model):
 
             conv_2 = tf.nn.conv2d(input=conv_1,
                                   filter=self.variable_dict['W_2'],
-                                  strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
+                                  strides=[1, self.config.CONV_STRIDE, self.config.CONV_STRIDE, 1],
                                   padding="SAME")
 
             conv_2 = tf.nn.bias_add(conv_2, self.variable_dict['B_2'])
@@ -215,7 +213,7 @@ class Discriminator(Model):
 
             conv_3 = tf.nn.conv2d(input=conv_2,
                                   filter=self.variable_dict['W_3'],
-                                  strides=[1, d_config.CONV_STRIDE, d_config.CONV_STRIDE, 1],
+                                  strides=[1, self.config.CONV_STRIDE, self.config.CONV_STRIDE, 1],
                                   padding="SAME")
 
             conv_3 = ops.batch_norm(x=conv_3,
@@ -229,8 +227,8 @@ class Discriminator(Model):
                                     name='LEAKY_RELU_3')
 
             final = tf.reshape(conv_3,
-                               [-1, d_config.CONV_OUT_WIDTH * d_config.CONV_OUT_HEIGHT *
-                                d_config.CONV_LAYER_3_OUT_CHANNEL])
+                               [-1, self.config.CONV_OUT_WIDTH * self.config.CONV_OUT_HEIGHT *
+                                self.config.CONV_LAYER_3_OUT_CHANNEL])
 
             final = tf.add(tf.matmul(final, self.variable_dict['W_4']), self.variable_dict['B_4'])
 
@@ -268,11 +266,11 @@ class Discriminator(Model):
                                            name='FAKE_ACCURACY')
             accuracy = tf.div(tf.add(fake_accuracy, real_accuracy), tf.constant(2.0), name='ACCURACY')
 
-            optimizer = tf.train.RMSPropOptimizer(learning_rate=d_config.LEARNING_RATE)
+            optimizer = tf.train.RMSPropOptimizer(learning_rate=self.config.LEARNING_RATE)
 
             gradients = optimizer.compute_gradients(loss=loss, var_list=self.var_list)
 
-            optimize_loss = optimizer.minimize(loss=loss)
+            optimize_loss = optimizer.minimize(loss=loss, var_list=self.var_list)
 
             self.fake_accuracy_scalar_summary, self.fake_accuracy_histogram_summary = ops.variable_summaries(
                 fake_accuracy)

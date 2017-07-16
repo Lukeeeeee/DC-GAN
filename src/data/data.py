@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Data(object):
-    def __init__(self, data_path, data_config=None):
+    def __init__(self, data_path, config):
         self.data_path = data_path
         self.IMAGE_HEIGHT = None
         self.IMAGE_WIDTH = None
@@ -11,7 +11,7 @@ class Data(object):
         self.Z_HEIGHT = None
         self.Z_WIDTH = None
         self.Z_CHANNEL = None
-        self.data_config = data_config
+        self.config = config
 
     def return_image_batch_data(self, batch_size, index):
         return None
@@ -26,7 +26,7 @@ class Data(object):
         return image, z
 
     def log_config(self, log_file):
-        self.data_config.log_config(self.data_config, log_file)
+        self.config.log_config(self.config, log_file)
 
 if __name__ == '__main__':
     a = Data(data_path=1, )

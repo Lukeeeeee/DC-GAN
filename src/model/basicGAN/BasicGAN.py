@@ -5,17 +5,17 @@ import os
 import tensorflow as tf
 
 from log import LOG_PATH
-from src.model.deepGAN.Discriminator.discriminator import Discriminator
-from src.model.deepGAN.Discriminator.discriminatorConfig import DiscriminatorConfig as Dconfig
-from src.model.deepGAN.Generator.generator import Generator
-from src.model.deepGAN.Generator.generatorConfig import GeneratorConfig as Gconfig
-from src.model.deepGAN.ganConfig import GANConfig as ganConfig
+from src.model.basicGAN.Discriminator.discriminator import Discriminator
+from src.model.basicGAN.Discriminator.discriminatorConfig import DiscriminatorConfig as Dconfig
+from src.model.basicGAN.Generator.generator import Generator
+from src.model.basicGAN.Generator.generatorConfig import GeneratorConfig as Gconfig
+# from src.model.basicGAN.ganConfig import GANConfig as ganConfig
 from src.model.model import Model
 
 
-class DeepGAN(Model):
-    def __init__(self, sess, data, config=None):
-        super(DeepGAN, self).__init__(sess=sess, data=data)
+class BasicGAN(Model):
+    def __init__(self, sess, data, config):
+        super(BasicGAN, self).__init__(sess=sess, data=data, config=config)
 
         ti = datetime.datetime.now()
         self.log_dir = (LOG_PATH + '/' + str(ti.month) + '-' + str(ti.day) + '-' + str(ti.hour) + '-' + str(ti.minute)
@@ -27,8 +27,11 @@ class DeepGAN(Model):
         if not os.path.exists(self.model_dir):
             os.makedirs(self.model_dir)
 
-        self.G = Generator(sess=sess, data=None)
-        self.D = Discriminator(sess=sess, data=None, generator=self.G)
+        g_config = Gconfig()
+        d_config = Dconfig()
+
+        self.G = Generator(sess=sess, data=None, config=g_config)
+        self.D = Discriminator(sess=sess, data=None, generator=self.G, config=d_config)
         self.G.loss = self.D.generator_loss
         self.model_saver = tf.train.Saver()
 
@@ -46,24 +49,24 @@ class DeepGAN(Model):
 
     def train(self):
         count = 0
-        for i in range(ganConfig.TRAINING_EPOCH):
+        for i in range(self.config.TRAINING_EPOCH):
             D_aver_acc = 0.0
             D_aver_loss = 0.0
             G_aver_loss = 0.0
             D_aver_fake_acc = 0.0
             D_aver_real_acc = 0.0
-            for j in range(ganConfig.BATCH_COUNT):
+            for j in range(self.config.BATCH_COUNT):
                 count = count + 1
-                image_batch, z_batch = self.data.return_batch_data(batch_size=ganConfig.BATCH_SIZE,
+                image_batch, z_batch = self.data.return_batch_data(batch_size=self.config.BATCH_SIZE,
                                                                    index=j)
                 D_acc, D_loss, D_real_acc, D_fake_acc = self.update_discriminator(image_batch=image_batch,
                                                                                   z_batch=z_batch)
 
-                # G_loss_1 = self.update_generator(z_batch=z_batch)
-                # G_loss_2 = self.update_generator(z_batch=z_batch)
-                # G_loss = (G_loss_1 + G_loss_2) / 2.0
+                G_loss_1 = self.update_generator(z_batch=z_batch)
+                G_loss_2 = self.update_generator(z_batch=z_batch)
+                G_loss = (G_loss_1 + G_loss_2) / 2.0
 
-                G_loss = self.update_generator(z_batch=z_batch)
+                # G_loss = self.update_generator(z_batch=z_batch)
 
                 D_aver_acc = (D_aver_acc * float(j) + D_acc) / float(j + 1)
                 D_aver_loss = (D_aver_loss * float(j) + D_loss) / float(j + 1)
@@ -89,7 +92,7 @@ class DeepGAN(Model):
                 'G_loss': G_aver_loss,
                 'Epoch': i
             })
-            if (i + 1) % ganConfig.SAVE_MODEL_EVERY_EPOCH == 0:
+            if (i + 1) % self.config.SAVE_MODEL_EVERY_EPOCH == 0:
                 self.save_model(model_path=self.model_dir, epoch=i + 1)
 
         with open(self.log_dir + 'loss.json', 'w') as f:
@@ -138,15 +141,15 @@ class DeepGAN(Model):
                               global_step=epoch)
         print('Model saved at %s' % model_path)
 
-    def load_model(self, model_path):
+    def load_model(self, model_path, epoch):
         self.model_saver.restore(sess=self.sess,
-                                 save_path=model_path)
+                                 save_path=model_path + 'model.ckpt-' + str(epoch))
         print('Model loaded at %s' % model_path)
 
     def log_config(self):
         with open(self.log_dir + 'Model.json', 'w') as f:
 
-            gan_dict = ganConfig.save_to_json(ganConfig)
+            gan_dict = self.config.save_to_json(self.config)
             d_dict = Dconfig.save_to_json(Dconfig)
             g_dict = Gconfig.save_to_json(Gconfig)
 

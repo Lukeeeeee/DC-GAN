@@ -1,9 +1,10 @@
 class Model(object):
-    def __init__(self, sess, data=None):
+    def __init__(self, sess, config, data=None):
         self.sess = sess
         self.data = data
         self.name = 'Model'
         self.model_saver = None
+        self.config = config
 
     def train(self):
         pass
