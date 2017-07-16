@@ -2,9 +2,9 @@ from src.config import Config
 
 
 class GANConfig(Config):
-    TRAINING_EPOCH = 10000000
+    TRAINING_EPOCH = 50
     BATCH_SIZE = 200
-    SAMPLE_COUNT = 50000
+    SAMPLE_COUNT = 5000
     BATCH_COUNT = int(SAMPLE_COUNT / BATCH_SIZE)
     # BATCH_COUNT = 1
 

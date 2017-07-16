@@ -174,12 +174,12 @@ class Generator(Model):
                                          gamma=self.variable_dict['GAMMA_4'],
                                          phase_train=self.is_training,
                                          scope='BATCH_NORM_4')
-            tran_conv_3 = tf.nn.relu(tran_conv_3, name='RELU_4')
+            tran_conv_3 = tf.nn.tanh(tran_conv_3, name='RELU_4')
 
             return tran_conv_3
 
     def create_training_method(self):
-        optimizer = tf.train.RMSPropOptimizer(learning_rate=self.config.G_LEARNING_RATE)
+        optimizer = tf.train.AdamOptimizer(learning_rate=self.config.G_LEARNING_RATE)
         gradients = optimizer.compute_gradients(loss=self.loss, var_list=self.var_list)
         optimize_loss = optimizer.minimize(loss=self.loss, var_list=self.var_list)
 

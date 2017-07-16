@@ -3,7 +3,7 @@ import scipy.io as sio
 from PIL import Image
 
 from dataset import DATASET_PATH
-# from mnistConfig import MnistConfig as conf
+from mnistConfig import MnistConfig
 from src.data.data import Data
 
 
@@ -14,7 +14,7 @@ class MnistData(Data):
 
     def load_data(self):
         image_data = None
-        for i in range(10):
+        for i in range(1):
             mat_file_path = self.data_path + '/digit' + str(i) + '.mat'
             data = sio.loadmat(mat_file_path)
             data = np.array(data['D'])
@@ -31,21 +31,27 @@ class MnistData(Data):
 
     def return_image_batch_data(self, batch_size, index):
         image_data = self.image_set[index: index + batch_size, ]
-        image_data = np.reshape(image_data,
+        image_data = np.reshape(np.ravel(image_data,
+                                         order='C'),
                                 newshape=[batch_size, self.config.IMAGE_WIDTH,
-                                          self.config.IMAGE_HEIGHT, self.config.IMAGE_CHANNEL]).astype(np.float32)
-        # image_data = np.divide(image_data, 255)
+                                          self.config.IMAGE_HEIGHT, self.config.IMAGE_CHANNEL],
+                                ).astype(np.float32)
+        image_data = np.subtract(np.divide(image_data, 255), 0.5)
         return image_data
 
     def show_pic(self, data):
         # im = Image.new(mode='L', size=(self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT))
-        data = np.reshape(data, newshape=[self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT])
-        im = Image.fromarray(data, 'L')
+        data = np.reshape(data,
+                          newshape=[self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT],
+                          )
+        data = np.multiply(np.add(data, 0.5), 255)
+        im = Image.fromarray(data)
         im.show()
 
 
 if __name__ == '__main__':
-    d = MnistData(data_path=DATASET_PATH + '/mnist')
+    config = MnistConfig()
+    d = MnistData(data_path=DATASET_PATH + '/mnist', config=config)
     # print(d.return_image_batch_data(batch_size=200, index=0))
-    i = 40000
-    d.show_pic(data=d.image_set[i:i + 1, ])
+    data = d.return_image_batch_data(100, 1)
+    d.show_pic(data=d.image_set[10:11, ])

@@ -163,5 +163,5 @@ class BasicGAN(Model):
             json.dump(log_dict, f, indent=4)
 
         with open(self.log_dir + 'Data.json', 'w') as f:
-            data_dict = self.data.data_config.save_to_json(self.data.data_config)
+            data_dict = self.data.config.save_to_json(self.data.config)
             json.dump(data_dict, f, indent=4)

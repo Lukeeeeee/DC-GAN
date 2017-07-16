@@ -11,6 +11,7 @@ sys.path.append(CURRENT_PATH)
 sys.path.append(PARENT_PATH)
 
 from dataset import DATASET_PATH
+from log import LOG_PATH
 from src.data.mnist.mnistConfig import MnistConfig
 from src.data.mnist.mnistData import MnistData
 from src.model.basicGAN.BasicGAN import BasicGAN
@@ -23,14 +24,16 @@ if __name__ == '__main__':
     gan = BasicGAN(sess=sess, data=data, config=gan_config)
 
     # Train
-    gan.log_config()
-    gan.train()
+    # gan.log_config()
+    # gan.train()
 
     # Test
 
-    # gan.load_model(model_path=LOG_PATH + '/7-16-19-49-13/model/', epoch=6)
-    # image_batch, z_batch = gan.data.return_batch_data(batch_size=gan.config.BATCH_SIZE,
-    #                                                   index=1)
-    # res = gan.eval_tensor(tensor=gan.G.output, image_batch=image_batch, z_batch=z_batch)
-    # for i in range(10):
-    #     gan.data.show_pic(data=res[i])
+    gan.load_model(model_path=LOG_PATH + '/7-16-23-39-45/model/', epoch=50)
+    image_batch, z_batch = gan.data.return_batch_data(batch_size=gan.config.BATCH_SIZE,
+                                                      index=1)
+    res = gan.eval_tensor(tensor=gan.G.output, image_batch=image_batch, z_batch=z_batch)
+    for i in range(10):
+        gan.data.show_pic(data=res[i])
+    for i in range(0):
+        gan.data.show_pic(data=image_batch[i:i + 1, ])

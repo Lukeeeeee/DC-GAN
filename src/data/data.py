@@ -3,7 +3,6 @@ import numpy as np
 
 class Data(object):
     def __init__(self, data_path, config):
-        self.data_path = data_path
         self.IMAGE_HEIGHT = None
         self.IMAGE_WIDTH = None
         self.IMAGE_CHANNEL = None
@@ -11,6 +10,9 @@ class Data(object):
         self.Z_HEIGHT = None
         self.Z_WIDTH = None
         self.Z_CHANNEL = None
+
+        self.data_path = data_path
+
         self.config = config
 
     def return_image_batch_data(self, batch_size, index):
