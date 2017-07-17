@@ -1,4 +1,4 @@
-from src.model.basicGAN.BasicGAN import BasicGAN
+from src.model.basicGAN.basicGAN import BasicGAN
 
 
 class CatGAN(BasicGAN):

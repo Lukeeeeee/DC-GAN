@@ -71,73 +71,73 @@ class Discriminator(Model):
 
                 "B_4": tf.Variable(tf.constant(0.0, shape=[self.config.OUTPUT_SIZE]), name='b_4')
 
-                # "W_1": tf.get_variable(shape=[self.config.FILTER_SIZE, self.config.FILTER_SIZE,
-                #                               self.config.IN_CHANNEL,
-                #                               self.config.CONV_LAYER_1_OUT_CHANNEL],
+                # "W_1": tf.get_variable(shape=[self.tempConfig.FILTER_SIZE, self.tempConfig.FILTER_SIZE,
+                #                               self.tempConfig.IN_CHANNEL,
+                #                               self.tempConfig.CONV_LAYER_1_OUT_CHANNEL],
                 #                        initializer=tf.truncated_normal_initializer(
-                #                            stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                            stddev=self.tempConfig.VARIABLE_RANDOM_STANDARD_DEVIATION),
                 #                        name='W_1'),
                 #
-                # "B_1": tf.get_variable(shape=[self.config.CONV_LAYER_1_OUT_CHANNEL],
+                # "B_1": tf.get_variable(shape=[self.tempConfig.CONV_LAYER_1_OUT_CHANNEL],
                 #                        name='B_1',
                 #                        initializer=tf.constant_initializer(value=0.0)),
                 #
-                # 'BETA_1': tf.get_variable(shape=[self.config.CONV_LAYER_1_OUT_CHANNEL],
+                # 'BETA_1': tf.get_variable(shape=[self.tempConfig.CONV_LAYER_1_OUT_CHANNEL],
                 #                           name='BETA_1',
                 #                           initializer=tf.constant_initializer(value=0.0)),
                 #
-                # 'GAMMA_1': tf.get_variable(shape=[self.config.CONV_LAYER_1_OUT_CHANNEL],
-                #                            initializer=tf.random_normal_initializer(mean=self.config.BATCH_NORM_MEAN,
-                #                                                                     stddev=self.config.BATCH_STANDARD_DEVIATION),
+                # 'GAMMA_1': tf.get_variable(shape=[self.tempConfig.CONV_LAYER_1_OUT_CHANNEL],
+                #                            initializer=tf.random_normal_initializer(mean=self.tempConfig.BATCH_NORM_MEAN,
+                #                                                                     stddev=self.tempConfig.BATCH_STANDARD_DEVIATION),
                 #                            name='GAMMA_1'),
                 #
-                # 'W_2': tf.get_variable(shape=[self.config.FILTER_SIZE, self.config.FILTER_SIZE,
-                #                               self.config.CONV_LAYER_1_OUT_CHANNEL,
-                #                               self.config.CONV_LAYER_2_OUT_CHANNEL],
+                # 'W_2': tf.get_variable(shape=[self.tempConfig.FILTER_SIZE, self.tempConfig.FILTER_SIZE,
+                #                               self.tempConfig.CONV_LAYER_1_OUT_CHANNEL,
+                #                               self.tempConfig.CONV_LAYER_2_OUT_CHANNEL],
                 #                        initializer=tf.truncated_normal_initializer(
-                #                            stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                            stddev=self.tempConfig.VARIABLE_RANDOM_STANDARD_DEVIATION),
                 #                        name='W_2'),
                 #
-                # 'B_2': tf.get_variable(shape=[self.config.CONV_LAYER_2_OUT_CHANNEL],
+                # 'B_2': tf.get_variable(shape=[self.tempConfig.CONV_LAYER_2_OUT_CHANNEL],
                 #                        initializer=tf.constant_initializer(value=0.0),
                 #                        name='B_2'),
                 #
-                # 'BETA_2': tf.get_variable(shape=[self.config.CONV_LAYER_2_OUT_CHANNEL],
+                # 'BETA_2': tf.get_variable(shape=[self.tempConfig.CONV_LAYER_2_OUT_CHANNEL],
                 #                           initializer=tf.constant_initializer(value=0.0),
                 #                           name='BETA_2'),
                 #
-                # 'GAMMA_2': tf.get_variable(shape=[self.config.CONV_LAYER_2_OUT_CHANNEL],
-                #                            initializer=tf.random_normal_initializer(mean=self.config.BATCH_NORM_MEAN,
-                #                                                                     stddev=self.config.BATCH_STANDARD_DEVIATION),
+                # 'GAMMA_2': tf.get_variable(shape=[self.tempConfig.CONV_LAYER_2_OUT_CHANNEL],
+                #                            initializer=tf.random_normal_initializer(mean=self.tempConfig.BATCH_NORM_MEAN,
+                #                                                                     stddev=self.tempConfig.BATCH_STANDARD_DEVIATION),
                 #                            name='GAMMA_2'),
                 #
-                # 'W_3': tf.get_variable(shape=[self.config.FILTER_SIZE, self.config.FILTER_SIZE,
-                #                               self.config.CONV_LAYER_2_OUT_CHANNEL,
-                #                               self.config.CONV_LAYER_3_OUT_CHANNEL],
+                # 'W_3': tf.get_variable(shape=[self.tempConfig.FILTER_SIZE, self.tempConfig.FILTER_SIZE,
+                #                               self.tempConfig.CONV_LAYER_2_OUT_CHANNEL,
+                #                               self.tempConfig.CONV_LAYER_3_OUT_CHANNEL],
                 #                        initializer=tf.truncated_normal_initializer(
-                #                            stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                            stddev=self.tempConfig.VARIABLE_RANDOM_STANDARD_DEVIATION),
                 #                        name='W_3'),
                 #
-                # 'B_3': tf.get_variable(shape=[self.config.CONV_LAYER_3_OUT_CHANNEL],
+                # 'B_3': tf.get_variable(shape=[self.tempConfig.CONV_LAYER_3_OUT_CHANNEL],
                 #                        initializer=tf.constant_initializer(value=0.0),
                 #                        name='B_3'),
                 #
-                # 'BETA_3': tf.get_variable(shape=[self.config.CONV_LAYER_3_OUT_CHANNEL],
+                # 'BETA_3': tf.get_variable(shape=[self.tempConfig.CONV_LAYER_3_OUT_CHANNEL],
                 #                           initializer=tf.constant_initializer(value=0.0),
                 #                           name='BETA_3'),
                 #
-                # 'GAMMA_3': tf.get_variable(shape=[self.config.CONV_LAYER_3_OUT_CHANNEL],
-                #                            initializer=tf.random_normal_initializer(mean=self.config.BATCH_NORM_MEAN,
-                #                                                                     stddev=self.config.BATCH_STANDARD_DEVIATION),
+                # 'GAMMA_3': tf.get_variable(shape=[self.tempConfig.CONV_LAYER_3_OUT_CHANNEL],
+                #                            initializer=tf.random_normal_initializer(mean=self.tempConfig.BATCH_NORM_MEAN,
+                #                                                                     stddev=self.tempConfig.BATCH_STANDARD_DEVIATION),
                 #                            name='GAMMA_3'),
                 #
-                # 'W_4': tf.get_variable(shape=[(self.config.CONV_OUT_HEIGHT * self.config.CONV_OUT_WIDTH
-                #                                * self.config.CONV_LAYER_3_OUT_CHANNEL), self.config.OUTPUT_SIZE],
+                # 'W_4': tf.get_variable(shape=[(self.tempConfig.CONV_OUT_HEIGHT * self.tempConfig.CONV_OUT_WIDTH
+                #                                * self.tempConfig.CONV_LAYER_3_OUT_CHANNEL), self.tempConfig.OUTPUT_SIZE],
                 #                        initializer=tf.truncated_normal_initializer(
-                #                        stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                        stddev=self.tempConfig.VARIABLE_RANDOM_STANDARD_DEVIATION),
                 #                        name='W_4'),
                 #
-                # 'B_4': tf.get_variable(shape=[self.config.OUTPUT_SIZE],
+                # 'B_4': tf.get_variable(shape=[self.tempConfig.OUTPUT_SIZE],
                 #                        initializer=tf.constant_initializer(value=0.0),
                 #                        name='B_4'),
 

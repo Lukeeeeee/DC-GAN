@@ -99,7 +99,6 @@ ENV/
 *.mat
 # dataset/mnist
 dataset/cat
-/src/model/basicGAN/Discriminator/discriminator.py
 log/*-*
 # src/data/cat/
 # src/model/vgg/

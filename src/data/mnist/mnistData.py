@@ -40,7 +40,7 @@ class MnistData(Data):
         return image_data
 
     def show_pic(self, data):
-        # im = Image.new(mode='L', size=(self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT))
+        # im = Image.new(mode='L', size=(self.tempConfig.IMAGE_WIDTH, self.tempConfig.IMAGE_HEIGHT))
         data = np.reshape(data,
                           newshape=[self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT],
                           )

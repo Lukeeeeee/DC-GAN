@@ -14,7 +14,7 @@ from dataset import DATASET_PATH
 from log import LOG_PATH
 from src.data.mnist.mnistConfig import MnistConfig
 from src.data.mnist.mnistData import MnistData
-from src.model.basicGAN.BasicGAN import BasicGAN
+from src.model.basicGAN.basicGAN import BasicGAN
 from src.model.basicGAN.ganConfig import GANConfig
 
 if __name__ == '__main__':
