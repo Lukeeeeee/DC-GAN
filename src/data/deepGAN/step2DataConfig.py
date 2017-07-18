@@ -1,5 +1,5 @@
 from src.config import Config
 
 
-class DeepDiscriminatorConfig(Config):
+class Step2DataConfig(Config):
     pass

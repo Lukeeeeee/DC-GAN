@@ -14,7 +14,7 @@ from src.model.model import Model
 
 
 class BasicGAN(Model):
-    def __init__(self, sess, data, config):
+    def __init__(self, sess, data, config, g_config=None, d_config=None):
         super(BasicGAN, self).__init__(sess=sess, data=data, config=config)
 
         ti = datetime.datetime.now()
@@ -27,8 +27,10 @@ class BasicGAN(Model):
         if not os.path.exists(self.model_dir):
             os.makedirs(self.model_dir)
 
-        g_config = Gconfig()
-        d_config = Dconfig()
+        if g_config is None:
+            g_config = Gconfig()
+        if d_config is None:
+            d_config = Dconfig()
 
         self.G = Generator(sess=sess, data=None, config=g_config)
         self.D = Discriminator(sess=sess, data=None, generator=self.G, config=d_config)

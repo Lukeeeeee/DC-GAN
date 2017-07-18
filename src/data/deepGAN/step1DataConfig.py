@@ -1,5 +1,5 @@
 from src.config import Config
 
 
-class DeepGeneratorConfig(Config):
+class Step1DataConfig(Config):
     pass
