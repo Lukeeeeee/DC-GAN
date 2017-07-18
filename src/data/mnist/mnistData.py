@@ -12,9 +12,11 @@ class MnistData(Data):
         super(MnistData, self).__init__(data_path=data_path, config=config)
         self.image_set = self.load_data()
 
-    def load_data(self):
+    def load_data(self, count=None):
+        if count is None:
+            count = 1
         image_data = None
-        for i in range(1):
+        for i in range(count):
             mat_file_path = self.data_path + '/digit' + str(i) + '.mat'
             data = sio.loadmat(mat_file_path)
             data = np.array(data['D'])
