@@ -2,9 +2,9 @@ from src.config import Config
 
 
 class Step2GANConfig(Config):
-    TRAINING_EPOCH = 1
+    TRAINING_EPOCH = 50
     BATCH_SIZE = 200
-    SAMPLE_COUNT = 5000
+    SAMPLE_COUNT = 60000
     BATCH_COUNT = int(SAMPLE_COUNT / BATCH_SIZE)
     # BATCH_COUNT = 1
     NAME = 'Step2_GAN'
