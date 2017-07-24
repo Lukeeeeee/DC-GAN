@@ -2,7 +2,7 @@ from src.config import Config
 
 
 class Step1GANConfig(Config):
-    TRAINING_EPOCH = 50
+    TRAINING_EPOCH = 1
     BATCH_SIZE = 200
     SAMPLE_COUNT = 5000
     BATCH_COUNT = int(SAMPLE_COUNT / BATCH_SIZE)
@@ -25,5 +25,5 @@ class Step1GANConfig(Config):
 
 
 if __name__ == '__main__':
-    a = GANConfig()
+    a = Step1GANConfig()
     a.log_config('1.json')

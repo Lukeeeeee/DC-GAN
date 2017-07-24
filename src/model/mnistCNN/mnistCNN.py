@@ -29,6 +29,7 @@ from __future__ import print_function
 import datetime
 import os
 
+import numpy as np
 import tensorflow as tf
 
 from log import LOG_PATH
@@ -157,13 +158,26 @@ class MnistCNN(Model):
                                              feed_dict={
                                                  self.input: image_batch,
                                                  self.label: label_batch,
-                                                 self.keep_prob: 0.5
+                                                 self.keep_prob: 0.5,
+                                                 self.is_training: True
                                              })
                 aver_acc = (aver_acc * float(j) + acc) / (j + 1)
                 aver_loss = (aver_loss * float(j) + loss) / (j + 1)
                 print("Epoch %3d, Iter %3d, loss %.3lf, aver loss %.3lf, acc %.3lf, aver acc %.3lf"
                       % (i, j, loss, aver_loss, acc, aver_loss))
             self.save_model(model_path=self.model_dir, epoch=i)
+
+    def eval_tensor(self, tensor, image_batch, keep_prob, label=None):
+        if not label:
+            label = np.zeros([image_batch.shape[0]])
+        res = self.sess.run(fetches=[tensor],
+                            feed_dict={
+                                self.input: image_batch,
+                                self.label: label,
+                                self.keep_prob: keep_prob,
+                                self.is_training: False
+                            })
+        return res
 
     def test(self):
         image_batch, label_batch = self.data.return_batch_data(batch_size=self.config.BATCH_SIZE,

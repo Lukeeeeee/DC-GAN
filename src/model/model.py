@@ -29,8 +29,8 @@ class Model(object):
                                  save_path=model_path + 'model.ckpt-' + str(epoch))
         print('Model loaded at %s' % model_path)
 
-    def eval_tenor(self, tensor):
-        pass
+    # def eval_tenor(self, tensor):
+    #     pass
 
     def log_config(self):
         pass

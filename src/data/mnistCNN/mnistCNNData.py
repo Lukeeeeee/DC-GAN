@@ -26,16 +26,20 @@ class MnistCNNData(MnistData):
 
         np.random.shuffle(self.image_set)
 
-    def return_batch_data(self, batch_size, index):
+    def return_image_batch_data(self, batch_size, index):
         image_data = self.image_set[index: index + batch_size, 1:]
-        lable_data = self.image_set[index: index + batch_size, 0:1]
-        lable_data = np.reshape(lable_data, newshape=[batch_size]).astype(np.int32)
         image_data = np.reshape(np.ravel(image_data,
                                          order='C'),
                                 newshape=[batch_size, self.config.IMAGE_WIDTH,
                                           self.config.IMAGE_HEIGHT, self.config.IMAGE_CHANNEL],
                                 ).astype(np.float32)
         image_data = np.subtract(np.divide(image_data, 255), 0.5)
+        return image_data
+
+    def return_batch_data(self, batch_size, index):
+        lable_data = self.image_set[index: index + batch_size, 0:1]
+        lable_data = np.reshape(lable_data, newshape=[batch_size]).astype(np.int32)
+        image_data = self.return_image_batch_data(batch_size, index)
         return image_data, lable_data
 
 

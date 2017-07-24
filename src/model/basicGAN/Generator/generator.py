@@ -10,7 +10,9 @@ class Generator(Model):
         self.name = 'Generator'
         with tf.variable_scope(self.name):
             self.variable_dict = {
-                'W_1': tf.Variable(tf.truncated_normal(shape=([self.config.IN_CHANNEL,
+                'W_1': tf.Variable(tf.truncated_normal(shape=([self.config.IN_CHANNEL *
+                                                               self.config.IN_WIDTH *
+                                                               self.config.IN_HEIGHT,
                                                                self.config.TRAN_CONV_LAYER_1_IN_CHANNEL *
                                                                self.config.TRAN_CONV_LAYER_1_HEIGHT *
                                                                self.config.TRAN_CONV_LAYER_1_WIDTH]),

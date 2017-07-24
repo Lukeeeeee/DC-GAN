@@ -4,21 +4,21 @@ from src.config import Config
 
 
 class Step1DiscriminatorConfig(Config):
-    IN_HEIGHT = 28
-    IN_WIDTH = 28
-    IN_CHANNEL = 1
+    IN_HEIGHT = 7
+    IN_WIDTH = 7
+    IN_CHANNEL = 16
 
     LEARNING_RATE = 0.001
 
     CONV_LAYER_COUNT = 3
 
-    CONV_LAYER_1_OUT_CHANNEL = 32
+    CONV_LAYER_1_OUT_CHANNEL = 4
 
-    CONV_LAYER_2_OUT_CHANNEL = 32
+    CONV_LAYER_2_OUT_CHANNEL = 16
 
-    CONV_LAYER_3_OUT_CHANNEL = 64
+    CONV_LAYER_3_OUT_CHANNEL = 32
 
-    CONV_STRIDE = 2
+    CONV_STRIDE = 1
 
     FILTER_SIZE = 4
 
