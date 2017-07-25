@@ -97,7 +97,7 @@ ENV/
 
 .idea/
 *.mat
-# dataset/mnist
+dataset/mnist
 dataset/cat
 log/*-*
 # src/data/cat/
