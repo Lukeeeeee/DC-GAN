@@ -102,3 +102,5 @@ dataset/cat
 log/*-*
 # src/data/cat/
 # src/model/vgg/
+demo/
+*.tfmodel

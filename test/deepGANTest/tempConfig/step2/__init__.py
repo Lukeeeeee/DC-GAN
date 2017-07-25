@@ -1,3 +1,0 @@
-from step2DiscriminatorConfig import Step2DiscriminatorConfig
-from step2GanConfig import Step2GANConfig
-from step2GeneratorConfig import Step2GeneratorConfig

@@ -8,9 +8,11 @@ class MnistCNNData(MnistData):
     def __init__(self, data_path, config):
         super(MnistCNNData, self).__init__(data_path=data_path, config=config)
 
-        # self.image_set = self.load_data(count=10)
+        self.image_set = self.load_data(count=10)
+
+    def load_data(self, count=10):
         image_data = None
-        for i in range(10):
+        for i in range(count):
             mat_file_path = self.data_path + '/digit' + str(i) + '.mat'
             data = sio.loadmat(mat_file_path)
             data = np.array(data['D'])
@@ -21,10 +23,8 @@ class MnistCNNData(MnistData):
                 image_data = data
             else:
                 image_data = np.concatenate((image_data, data))
-
-        self.image_set = image_data
-
-        np.random.shuffle(self.image_set)
+        np.random.shuffle(image_data)
+        return image_data
 
     def return_image_batch_data(self, batch_size, index):
         image_data = self.image_set[index: index + batch_size, 1:]
