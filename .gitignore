@@ -100,7 +100,9 @@ ENV/
 dataset/mnist
 dataset/cat
 log/*-*
+log/mnist
 # src/data/cat/
 # src/model/vgg/
-demo/
+demo/*-*
+demo/mnist
 *.tfmodel
