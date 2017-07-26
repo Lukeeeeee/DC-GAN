@@ -38,7 +38,8 @@ class MnistData(Data):
                                 newshape=[batch_size, self.config.IMAGE_WIDTH,
                                           self.config.IMAGE_HEIGHT, self.config.IMAGE_CHANNEL],
                                 ).astype(np.float32)
-        image_data = np.subtract(np.divide(image_data, 255), 0.5)
+        # TODO NORMAL THE PIC IS NECESSARY?
+        # image_data = np.subtract(np.divide(image_data, 255), 0.5)
         return image_data
 
     def show_pic(self, data):

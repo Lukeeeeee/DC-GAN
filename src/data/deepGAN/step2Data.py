@@ -10,12 +10,11 @@ class Step2Data(MnistData):
         self.image_set = self.load_data(count=10)
         self.mnist_cnn = mnist_cnn
         self.sess = sess
-        self.index = 0
         self.new_config = config
 
-    def return_z_batch_data(self, batch_size):
+    def return_z_batch_data(self, batch_size, index=None):
         # data = super(Step2Data, self).return_z_batch_data(batch_size)
-        image = self.return_image_batch_data(batch_size=batch_size, index=self.index)
+        image = self.return_image_batch_data(batch_size=batch_size, index=index)
         data = self.mnist_cnn.eval_tensor(tensor=self.mnist_cnn.conv2,
                                           image_batch=image,
                                           keep_prob=0.5)
