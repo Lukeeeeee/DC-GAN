@@ -13,10 +13,11 @@ class Step1VGGData(VGG16Data):
 
 if __name__ == '__main__':
     from dataset import DATASET_PATH
-    from src.data import DATA_PATH
     from src.data.deepVGG16Data.step1VGGDataConfig import Step1VGGDataConfig
-
+    import numpy as np
     d = Step1VGGData(data_path=DATASET_PATH + '/cat/',
                      config=Step1VGGDataConfig(),
-                     model_file=DATA_PATH + '/vgg16/vgg16.tfmodel')
-    print(d.return_batch_data(batch_size=1, index=0))
+                     model_file=DATASET_PATH + '/vgg16.tfmodel')
+    # print(d.return_batch_data(batch_size=1, index=0))
+    res = d.return_image_batch_data(batch_size=1000, index=0)
+    np.save('step1_image', res)

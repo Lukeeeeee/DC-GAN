@@ -106,4 +106,3 @@ log/mnist
 demo/*-*
 demo/mnist
 *.tfmodel
-src/data/vgg16/graph.txt

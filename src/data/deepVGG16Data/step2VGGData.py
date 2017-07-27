@@ -14,14 +14,13 @@ class Step2VGGData(VGG16Data):
 
 if __name__ == '__main__':
     from dataset import DATASET_PATH
-    from src.data import DATA_PATH
     from src.data.deepVGG16Data.step2VGGDataConfig import Step2VGGDataConfig
     from PIL import Image
     import numpy as np
 
     d = Step2VGGData(data_path=DATASET_PATH + '/cat/',
                      config=Step2VGGDataConfig(),
-                     model_file=DATA_PATH + '/vgg16/vgg16.tfmodel')
+                     model_file=DATASET_PATH + '/vgg16.tfmodel')
     image, _ = d.return_batch_data(batch_size=1, index=0)
     image = np.reshape(image, newshape=[224, 224, 3]).astype(dtype=np.uint8)
     im = Image.fromarray(image)

@@ -4,11 +4,11 @@ import numpy as np
 import tensorflow as tf
 
 import utils
-from src.data import DATA_PATH
+from dataset import DATASET_PATH
 
 
 def main():
-    with open(DATA_PATH + "/vgg16/vgg16.tfmodel", mode='rb') as f:
+    with open(DATASET_PATH + "/vgg16.tfmodel", mode='rb') as f:
         fileContent = f.read()
 
     graph_def = tf.GraphDef()

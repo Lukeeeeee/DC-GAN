@@ -1,0 +1,3 @@
+from step2VGGDiscriminatorConfig import Step2VGGDiscriminatorConfig
+from step2VGGGANConfig import Step2VGGGANConfig
+from step2VGGGeneratorConfig import Step2VGGGeneratorConfig
