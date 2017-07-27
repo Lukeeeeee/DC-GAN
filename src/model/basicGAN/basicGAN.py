@@ -46,8 +46,11 @@ class BasicGAN(Model):
         #                                         self.D.real_accuracy_scalar_summary,
         #                                         self.D.fake_accuracy_scalar_summary])
         self.summary_writer = tf.summary.FileWriter(self.log_dir + '/train', self.sess.graph)
-
-        self.sess.run(tf.global_variables_initializer())
+        try:
+            with tf.device('/gpu:0'):
+                self.sess.run(tf.global_variables_initializer())
+        except BaseException:
+            self.sess.run(tf.global_variables_initializer())
 
     def train(self):
         count = 0

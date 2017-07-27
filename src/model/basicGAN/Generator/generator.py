@@ -8,7 +8,7 @@ class Generator(Model):
     def __init__(self, sess, data, config):
         super(Generator, self).__init__(sess=sess, data=data, config=config)
         self.name = 'Generator'
-        with tf.variable_scope(self.name):
+        with tf.variable_scope(self.name), tf.device('/gpu:1'):
             self.variable_dict = {
                 'W_1': tf.Variable(tf.truncated_normal(shape=([self.config.IN_CHANNEL *
                                                                self.config.IN_WIDTH *
@@ -112,7 +112,7 @@ class Generator(Model):
         self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss)
 
     def create_model(self):
-        with tf.variable_scope('Generator', reuse=False):
+        with tf.variable_scope('Generator', reuse=False), tf.device('/gpu:1'):
             input = tf.reshape(tensor=self.input,
                                shape=[-1, self.config.IN_HEIGHT * self.config.IN_WIDTH * self.config.IN_CHANNEL])
             tran_fc = tf.add(tf.matmul(input, self.variable_dict['W_1']), self.variable_dict['B_1'])

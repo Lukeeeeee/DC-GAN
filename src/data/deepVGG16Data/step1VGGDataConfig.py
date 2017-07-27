@@ -14,7 +14,7 @@ class Step1VGGDataConfig(Config):
     Z_WIDTH = 1
     Z_CHANNEL = 100
 
-    SAMPLE_COUNT = 1000
+    SAMPLE_COUNT = 100
 
     IMAGE_SOURCE = 'import/pool3'
 

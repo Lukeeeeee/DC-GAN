@@ -8,7 +8,7 @@ class Discriminator(Model):
     def __init__(self, sess, data, generator, config):
         super(Discriminator, self).__init__(sess=sess, data=data, config=config)
         self.name = 'Discriminator'
-        with tf.variable_scope(self.name):
+        with tf.variable_scope(self.name), tf.device('/gpu:0'):
             self.variable_dict = {
                 "W_1": tf.Variable(tf.truncated_normal([self.config.FILTER_SIZE, self.config.FILTER_SIZE,
                                                         self.config.IN_CHANNEL,
@@ -175,7 +175,7 @@ class Discriminator(Model):
 
         # super(Discriminator, self).create_model()
 
-        with tf.variable_scope(self.name):
+        with tf.variable_scope(self.name), tf.device('/gpu:0'):
 
             conv_1 = tf.nn.conv2d(input=input,
                                   filter=self.variable_dict['W_1'],

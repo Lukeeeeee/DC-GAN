@@ -8,6 +8,8 @@ class Step1VGGData(VGG16Data):
     def return_image_batch_data(self, batch_size, index):
         image = super(Step1VGGData, self).return_image_batch_data(batch_size, index)
         res = self.eval_tensor_by_name(tensor_name=self.config.IMAGE_SOURCE, image_batch=image)
+        res = np.reshape(res,
+                         newshape=[-1, self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT, self.config.IMAGE_CHANNEL])
         return res
 
 

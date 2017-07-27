@@ -2,10 +2,10 @@ from src.config import Config
 
 
 class Step1VGGGANConfig(Config):
-    TRAINING_EPOCH = 1
-    BATCH_SIZE = 1
+    TRAINING_EPOCH = 10
+    BATCH_SIZE = 10
     # SAMPLE_COUNT = 5000 0
-    SAMPLE_COUNT = 10  # 0 1
+    SAMPLE_COUNT = 100  # 0 1
     BATCH_COUNT = int(SAMPLE_COUNT / BATCH_SIZE)
     # BATCH_COUNT = 1
     NAME = 'Step1_VGG_GAN'

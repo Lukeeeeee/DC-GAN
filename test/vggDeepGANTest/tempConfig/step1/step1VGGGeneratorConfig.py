@@ -14,7 +14,7 @@ class Step1VGGGeneratorConfig(Config):
 
     OUT_HEIGHT = 28
     OUT_WIDTH = 28
-    OUT_CHANNEL = 256
+    OUT_CHANNEL = 10
 
     TRAN_CONV_LAYER_1_IN_CHANNEL = 16
     TRAN_CONV_LAYER_2_IN_CHANNEL = 64
@@ -22,7 +22,7 @@ class Step1VGGGeneratorConfig(Config):
 
     FILTER_SIZE = 4
 
-    CONV_STRIDE = 1
+    CONV_STRIDE = 2
 
     TRAN_CONV_LAYER_3_HEIGHT = int(math.ceil(float(OUT_HEIGHT) / float(CONV_STRIDE)))
     TRAN_CONV_LAYER_3_WIDTH = int(math.ceil(float(OUT_WIDTH) / float(CONV_STRIDE)))
@@ -35,11 +35,11 @@ class Step1VGGGeneratorConfig(Config):
 
     G_LEARNING_RATE = 0.003
 
-    BATCH_SIZE = 200
-
     VARIABLE_RANDOM_STANDARD_DEVIATION = 0.02
 
     BATCH_NORM_MEAN = 1.0
+
+    BATCH_SIZE = 10
 
     BATCH_STANDARD_DEVIATION = 0.02
 

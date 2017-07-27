@@ -12,15 +12,36 @@ class VGG16Data(Data):
         self.image_set = self.load_data()
         with open(model_file, mode='rb') as f:
             file_content = f.read()
-        self.graph = tf.GraphDef()
-        self.graph.ParseFromString(file_content)
-        self.graph_input = tf.placeholder(dtype=tf.float32,
-                                          shape=[None, self.config.DATA_WIDTH,
-                                                 self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
-        self.sess = tf.InteractiveSession()
-        tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
-        self.graph = tf.get_default_graph()
-        self.sess.run(tf.global_variables_initializer())
+        try:
+            with tf.device('/gpu:1'):
+                self.graph = tf.GraphDef()
+                self.graph.ParseFromString(file_content)
+                self.graph_input = tf.placeholder(dtype=tf.float32,
+                                                  shape=[None, self.config.DATA_WIDTH,
+                                                         self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
+                gpu_config = tf.GPUOptions(allow_growth=True)
+
+                config = tf.ConfigProto(gpu_options=gpu_config, log_device_placement=True)
+
+                self.sess = tf.Session(config=config)
+
+                tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
+                self.graph = tf.get_default_graph()
+                self.sess.run(tf.global_variables_initializer())
+        except BaseException:
+            self.graph = tf.GraphDef()
+            self.graph.ParseFromString(file_content)
+            self.graph_input = tf.placeholder(dtype=tf.float32,
+                                              shape=[None, self.config.DATA_WIDTH,
+                                                     self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
+            gpu_config = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction=0.4)
+
+            config = tf.ConfigProto(gpu_options=gpu_config)
+
+            self.sess = tf.Session(config=config)
+            tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
+            self.graph = tf.get_default_graph()
+            self.sess.run(tf.global_variables_initializer())
 
     def load_data(self):
         image_data = None
