@@ -26,13 +26,13 @@ class MnistData(Data):
                 image_data = np.concatenate((image_data, data))
         return image_data
 
-    def return_z_batch_data(self, batch_size):
+    def return_z_batch_data(self, batch_size, index=0):
         z_batch = np.random.uniform(-1, 1, [batch_size, self.config.Z_WIDTH, self.config.Z_HEIGHT,
                                             self.config.Z_CHANNEL]).astype(np.float32)
         return z_batch
 
     def return_image_batch_data(self, batch_size, index):
-        image_data = self.image_set[index: index + batch_size, ]
+        image_data = self.image_set[index * batch_size: (index + 1) * batch_size, ]
         image_data = np.reshape(np.ravel(image_data,
                                          order='C'),
                                 newshape=[batch_size, self.config.IMAGE_WIDTH,

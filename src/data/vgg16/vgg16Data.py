@@ -62,7 +62,7 @@ class VGG16Data(Data):
         return z_batch
 
     def return_image_batch_data(self, batch_size, index):
-        image_data = self.image_set[index: index + batch_size, ]
+        image_data = self.image_set[index * batch_size: (index + 1) * batch_size, ]
         image_data = np.reshape(np.ravel(image_data,
                                          order='C'),
                                 newshape=[batch_size, self.config.DATA_WIDTH,

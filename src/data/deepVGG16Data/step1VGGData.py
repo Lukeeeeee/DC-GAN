@@ -21,5 +21,11 @@ if __name__ == '__main__':
                      config=Step1VGGDataConfig(),
                      model_file=DATASET_PATH + '/vgg16.tfmodel')
     # print(d.return_batch_data(batch_size=1, index=0))
-    res = d.return_image_batch_data(batch_size=1000, index=0)
-    np.save('step1_image', res)
+    path = DATASET_PATH + '/deepGANcat/'
+
+    for i in range(100):
+        res = d.return_image_batch_data(batch_size=10, index=0)
+        np.save(path + 'step1_image' + 'batch_' + str(i), res)
+        # res = d.return_image_batch_data(batch_size=10, index=i)
+        # data = np.load(path + 'step1_image' + 'batch_' + str(i) + '.npy')
+    pass

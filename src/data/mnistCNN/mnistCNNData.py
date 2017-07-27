@@ -27,7 +27,7 @@ class MnistCNNData(MnistData):
         return image_data
 
     def return_image_batch_data(self, batch_size, index):
-        image_data = self.image_set[index: index + batch_size, 1:]
+        image_data = self.image_set[index * batch_size: (index + 1) * batch_size, 1:]
         image_data = np.reshape(np.ravel(image_data,
                                          order='C'),
                                 newshape=[batch_size, self.config.IMAGE_WIDTH,
@@ -37,7 +37,7 @@ class MnistCNNData(MnistData):
         return image_data
 
     def return_batch_data(self, batch_size, index):
-        lable_data = self.image_set[index: index + batch_size, 0:1]
+        lable_data = self.image_set[index * batch_size: (index + 1) * batch_size, 0:1]
         lable_data = np.reshape(lable_data, newshape=[batch_size]).astype(np.int32)
         image_data = self.return_image_batch_data(batch_size, index)
         return image_data, lable_data

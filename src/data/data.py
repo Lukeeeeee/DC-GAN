@@ -18,13 +18,13 @@ class Data(object):
     def return_image_batch_data(self, batch_size, index):
         return None
 
-    def return_z_batch_data(self, batch_size, index=None):
+    def return_z_batch_data(self, batch_size, index=0):
         z_batch = np.random.uniform(-1, 1, [batch_size, 1, 1, 100]).astype(np.float32)
         return z_batch
 
     def return_batch_data(self, batch_size, index):
         image = self.return_image_batch_data(batch_size, index)
-        z = self.return_z_batch_data(batch_size, index)
+        z = self.return_z_batch_data(batch_size, index=index)
         return image, z
 
     def log_config(self, log_file):
