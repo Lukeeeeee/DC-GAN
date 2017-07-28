@@ -4,32 +4,32 @@ from src.common.ops import ops
 from src.model.model import Model
 
 
-class Generator(Model):
+class Step2Generator(Model):
     def __init__(self, sess, data, config):
-        super(Generator, self).__init__(sess=sess, data=data, config=config)
+        super(Step2Generator, self).__init__(sess=sess, data=data, config=config)
         self.name = 'Generator'
         with tf.variable_scope(self.name), tf.device('/gpu:1'):
             self.variable_dict = {
-                'W_1': tf.Variable(tf.truncated_normal(shape=([self.config.IN_CHANNEL *
-                                                               self.config.IN_WIDTH *
-                                                               self.config.IN_HEIGHT,
-                                                               self.config.TRAN_CONV_LAYER_1_IN_CHANNEL *
-                                                               self.config.TRAN_CONV_LAYER_1_HEIGHT *
-                                                               self.config.TRAN_CONV_LAYER_1_WIDTH]),
-                                                       stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
-                                   name='W_1'),
-                'B_1': tf.Variable(tf.constant(value=0.0,
-                                               shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL *
-                                                      self.config.TRAN_CONV_LAYER_1_WIDTH *
-                                                      self.config.TRAN_CONV_LAYER_1_HEIGHT]),
-                                   name='B_1'),
-                'BETA_1': tf.Variable(tf.truncated_normal(shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL]),
-                                      name='BETA_1'),
-
-                'GAMMA_1': tf.Variable(tf.random_normal(shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL],
-                                                        mean=self.config.BATCH_NORM_MEAN,
-                                                        stddev=self.config.BATCH_STANDARD_DEVIATION),
-                                       name='GAMMA_1'),
+                # 'W_1': tf.Variable(tf.truncated_normal(shape=([self.config.IN_CHANNEL *
+                #                                                self.config.IN_WIDTH *
+                #                                                self.config.IN_HEIGHT,
+                #                                                self.config.TRAN_CONV_LAYER_1_IN_CHANNEL *
+                #                                                self.config.TRAN_CONV_LAYER_1_HEIGHT *
+                #                                                self.config.TRAN_CONV_LAYER_1_WIDTH]),
+                #                                        stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                #                    name='W_1'),
+                # 'B_1': tf.Variable(tf.constant(value=0.0,
+                #                                shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL *
+                #                                       self.config.TRAN_CONV_LAYER_1_WIDTH *
+                #                                       self.config.TRAN_CONV_LAYER_1_HEIGHT]),
+                #                    name='B_1'),
+                # 'BETA_1': tf.Variable(tf.truncated_normal(shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL]),
+                #                       name='BETA_1'),
+                #
+                # 'GAMMA_1': tf.Variable(tf.random_normal(shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL],
+                #                                         mean=self.config.BATCH_NORM_MEAN,
+                #                                         stddev=self.config.BATCH_STANDARD_DEVIATION),
+                #                        name='GAMMA_1'),
 
                 'W_2': tf.Variable(tf.truncated_normal(shape=[self.config.FILTER_SIZE,
                                                               self.config.FILTER_SIZE,
@@ -112,21 +112,8 @@ class Generator(Model):
         self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss)
 
     def create_model(self):
-        with tf.variable_scope('Generator', reuse=False), tf.device('/gpu:1'):
-            input = tf.reshape(tensor=self.input,
-                               shape=[-1, self.config.IN_HEIGHT * self.config.IN_WIDTH * self.config.IN_CHANNEL])
-            tran_fc = tf.add(tf.matmul(input, self.variable_dict['W_1']), self.variable_dict['B_1'])
-            tran_fc = tf.reshape(tensor=tran_fc,
-                                 shape=[-1, self.config.TRAN_CONV_LAYER_1_WIDTH, self.config.TRAN_CONV_LAYER_1_HEIGHT,
-                                        self.config.TRAN_CONV_LAYER_1_IN_CHANNEL])
-            tran_fc = ops.batch_norm(x=tran_fc,
-                                     beta=self.variable_dict['BETA_1'],
-                                     gamma=self.variable_dict['GAMMA_1'],
-                                     phase_train=self.is_training,
-                                     scope='BATCH_NORM_1')
-            tran_fc = tf.nn.relu(tran_fc, name='RELU_1')
-
-            tran_conv_1 = tf.nn.conv2d_transpose(value=input,
+        with tf.variable_scope('Generator', reuse=False), tf.device('/gpu:0'):
+            tran_conv_1 = tf.nn.conv2d_transpose(value=self.input,
                                                  filter=self.variable_dict['W_2'],
                                                  output_shape=[self.config.BATCH_SIZE,
                                                                self.config.TRAN_CONV_LAYER_2_WIDTH,

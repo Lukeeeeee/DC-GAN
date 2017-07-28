@@ -9,12 +9,13 @@ from src.model.basicGAN.Discriminator.discriminator import Discriminator
 from src.model.basicGAN.Discriminator.discriminatorConfig import DiscriminatorConfig as Dconfig
 from src.model.basicGAN.Generator.generator import Generator
 from src.model.basicGAN.Generator.generatorConfig import GeneratorConfig as Gconfig
+from src.model.basicGAN.Generator.step2_generator import Step2Generator
 # from src.model.basicGAN.ganConfig import GANConfig as ganConfig
 from src.model.model import Model
 
 
 class BasicGAN(Model):
-    def __init__(self, sess, data, config, g_config=None, d_config=None):
+    def __init__(self, sess, data, config, g_config=None, d_config=None, step2_flag=False):
         super(BasicGAN, self).__init__(sess=sess, data=data, config=config)
 
         ti = datetime.datetime.now()
@@ -31,8 +32,10 @@ class BasicGAN(Model):
             g_config = Gconfig()
         if d_config is None:
             d_config = Dconfig()
-
-        self.G = Generator(sess=sess, data=None, config=g_config)
+        if step2_flag is True:
+            self.G = Step2Generator(sess=sess, data=None, config=g_config)
+        else:
+            self.G = Generator(sess=sess, data=None, config=g_config)
         self.D = Discriminator(sess=sess, data=None, generator=self.G, config=d_config)
         self.G.loss = self.D.generator_loss
         self.model_saver = tf.train.Saver()

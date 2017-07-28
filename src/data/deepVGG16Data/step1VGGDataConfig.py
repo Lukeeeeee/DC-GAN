@@ -16,6 +16,8 @@ class Step1VGGDataConfig(Config):
 
     SAMPLE_COUNT = 1000
 
+    NPY_FILE_COUNT = 100
+
     IMAGE_SOURCE = 'import/pool3'
 
     PREFIX = 'STEP1_VGG_DATA_'

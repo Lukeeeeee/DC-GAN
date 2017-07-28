@@ -7,41 +7,11 @@ from src.data.data import Data
 
 
 class VGG16Data(Data):
-    def __init__(self, data_path, config, model_file):
+    def __init__(self, data_path, config, model_file, load_image=True):
         super(VGG16Data, self).__init__(data_path=data_path, config=config)
-        self.image_set = self.load_data()
-        with open(model_file, mode='rb') as f:
-            file_content = f.read()
-        try:
-            with tf.device('/gpu:1'):
-                self.graph = tf.GraphDef()
-                self.graph.ParseFromString(file_content)
-                self.graph_input = tf.placeholder(dtype=tf.float32,
-                                                  shape=[None, self.config.DATA_WIDTH,
-                                                         self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
-                gpu_config = tf.GPUOptions(allow_growth=True)
-
-                config = tf.ConfigProto(gpu_options=gpu_config, log_device_placement=True)
-
-                self.sess = tf.Session(config=config)
-
-                tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
-                self.graph = tf.get_default_graph()
-                self.sess.run(tf.global_variables_initializer())
-        except BaseException:
-            self.graph = tf.GraphDef()
-            self.graph.ParseFromString(file_content)
-            self.graph_input = tf.placeholder(dtype=tf.float32,
-                                              shape=[None, self.config.DATA_WIDTH,
-                                                     self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
-            gpu_config = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction=0.4)
-
-            config = tf.ConfigProto(gpu_options=gpu_config)
-
-            self.sess = tf.Session(config=config)
-            tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
-            self.graph = tf.get_default_graph()
-            self.sess.run(tf.global_variables_initializer())
+        if load_image is True:
+            self.image_set = self.load_data()
+            pass
 
     def load_data(self):
         image_data = None
@@ -90,3 +60,38 @@ class VGG16Data(Data):
             im_new = im.resize(new_size, Image.ANTIALIAS)
             im_new.save(fp=data_path + 'new_cat.' + str(i) + '.jpg')
         pass
+
+    def init_with_model(self, model_file):
+
+        with open(model_file, mode='rb') as f:
+            file_content = f.read()
+        try:
+            with tf.device('/gpu:1'):
+                self.graph = tf.GraphDef()
+                self.graph.ParseFromString(file_content)
+                self.graph_input = tf.placeholder(dtype=tf.float32,
+                                                  shape=[None, self.config.DATA_WIDTH,
+                                                         self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
+                gpu_config = tf.GPUOptions(allow_growth=True)
+
+                config = tf.ConfigProto(gpu_options=gpu_config, log_device_placement=True)
+
+                self.sess = tf.Session(config=config)
+
+                tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
+                self.graph = tf.get_default_graph()
+                self.sess.run(tf.global_variables_initializer())
+        except BaseException:
+            self.graph = tf.GraphDef()
+            self.graph.ParseFromString(file_content)
+            self.graph_input = tf.placeholder(dtype=tf.float32,
+                                              shape=[None, self.config.DATA_WIDTH,
+                                                     self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
+            gpu_config = tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction=0.4)
+
+            config = tf.ConfigProto(gpu_options=gpu_config)
+
+            self.sess = tf.Session(config=config)
+            tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
+            self.graph = tf.get_default_graph()
+            self.sess.run(tf.global_variables_initializer())

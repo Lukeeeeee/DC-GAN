@@ -15,6 +15,8 @@ class Step2VGGDataConfig(Config):
     Z_CHANNEL = 256
 
     SAMPLE_COUNT = 1000
+    NPY_FILE_COUNT = 100
+
     Z_SOURCE = 'import/pool3'
 
     PREFIX = 'STEP2_VGG_DATA_'
