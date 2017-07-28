@@ -1,5 +1,6 @@
 from src.data.vgg16.vgg16Data import VGG16Data
-
+from dataset import DATASET_PATH
+import numpy as np
 
 class Step2VGGData(VGG16Data):
     def __init__(self, data_path, config, model_file):
