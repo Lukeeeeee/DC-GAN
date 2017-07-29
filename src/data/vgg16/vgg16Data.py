@@ -40,7 +40,7 @@ class VGG16Data(Data):
                                 ).astype(np.float32)
 
         # TODO NORMAL THE PIC IS NECESSARY?
-        # image_data = np.subtract(np.divide(image_data, 255), 0.5)
+        # image_data = np.subtract(np.divide(image_data, 127.5), 1.0)
         return image_data
 
     def eval_tensor_by_name(self, tensor_name, image_batch):

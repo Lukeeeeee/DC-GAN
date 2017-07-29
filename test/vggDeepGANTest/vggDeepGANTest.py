@@ -76,17 +76,25 @@ def load_step2_test():
     from log import LOG_PATH
     import numpy as np
     from PIL import Image
-    step2_gan.load_model(model_path=LOG_PATH + '/7-28-11-18-7/Step2_VGG_GAN/model/', epoch=100)
+    step2_gan.load_model(model_path=LOG_PATH + '/7-29-10-47-6/Step2_VGG_GAN/model/', epoch=500)
     image, z = step2_gan.data.return_batch_data(50, 0)
     res = step2_gan.eval_tensor(tensor=step2_gan.G.output, image_batch=image, z_batch=z)
     for i in range(10):
-        data = np.multiply(np.add(res, 0.5), 255)
+        data = np.multiply(np.add(res, 1.0), 127.5)
         data = np.reshape(data[i:i + 1, ],
                           newshape=[224, 224, 3],
                           ).astype((np.uint8))
         im = Image.fromarray(data, mode='RGB')
         im.show()
+    for i in range(10):
+        # data = np.multiply(np.add(image, 1.0), 127.5)
+        data = np.reshape(image[i:i + 1, ],
+                          newshape=[224, 224, 3],
+                          ).astype((np.uint8))
+        im = Image.fromarray(data, mode='RGB')
+        im.show()
+
 
 if __name__ == '__main__':
-    # load_step2_test()
-    train_step2()
+    load_step2_test()
+    # train_step2()

@@ -126,7 +126,7 @@ class Generator(Model):
                                      scope='BATCH_NORM_1')
             tran_fc = tf.nn.relu(tran_fc, name='RELU_1')
 
-            tran_conv_1 = tf.nn.conv2d_transpose(value=input,
+            tran_conv_1 = tf.nn.conv2d_transpose(value=tran_fc,
                                                  filter=self.variable_dict['W_2'],
                                                  output_shape=[self.config.BATCH_SIZE,
                                                                self.config.TRAN_CONV_LAYER_2_WIDTH,
