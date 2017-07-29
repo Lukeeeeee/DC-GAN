@@ -88,4 +88,5 @@ def load_step2_test():
         im.show()
 
 if __name__ == '__main__':
-    load_step2_test()
+    # load_step2_test()
+    train_step2()

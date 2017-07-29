@@ -72,6 +72,9 @@ class BasicGAN(Model):
 
                 G_loss_1 = self.update_generator(z_batch=z_batch)
                 G_loss_2 = self.update_generator(z_batch=z_batch)
+
+                self.run_summary(image_batch=image_batch, z_batch=z_batch, count=count)
+
                 G_loss = (G_loss_1 + G_loss_2) / 2.0
 
                 # G_loss = self.update_generator(z_batch=z_batch)
@@ -129,7 +132,7 @@ class BasicGAN(Model):
         return acc, loss, real_acc, fake_acc
 
     def run_summary(self, image_batch, z_batch, count):
-        summary = self.sess.run(fetches=[self.merged_summary],
+        summary = self.sess.run(fetches=self.merged_summary,
                                 feed_dict={self.D.input: image_batch,
                                            self.G.input: z_batch,
                                            self.G.is_training: True,
