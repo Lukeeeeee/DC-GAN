@@ -4,8 +4,9 @@ import numpy as np
 
 
 class Step2VGGData(VGG16Data):
-    def __init__(self, data_path, config, model_file):
-        super(Step2VGGData, self).__init__(data_path, config, model_file, load_image=True)
+    def __init__(self, image_data_path, z_data_path, config, model_file):
+        super(Step2VGGData, self).__init__(image_data_path, config, model_file, load_image=True)
+        self.z_data_path = z_data_path
         self.step2_z_data = self.load_step2_z_data()
 
     def return_z_batch_data(self, batch_size, index=None):
@@ -20,10 +21,10 @@ class Step2VGGData(VGG16Data):
         return res
 
     def load_step2_z_data(self):
-        data_path = DATASET_PATH + '/deepGANcat/step1_image/'
+        # data_path = DATASET_PATH + '/deepGANcat/step1_image_28_28_256_28_28_256/'
         step1_image_data = None
         for i in range(self.config.NPY_FILE_COUNT):
-            res = np.load(data_path + 'step1_image' + 'batch_' + str(i) + '.npy')
+            res = np.load(self.z_data_path + 'step1_image' + 'batch_' + str(i) + '.npy')
             if i == 0:
                 step1_image_data = res
             else:
@@ -36,9 +37,10 @@ if __name__ == '__main__':
     from src.data.deepVGG16Data.step2VGGDataConfig import Step2VGGDataConfig
     import numpy as np
 
-    d = Step2VGGData(data_path=DATASET_PATH + '/cat/',
+    d = Step2VGGData(image_data_path=DATASET_PATH + '/cat/',
                      config=Step2VGGDataConfig(),
-                     model_file=DATASET_PATH + '/vgg16.tfmodel')
+                     model_file=DATASET_PATH + '/vgg16.tfmodel',
+                     z_data_path=None)
     print (d.return_z_batch_data(1, 0))
     # path = DATASET_PATH + '/deepGANcat/'
 

@@ -8,8 +8,8 @@ def conv_out_size_same(size, stride):
 
 
 class Step2VGGGeneratorConfig(Config):
-    IN_HEIGHT = 28
-    IN_WIDTH = 28
+    IN_HEIGHT = 56
+    IN_WIDTH = 56
     IN_CHANNEL = 256
 
     OUT_HEIGHT = 224
@@ -17,10 +17,10 @@ class Step2VGGGeneratorConfig(Config):
     OUT_CHANNEL = 3
 
     TRAN_CONV_LAYER_1_IN_CHANNEL = 256
-    TRAN_CONV_LAYER_2_IN_CHANNEL = 128
+    TRAN_CONV_LAYER_2_IN_CHANNEL = 256
     TRAN_CONV_LAYER_3_IN_CHANNEL = 32
 
-    FILTER_SIZE = 4
+    FILTER_SIZE = 2
 
     CONV_STRIDE = 2
 

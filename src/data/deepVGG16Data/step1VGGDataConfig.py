@@ -2,8 +2,8 @@ from src.config import Config
 
 
 class Step1VGGDataConfig(Config):
-    IMAGE_HEIGHT = 28
-    IMAGE_WIDTH = 28
+    IMAGE_HEIGHT = 56
+    IMAGE_WIDTH = 56
     IMAGE_CHANNEL = 256
 
     DATA_HEIGHT = 224
@@ -18,7 +18,7 @@ class Step1VGGDataConfig(Config):
 
     NPY_FILE_COUNT = 100
 
-    IMAGE_SOURCE = 'import/pool3'
+    IMAGE_SOURCE = 'import/conv3_3/Relu'
 
     PREFIX = 'STEP1_VGG_DATA_'
 

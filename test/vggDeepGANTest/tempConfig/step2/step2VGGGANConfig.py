@@ -2,7 +2,7 @@ from src.config import Config
 
 
 class Step2VGGGANConfig(Config):
-    TRAINING_EPOCH = 500
+    TRAINING_EPOCH = 100
     BATCH_SIZE = 50
     # SAMPLE_COUNT = 5000 0
     SAMPLE_COUNT = 1000  # 0 1

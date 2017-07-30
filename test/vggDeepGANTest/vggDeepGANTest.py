@@ -26,10 +26,14 @@ def train_step1():
 
 def train_step2():
     data_path = DATASET_PATH + '/cat/'
+    z_path = DATASET_PATH + '/deepGANcat/step1_image_56_56_256/'
     model_file = DATASET_PATH + '/vgg16.tfmodel'
 
     step2_config = Step2VGGDataConfig()
-    step2_data = Step2VGGData(config=step2_config, data_path=data_path, model_file=model_file)
+    step2_data = Step2VGGData(config=step2_config,
+                              image_data_path=data_path,
+                              model_file=model_file,
+                              z_data_path=z_path)
 
     gan_config = Step2VGGGANConfig()
     g_config = Step2VGGGeneratorConfig()
@@ -53,9 +57,13 @@ def train_step2():
 def load_step2_test():
     data_path = DATASET_PATH + '/cat/'
     model_file = DATASET_PATH + '/vgg16.tfmodel'
+    z_path = DATASET_PATH + '/deepGANcat/step1_image_56_56_256/'
 
     step2_config = Step2VGGDataConfig()
-    step2_data = Step2VGGData(config=step2_config, data_path=data_path, model_file=model_file)
+    step2_data = Step2VGGData(config=step2_config,
+                              image_data_path=data_path,
+                              model_file=model_file,
+                              z_data_path=z_path)
 
     gan_config = Step2VGGGANConfig()
     g_config = Step2VGGGeneratorConfig()
@@ -96,5 +104,5 @@ def load_step2_test():
 
 
 if __name__ == '__main__':
-    load_step2_test()
-    # train_step2()
+    # load_step2_test()
+    train_step2()

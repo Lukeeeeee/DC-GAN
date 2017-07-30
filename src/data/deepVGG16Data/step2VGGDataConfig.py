@@ -10,14 +10,14 @@ class Step2VGGDataConfig(Config):
     DATA_WIDTH = 224
     DATA_CHANNEL = 3
 
-    Z_HEIGHT = 28
-    Z_WIDTH = 28
+    Z_HEIGHT = 56
+    Z_WIDTH = 56
     Z_CHANNEL = 256
 
     SAMPLE_COUNT = 1000
     NPY_FILE_COUNT = 100
 
-    Z_SOURCE = 'import/pool3'
+    Z_SOURCE = 'import/conv3_3/Relu'
 
     PREFIX = 'STEP2_VGG_DATA_'
 

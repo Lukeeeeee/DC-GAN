@@ -12,6 +12,7 @@ class VGG16Data(Data):
         if load_image is True:
             self.image_set = self.load_data()
             pass
+        self.model_file = model_file
 
     def load_data(self):
         image_data = None
@@ -95,3 +96,4 @@ class VGG16Data(Data):
             tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
             self.graph = tf.get_default_graph()
             self.sess.run(tf.global_variables_initializer())
+
