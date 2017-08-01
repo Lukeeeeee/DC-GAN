@@ -167,8 +167,8 @@ class Step2Generator(Model):
             tran_conv_4 = tf.nn.conv2d_transpose(value=tran_conv_3,
                                                  filter=self.variable_dict['W_4'],
                                                  output_shape=[self.config.BATCH_SIZE,
-                                                               self.config.OUT_HEIGHT,
-                                                               self.config.OUT_WIDTH,
+                                                               self.config.TRAN_CONV_LAYER_4_WIDTH,
+                                                               self.config.TRAN_CONV_LAYER_4_HEIGHT,
                                                                self.config.OUT_CHANNEL],
                                                  strides=[1, self.config.CONV_4_STRIDE, self.config.CONV_4_STRIDE, 1],
                                                  padding='SAME')

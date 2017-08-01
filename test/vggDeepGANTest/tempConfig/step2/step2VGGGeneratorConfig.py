@@ -27,20 +27,20 @@ class Step2VGGGeneratorConfig(Config):
     CONV_3_STRIDE = 2
     CONV_4_STRIDE = 1
 
-    TRAN_CONV_LAYER_4_HEIGHT = int(math.ceil(float(OUT_HEIGHT) / float(CONV_4_STRIDE)))
-    TRAN_CONV_LAYER_4_WIDTH = int(math.ceil(float(OUT_WIDTH) / float(CONV_4_STRIDE)))
+    TRAN_CONV_LAYER_4_HEIGHT = OUT_HEIGHT
+    TRAN_CONV_LAYER_4_WIDTH = OUT_WIDTH
 
-    assert TRAN_CONV_LAYER_4_HEIGHT == OUT_HEIGHT
-    assert TRAN_CONV_LAYER_4_WIDTH == OUT_WIDTH
+    TRAN_CONV_LAYER_3_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_4_HEIGHT) / float(CONV_4_STRIDE)))
+    TRAN_CONV_LAYER_3_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_4_WIDTH) / float(CONV_4_STRIDE)))
 
-    TRAN_CONV_LAYER_3_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_4_HEIGHT) / float(CONV_3_STRIDE)))
-    TRAN_CONV_LAYER_3_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_4_WIDTH) / float(CONV_3_STRIDE)))
+    TRAN_CONV_LAYER_2_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_3_HEIGHT) / float(CONV_3_STRIDE)))
+    TRAN_CONV_LAYER_2_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_3_WIDTH) / float(CONV_3_STRIDE)))
 
-    TRAN_CONV_LAYER_2_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_3_HEIGHT) / float(CONV_2_STRIDE)))
-    TRAN_CONV_LAYER_2_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_3_WIDTH) / float(CONV_2_STRIDE)))
+    TRAN_CONV_LAYER_1_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_2_HEIGHT) / float(CONV_2_STRIDE)))
+    TRAN_CONV_LAYER_1_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_2_WIDTH) / float(CONV_2_STRIDE)))
 
-    TRAN_CONV_LAYER_1_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_2_HEIGHT) / float(CONV_1_STRIDE)))
-    TRAN_CONV_LAYER_1_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_2_WIDTH) / float(CONV_1_STRIDE)))
+    assert TRAN_CONV_LAYER_1_HEIGHT == IN_HEIGHT
+    assert TRAN_CONV_LAYER_1_WIDTH == IN_WIDTH
 
     G_LEARNING_RATE = 0.003
 
@@ -91,3 +91,7 @@ class Step2VGGGeneratorConfig(Config):
             conf.PREFIX + 'TRAN_CONV_LAYER_3_IN_CHANNEL': conf.TRAN_CONV_LAYER_3_IN_CHANNEL,
 
         }
+
+
+if __name__ == '__main__':
+    a = Step2VGGGeneratorConfig()
