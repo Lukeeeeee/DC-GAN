@@ -10,18 +10,18 @@ def train_step1():
     data_path = DATASET_PATH + '/cat/'
     model_file = DATASET_PATH + '/vgg16.tfmodel'
 
-    # step1_config = Step1VGGDataConfig()
-    # step1_data = Step1VGGData(config=step1_config, data_path=data_path, model_file=model_file)
+    step1_config = Step1VGGDataConfig()
+    step1_data = Step1VGGData(config=step1_config, model_file=model_file, image_data_path=data_path)
 
-    # gan_config = Step1VGGGANConfig()
-    # g_config = Step1VGGGeneratorConfig()
-    # d_config = Step1VGGDiscriminatorConfig()
-    # step1_gan = DeepGAN(config=gan_config,
-    #                     sess=tf.InteractiveSession(),
-    #                     data=step1_data,
-    #                     g_config=g_config,
-    #                     d_config=d_config)
-    # step1_gan.train()
+    gan_config = Step1VGGGANConfig()
+    g_config = Step1VGGGeneratorConfig()
+    d_config = Step1VGGDiscriminatorConfig()
+    step1_gan = DeepGAN(config=gan_config,
+                        sess=tf.InteractiveSession(),
+                        data=step1_data,
+                        g_config=g_config,
+                        d_config=d_config)
+    step1_gan.train()
 
 
 def train_step2():

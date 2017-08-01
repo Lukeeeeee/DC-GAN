@@ -12,26 +12,35 @@ class Step2VGGGeneratorConfig(Config):
     IN_WIDTH = 56
     IN_CHANNEL = 256
 
+    TRAN_CONV_LAYER_1_IN_CHANNEL = 128
+    TRAN_CONV_LAYER_2_IN_CHANNEL = 64
+    TRAN_CONV_LAYER_3_IN_CHANNEL = 32
+
     OUT_HEIGHT = 224
     OUT_WIDTH = 224
     OUT_CHANNEL = 3
 
-    TRAN_CONV_LAYER_1_IN_CHANNEL = 256
-    TRAN_CONV_LAYER_2_IN_CHANNEL = 256
-    TRAN_CONV_LAYER_3_IN_CHANNEL = 32
+    FILTER_SIZE = 4
 
-    FILTER_SIZE = 2
+    CONV_1_STRIDE = 1
+    CONV_2_STRIDE = 2
+    CONV_3_STRIDE = 2
+    CONV_4_STRIDE = 1
 
-    CONV_STRIDE = 2
+    TRAN_CONV_LAYER_4_HEIGHT = int(math.ceil(float(OUT_HEIGHT) / float(CONV_4_STRIDE)))
+    TRAN_CONV_LAYER_4_WIDTH = int(math.ceil(float(OUT_WIDTH) / float(CONV_4_STRIDE)))
 
-    TRAN_CONV_LAYER_3_HEIGHT = int(math.ceil(float(OUT_HEIGHT) / float(CONV_STRIDE)))
-    TRAN_CONV_LAYER_3_WIDTH = int(math.ceil(float(OUT_WIDTH) / float(CONV_STRIDE)))
+    assert TRAN_CONV_LAYER_4_HEIGHT == OUT_HEIGHT
+    assert TRAN_CONV_LAYER_4_WIDTH == OUT_WIDTH
 
-    TRAN_CONV_LAYER_2_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_3_HEIGHT) / float(CONV_STRIDE)))
-    TRAN_CONV_LAYER_2_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_3_WIDTH) / float(CONV_STRIDE)))
+    TRAN_CONV_LAYER_3_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_4_HEIGHT) / float(CONV_3_STRIDE)))
+    TRAN_CONV_LAYER_3_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_4_WIDTH) / float(CONV_3_STRIDE)))
 
-    TRAN_CONV_LAYER_1_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_2_HEIGHT) / float(CONV_STRIDE)))
-    TRAN_CONV_LAYER_1_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_2_WIDTH) / float(CONV_STRIDE)))
+    TRAN_CONV_LAYER_2_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_3_HEIGHT) / float(CONV_2_STRIDE)))
+    TRAN_CONV_LAYER_2_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_3_WIDTH) / float(CONV_2_STRIDE)))
+
+    TRAN_CONV_LAYER_1_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_2_HEIGHT) / float(CONV_1_STRIDE)))
+    TRAN_CONV_LAYER_1_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_2_WIDTH) / float(CONV_1_STRIDE)))
 
     G_LEARNING_RATE = 0.003
 

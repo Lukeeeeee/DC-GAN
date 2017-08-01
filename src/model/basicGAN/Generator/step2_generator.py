@@ -11,22 +11,22 @@ class Step2Generator(Model):
         with tf.variable_scope(self.name), tf.device('/gpu:1'):
             self.variable_dict = {
 
-                # 'W_1': tf.Variable(tf.truncated_normal(shape=[self.config.FILTER_SIZE,
-                #                                               self.config.FILTER_SIZE,
-                #                                               self.config.TRAN_CONV_LAYER_1_IN_CHANNEL,
-                #                                               self.config.IN_CHANNEL],
-                #                                        stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
-                #                    name='W_1'),
-                #
-                # 'B_1': tf.Variable(tf.constant(value=0.0,
-                #                                shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL]),
-                #                    name='B_1'),
-                #
-                # 'BETA_1': tf.Variable(tf.constant(value=0.0,
-                #                                   shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL]),
-                #                       name='BETA_1'),
-                # 'GAMMA_1': tf.Variable(tf.random_normal(shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL]),
-                #                        name='GAMMA_1'),
+                'W_1': tf.Variable(tf.truncated_normal(shape=[self.config.FILTER_SIZE,
+                                                              self.config.FILTER_SIZE,
+                                                              self.config.TRAN_CONV_LAYER_1_IN_CHANNEL,
+                                                              self.config.IN_CHANNEL],
+                                                       stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                                   name='W_1'),
+
+                'B_1': tf.Variable(tf.constant(value=0.0,
+                                               shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL]),
+                                   name='B_1'),
+
+                'BETA_1': tf.Variable(tf.constant(value=0.0,
+                                                  shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL]),
+                                      name='BETA_1'),
+                'GAMMA_1': tf.Variable(tf.random_normal(shape=[self.config.TRAN_CONV_LAYER_1_IN_CHANNEL]),
+                                       name='GAMMA_1'),
 
                 'W_2': tf.Variable(tf.truncated_normal(shape=[self.config.FILTER_SIZE,
                                                               self.config.FILTER_SIZE,
@@ -106,53 +106,53 @@ class Step2Generator(Model):
     def loss(self, new_loss):
         self._loss = new_loss
         with tf.variable_scope(self.name):
+
             self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
-            # ops.variable_summaries(self.gradients)
             self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss)
 
     def create_model(self):
         with tf.variable_scope(self.name, reuse=False), tf.device('/gpu:0'):
-            # tran_conv_1 = tf.nn.conv2d_transpose(value=self.input,
-            #                                      filter=self.variable_dict['W_1'],
-            #                                      output_shape=[self.config.BATCH_SIZE,
-            #                                                    self.config.TRAN_CONV_LAYER_1_WIDTH,
-            #                                                    self.config.TRAN_CONV_LAYER_1_HEIGHT,
-            #                                                    self.config.TRAN_CONV_LAYER_1_IN_CHANNEL],
-            #                                      strides=[1, self.config.CONV_STRIDE, self.config.CONV_STRIDE, 1],
-            #                                      padding='SAME')
-            # tran_conv_1 = tf.nn.bias_add(tran_conv_1, self.variable_dict['B_1'])
-            #
-            # tran_conv_1 = ops.batch_norm(x=tran_conv_1,
-            #                              beta=self.variable_dict['BETA_1'],
-            #                              gamma=self.variable_dict['GAMMA_1'],
-            #                              phase_train=self.is_training,
-            #                              scope='BATCH_NORM_1')
-            # tran_conv_1 = tf.nn.relu(tran_conv_1, name='RELU_1')
+            tran_conv_1 = tf.nn.conv2d_transpose(value=self.input,
+                                                 filter=self.variable_dict['W_1'],
+                                                 output_shape=[self.config.BATCH_SIZE,
+                                                               self.config.TRAN_CONV_LAYER_1_WIDTH,
+                                                               self.config.TRAN_CONV_LAYER_1_HEIGHT,
+                                                               self.config.TRAN_CONV_LAYER_1_IN_CHANNEL],
+                                                 strides=[1, self.config.CONV_1_STRIDE, self.config.CONV_1_STRIDE, 1],
+                                                 padding='SAME')
+            tran_conv_1 = tf.nn.bias_add(tran_conv_1, self.variable_dict['B_1'])
 
-            # tran_conv_2 = tf.nn.conv2d_transpose(value=self.input,
-            #                                      filter=self.variable_dict['W_2'],
-            #                                      output_shape=[self.config.BATCH_SIZE,
-            #                                                    self.config.TRAN_CONV_LAYER_2_WIDTH,
-            #                                                    self.config.TRAN_CONV_LAYER_2_HEIGHT,
-            #                                                    self.config.TRAN_CONV_LAYER_2_IN_CHANNEL],
-            #                                      strides=[1, self.config.CONV_STRIDE, self.config.CONV_STRIDE, 1],
-            #                                      padding='SAME')
-            # tran_conv_2 = tf.nn.bias_add(tran_conv_2, self.variable_dict['B_2'])
-            #
-            # tran_conv_2 = ops.batch_norm(x=tran_conv_2,
-            #                              beta=self.variable_dict['BETA_2'],
-            #                              gamma=self.variable_dict['GAMMA_2'],
-            #                              phase_train=self.is_training,
-            #                              scope='BATCH_NORM_2')
-            # tran_conv_2 = tf.nn.relu(tran_conv_2, name='RELU_2')
+            tran_conv_1 = ops.batch_norm(x=tran_conv_1,
+                                         beta=self.variable_dict['BETA_1'],
+                                         gamma=self.variable_dict['GAMMA_1'],
+                                         phase_train=self.is_training,
+                                         scope='BATCH_NORM_1')
+            tran_conv_1 = tf.nn.relu(tran_conv_1, name='RELU_1')
 
-            tran_conv_3 = tf.nn.conv2d_transpose(value=self.input,
+            tran_conv_2 = tf.nn.conv2d_transpose(value=tran_conv_1,
+                                                 filter=self.variable_dict['W_2'],
+                                                 output_shape=[self.config.BATCH_SIZE,
+                                                               self.config.TRAN_CONV_LAYER_2_WIDTH,
+                                                               self.config.TRAN_CONV_LAYER_2_HEIGHT,
+                                                               self.config.TRAN_CONV_LAYER_2_IN_CHANNEL],
+                                                 strides=[1, self.config.CONV_2_STRIDE, self.config.CONV_2_STRIDE, 1],
+                                                 padding='SAME')
+            tran_conv_2 = tf.nn.bias_add(tran_conv_2, self.variable_dict['B_2'])
+
+            tran_conv_2 = ops.batch_norm(x=tran_conv_2,
+                                         beta=self.variable_dict['BETA_2'],
+                                         gamma=self.variable_dict['GAMMA_2'],
+                                         phase_train=self.is_training,
+                                         scope='BATCH_NORM_2')
+            tran_conv_2 = tf.nn.relu(tran_conv_2, name='RELU_2')
+
+            tran_conv_3 = tf.nn.conv2d_transpose(value=tran_conv_2,
                                                  filter=self.variable_dict['W_3'],
                                                  output_shape=[self.config.BATCH_SIZE,
                                                                self.config.TRAN_CONV_LAYER_3_WIDTH,
                                                                self.config.TRAN_CONV_LAYER_3_HEIGHT,
                                                                self.config.TRAN_CONV_LAYER_3_IN_CHANNEL],
-                                                 strides=[1, self.config.CONV_STRIDE, self.config.CONV_STRIDE, 1],
+                                                 strides=[1, self.config.CONV_3_STRIDE, self.config.CONV_3_STRIDE, 1],
                                                  padding='SAME')
             tran_conv_3 = tf.nn.bias_add(tran_conv_3, self.variable_dict['B_3'])
 
@@ -170,7 +170,7 @@ class Step2Generator(Model):
                                                                self.config.OUT_HEIGHT,
                                                                self.config.OUT_WIDTH,
                                                                self.config.OUT_CHANNEL],
-                                                 strides=[1, self.config.CONV_STRIDE, self.config.CONV_STRIDE, 1],
+                                                 strides=[1, self.config.CONV_4_STRIDE, self.config.CONV_4_STRIDE, 1],
                                                  padding='SAME')
             tran_conv_4 = tf.nn.bias_add(tran_conv_4, self.variable_dict['B_4'])
 
@@ -190,9 +190,3 @@ class Step2Generator(Model):
 
         return optimizer, gradients, optimize_loss
 
-        # def update(self, z_batch):
-        #     loss, _ = self.sess.run(fetches=[self.loss, self.optimize_loss],
-        #                             feed_dict={self.input: z_batch,
-        #                                        self.is_training: True,
-        #                                        self.discriminator.is_training: True})
-        #     return loss

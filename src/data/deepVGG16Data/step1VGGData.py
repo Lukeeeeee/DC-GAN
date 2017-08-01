@@ -4,14 +4,13 @@ from src.data.vgg16.vgg16Data import VGG16Data
 class Step1VGGData(VGG16Data):
     def __init__(self, image_data_path, config, model_file):
         super(Step1VGGData, self).__init__(data_path=image_data_path, config=config, model_file=model_file,
-                                           load_image=True)
+                                           load_image=False)
         self.step1_image_data = self.load_step1_image_data()
 
     def load_step1_image_data(self):
-        data_path = DATASET_PATH + '/deepGANcat/step1_image_28_28_256/'
         step1_image_data = None
         for i in range(self.config.NPY_FILE_COUNT):
-            res = np.load(data_path + 'step1_image' + 'batch_' + str(i) + '.npy')
+            res = np.load(self.data_path + 'step1_image' + 'batch_' + str(i) + '.npy')
             if i == 0:
                 step1_image_data = res
             else:
