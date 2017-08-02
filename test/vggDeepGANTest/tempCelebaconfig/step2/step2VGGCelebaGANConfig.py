@@ -2,14 +2,14 @@ from src.config import Config
 
 
 class Step2VGGCelbaeGANConfig(Config):
-    TRAINING_EPOCH = 500
-    BATCH_SIZE = 20
+    TRAINING_EPOCH = 120
+    BATCH_SIZE = 50
     # SAMPLE_COUNT = 5000 0
-    SAMPLE_COUNT = 1000  # 0 1
+    SAMPLE_COUNT = 2000  # 0 1
     BATCH_COUNT = int(SAMPLE_COUNT / BATCH_SIZE)
     # BATCH_COUNT = 1
 
-    TEST_EVERY_EPOCH = 600
+    TEST_EVERY_EPOCH = TRAINING_EPOCH // 20
     NAME = 'Step2_VGG_Celeba_GAN'
 
     SAVE_MODEL_EVERY_EPOCH = 1

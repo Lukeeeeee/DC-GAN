@@ -13,9 +13,10 @@ class Step2VGGCelebaGeneratorConfig(Config):
     IN_CHANNEL = 256
 
     TRAN_CONV_LAYER_1_IN_CHANNEL = 128
-    TRAN_CONV_LAYER_2_IN_CHANNEL = 64
+    TRAN_CONV_LAYER_2_IN_CHANNEL = 128
     TRAN_CONV_LAYER_3_IN_CHANNEL = 64
     TRAN_CONV_LAYER_4_IN_CHANNEL = 32
+    TRAN_CONV_LAYER_5_IN_CHANNEL = 32
 
     OUT_HEIGHT = 224
     OUT_WIDTH = 224
@@ -28,12 +29,16 @@ class Step2VGGCelebaGeneratorConfig(Config):
     CONV_3_STRIDE = 1
     CONV_4_STRIDE = 2
     CONV_5_STRIDE = 1
+    CONV_6_STRIDE = 1
 
-    TRAN_CONV_LAYER_5_HEIGHT = OUT_HEIGHT
-    TRAN_CONV_LAYER_5_WIDTH = OUT_WIDTH
+    TRAN_CONV_LAYER_6_HEIGHT = OUT_HEIGHT
+    TRAN_CONV_LAYER_6_WIDTH = OUT_WIDTH
+
+    TRAN_CONV_LAYER_5_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_6_HEIGHT) / float(CONV_6_STRIDE)))
+    TRAN_CONV_LAYER_5_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_6_HEIGHT) / float(CONV_6_STRIDE)))
 
     TRAN_CONV_LAYER_4_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_5_HEIGHT) / float(CONV_5_STRIDE)))
-    TRAN_CONV_LAYER_4_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_5_WIDTH) / float(CONV_5_STRIDE)))
+    TRAN_CONV_LAYER_4_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_5_HEIGHT) / float(CONV_5_STRIDE)))
 
     TRAN_CONV_LAYER_3_HEIGHT = int(math.ceil(float(TRAN_CONV_LAYER_4_HEIGHT) / float(CONV_4_STRIDE)))
     TRAN_CONV_LAYER_3_WIDTH = int(math.ceil(float(TRAN_CONV_LAYER_4_WIDTH) / float(CONV_4_STRIDE)))
@@ -47,9 +52,9 @@ class Step2VGGCelebaGeneratorConfig(Config):
     assert TRAN_CONV_LAYER_1_HEIGHT == IN_HEIGHT
     assert TRAN_CONV_LAYER_1_WIDTH == IN_WIDTH
 
-    G_LEARNING_RATE = 0.03
+    G_LEARNING_RATE = 0.003
 
-    BATCH_SIZE = 20
+    BATCH_SIZE = 50
 
     VARIABLE_RANDOM_STANDARD_DEVIATION = 0.02
 
@@ -72,10 +77,6 @@ class Step2VGGCelebaGeneratorConfig(Config):
 
             conf.PREFIX + 'G_LEARNING_RATE': conf.G_LEARNING_RATE,
 
-            conf.PREFIX + 'DATA_COUNT': conf.DATA_COUNT,
-            conf.PREFIX + 'DATA_SOURCE': conf.DATA_SOURCE,
-            conf.PREFIX + 'DATA_Z_NAME': conf.DATA_Z_NAME,
-
             conf.PREFIX + 'BATCH_SIZE': conf.BATCH_SIZE,
 
             conf.PREFIX + 'VARIABLE_RANDOM_STANDARD_DEVIATION': conf.VARIABLE_RANDOM_STANDARD_DEVIATION,
@@ -89,7 +90,6 @@ class Step2VGGCelebaGeneratorConfig(Config):
             conf.PREFIX + 'TRAN_CONV_LAYER_1_WIDTH': conf.TRAN_CONV_LAYER_1_WIDTH,
 
             conf.PREFIX + 'FILTER_SIZE': conf.FILTER_SIZE,
-            conf.PREFIX + 'CONV_STRIDE': conf.CONV_STRIDE,
 
             conf.PREFIX + 'TRAN_CONV_LAYER_1_IN_CHANNEL': conf.TRAN_CONV_LAYER_1_IN_CHANNEL,
             conf.PREFIX + 'TRAN_CONV_LAYER_2_IN_CHANNEL': conf.TRAN_CONV_LAYER_2_IN_CHANNEL,

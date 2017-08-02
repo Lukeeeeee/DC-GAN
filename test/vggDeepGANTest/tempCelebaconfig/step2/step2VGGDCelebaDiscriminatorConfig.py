@@ -14,7 +14,7 @@ class Step2VGGCelebaDiscriminatorConfig(Config):
 
     CONV_LAYER_1_OUT_CHANNEL = 6
 
-    CONV_LAYER_2_OUT_CHANNEL = 6
+    CONV_LAYER_2_OUT_CHANNEL = 12
 
     CONV_LAYER_3_OUT_CHANNEL = 12
 

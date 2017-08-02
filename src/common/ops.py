@@ -34,10 +34,13 @@ class ops(object):
                               padding='SAME')
 
     @staticmethod
-    def variable_summaries(var):
+    def variable_summaries(var, name='Summmary'):
         """Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
-        with tf.name_scope('Summary'):
-            scalar = tf.summary.scalar(var.name, var)
+        with tf.name_scope(name):
+            try:
+                scalar = tf.summary.scalar(var.name, var)
+            except BaseException:
+                scalar = tf.summary.tensor_summary(var.name, var)
 
             # tf.summary.scalar('mean', mean)
             # tf.summary.scalar('max', tf.reduce_max(var))

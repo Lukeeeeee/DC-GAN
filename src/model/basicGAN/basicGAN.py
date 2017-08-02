@@ -25,6 +25,14 @@ class BasicGAN(Model):
                         + '-' + str(ti.second) + '/')
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir)
+        config_log = [config.save_to_json(config),
+                      g_config.save_to_json(g_config),
+                      d_config.save_to_json(d_config),
+                      data.config.save_to_json(data.config)
+                      ]
+
+        with open(self.log_dir + 'config.json', 'w') as f:
+            json.dump(config_log, f, indent=4)
 
         self.model_dir = self.log_dir + 'model/'
         if not os.path.exists(self.model_dir):
@@ -108,7 +116,7 @@ class BasicGAN(Model):
             if (i + 1) % self.config.SAVE_MODEL_EVERY_EPOCH == 0:
                 self.save_model(model_path=self.model_dir, epoch=i + 1)
             if (i + 1) % self.config.TEST_EVERY_EPOCH == 0:
-                image, z = self.data.return_batch_data(20, 0)
+                image, z = self.data.return_batch_data(50, 0)
                 res = self.eval_tensor(tensor=self.G.output, image_batch=image, z_batch=z)
                 for i in range(5):
                     data = np.multiply(np.add(res, 1.0), 127.5)
@@ -154,15 +162,15 @@ class BasicGAN(Model):
         summary = self.sess.run(fetches=self.merged_summary,
                                 feed_dict={self.D.input: image_batch,
                                            self.G.input: z_batch,
-                                           self.G.is_training: True,
-                                           self.D.is_training: True})
+                                           self.G.is_training: False,
+                                           self.D.is_training: False})
         self.summary_writer.add_summary(summary, count)
 
     def eval_tensor(self, tensor, image_batch, z_batch):
         res = self.sess.run(tensor, feed_dict={self.D.input: image_batch,
                                                self.G.input: z_batch,
-                                               self.G.is_training: True,
-                                               self.D.is_training: True})
+                                               self.G.is_training: False,
+                                               self.D.is_training: False})
         return res
 
     def save_model(self, model_path, epoch):

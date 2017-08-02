@@ -83,22 +83,41 @@ class Step2Generator(Model):
                                        name='GAMMA_4'),
                 'W_5': tf.Variable(tf.truncated_normal(shape=[self.config.FILTER_SIZE,
                                                               self.config.FILTER_SIZE,
-                                                              self.config.OUT_CHANNEL,
+                                                              self.config.TRAN_CONV_LAYER_5_IN_CHANNEL,
                                                               self.config.TRAN_CONV_LAYER_4_IN_CHANNEL],
                                                        stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
-                                   name='W_4'),
+                                   name='W_5'),
                 'B_5': tf.Variable(tf.constant(value=0.0,
-                                               shape=[self.config.OUT_CHANNEL]),
-                                   name='B_4'),
+                                               shape=[self.config.TRAN_CONV_LAYER_5_IN_CHANNEL]),
+                                   name='B_5'),
 
                 'BETA_5': tf.Variable(tf.constant(value=0.0,
-                                                  shape=[self.config.OUT_CHANNEL]),
-                                      name='BETA_4'),
+                                                  shape=[self.config.TRAN_CONV_LAYER_5_IN_CHANNEL]),
+                                      name='BETA_5'),
 
-                'GAMMA_5': tf.Variable(tf.random_normal(shape=[self.config.OUT_CHANNEL],
+                'GAMMA_5': tf.Variable(tf.random_normal(shape=[self.config.TRAN_CONV_LAYER_5_IN_CHANNEL],
                                                         mean=self.config.BATCH_NORM_MEAN,
                                                         stddev=self.config.BATCH_STANDARD_DEVIATION),
-                                       name='GAMMA_4')
+                                       name='GAMMA_5'),
+
+                'W_6': tf.Variable(tf.truncated_normal(shape=[self.config.FILTER_SIZE,
+                                                              self.config.FILTER_SIZE,
+                                                              self.config.OUT_CHANNEL,
+                                                              self.config.TRAN_CONV_LAYER_5_IN_CHANNEL],
+                                                       stddev=self.config.VARIABLE_RANDOM_STANDARD_DEVIATION),
+                                   name='W_6'),
+                'B_6': tf.Variable(tf.constant(value=0.0,
+                                               shape=[self.config.OUT_CHANNEL]),
+                                   name='B_6'),
+
+                'BETA_6': tf.Variable(tf.constant(value=0.0,
+                                                  shape=[self.config.OUT_CHANNEL]),
+                                      name='BETA_6'),
+
+                'GAMMA_6': tf.Variable(tf.random_normal(shape=[self.config.OUT_CHANNEL],
+                                                        mean=self.config.BATCH_NORM_MEAN,
+                                                        stddev=self.config.BATCH_STANDARD_DEVIATION),
+                                       name='GAMMA_6')
 
             }
         with tf.variable_scope(self.name):
@@ -111,8 +130,15 @@ class Step2Generator(Model):
             self.is_training = tf.placeholder(tf.bool)
         self.output = self.create_model()
         self.var_list = []
+        self.var_summary_list = []
         for key, value in self.variable_dict.iteritems():
             self.var_list.append(value)
+            with tf.name_scope('G_weight_summary'):
+                summary = tf.summary.tensor_summary(value.op.name, value)
+                histogram = tf.summary.histogram(value.op.name, value)
+                self.var_summary_list.append(summary)
+                self.var_summary_list.append(histogram)
+
             # self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
         pass
 
@@ -126,7 +152,8 @@ class Step2Generator(Model):
         with tf.variable_scope(self.name):
 
             self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
-            self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss)
+            self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss,
+                                                                                           name='G_loss_summary')
 
     def create_model(self):
         with tf.variable_scope(self.name, reuse=False), tf.device('/gpu:0'):
@@ -203,7 +230,7 @@ class Step2Generator(Model):
                                                  output_shape=[self.config.BATCH_SIZE,
                                                                self.config.TRAN_CONV_LAYER_5_WIDTH,
                                                                self.config.TRAN_CONV_LAYER_5_HEIGHT,
-                                                               self.config.OUT_CHANNEL],
+                                                               self.config.TRAN_CONV_LAYER_5_IN_CHANNEL],
                                                  strides=[1, self.config.CONV_5_STRIDE, self.config.CONV_5_STRIDE, 1],
                                                  padding='SAME')
             tran_conv_5 = tf.nn.bias_add(tran_conv_5, self.variable_dict['B_5'])
@@ -213,9 +240,26 @@ class Step2Generator(Model):
                                          gamma=self.variable_dict['GAMMA_5'],
                                          phase_train=self.is_training,
                                          scope='BATCH_NORM_5')
-            tran_conv_5 = tf.nn.tanh(tran_conv_5, name='TANH_5')
 
-            return tran_conv_5
+            tran_conv_6 = tf.nn.conv2d_transpose(value=tran_conv_5,
+                                                 filter=self.variable_dict['W_6'],
+                                                 output_shape=[self.config.BATCH_SIZE,
+                                                               self.config.TRAN_CONV_LAYER_6_WIDTH,
+                                                               self.config.TRAN_CONV_LAYER_6_HEIGHT,
+                                                               self.config.OUT_CHANNEL],
+                                                 strides=[1, self.config.CONV_6_STRIDE, self.config.CONV_6_STRIDE, 1],
+                                                 padding='SAME')
+
+            tran_conv_6 = tf.nn.bias_add(tran_conv_6, self.variable_dict['B_6'])
+
+            tran_conv_6 = ops.batch_norm(x=tran_conv_6,
+                                         beta=self.variable_dict['BETA_6'],
+                                         gamma=self.variable_dict['GAMMA_6'],
+                                         phase_train=self.is_training,
+                                         scope='BATCH_NORM_6')
+            tran_conv_6 = tf.nn.tanh(tran_conv_6, name='TANH_6')
+
+            return tran_conv_6
 
     def create_training_method(self):
         optimizer = tf.train.AdamOptimizer(learning_rate=self.config.G_LEARNING_RATE)

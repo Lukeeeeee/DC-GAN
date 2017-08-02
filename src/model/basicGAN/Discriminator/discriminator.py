@@ -150,8 +150,14 @@ class Discriminator(Model):
             self.is_training = tf.placeholder(tf.bool)
 
         self.var_list = []
+        self.var_summary_list = []
         for key, value in self.variable_dict.iteritems():
             self.var_list.append(value)
+            with tf.name_scope('D_weight_summary'):
+                summary = tf.summary.tensor_summary(value.op.name, value)
+                histogram = tf.summary.histogram(value.op.name, value)
+                self.var_summary_list.append(summary)
+                self.var_summary_list.append(histogram)
 
         self.generator = generator
 
@@ -167,8 +173,10 @@ class Discriminator(Model):
         self.accuracy, self.fake_accuracy, self.real_accuracy, self.loss, self.generator_loss, self.optimizer, \
         self.gradients, self.minimize_loss = self.create_training_method()
 
-        self.accuracy_scalar_summary, self.accuracy_histogram_summary = ops.variable_summaries(self.accuracy)
-        self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss)
+        self.accuracy_scalar_summary, self.accuracy_histogram_summary = ops.variable_summaries(self.accuracy,
+                                                                                               name='D_acc_summary')
+        self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss,
+                                                                                       name='D_loss_summary')
         # ops.variable_summaries(self.gradients)
 
     def create_model(self, input):
@@ -273,9 +281,11 @@ class Discriminator(Model):
             optimize_loss = optimizer.minimize(loss=loss, var_list=self.var_list)
 
             self.fake_accuracy_scalar_summary, self.fake_accuracy_histogram_summary = ops.variable_summaries(
-                fake_accuracy)
+                fake_accuracy,
+                name='D_acc_summary')
             self.real_accuracy_scalar_summary, self.real_accuracy_histogram_summary = ops.variable_summaries(
-                real_accuracy)
+                real_accuracy,
+                name='D_acc_summary')
 
         return accuracy, fake_accuracy, real_accuracy, loss, generator_loss, optimizer, gradients, optimize_loss
 
