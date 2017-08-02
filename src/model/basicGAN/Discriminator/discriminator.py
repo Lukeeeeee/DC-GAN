@@ -173,6 +173,12 @@ class Discriminator(Model):
         self.accuracy, self.fake_accuracy, self.real_accuracy, self.loss, self.generator_loss, self.optimizer, \
         self.gradients, self.minimize_loss = self.create_training_method()
 
+        # with tf.name_scope('D_gradients'):
+        #     summary = tf.summary.tensor_summary(self.gradients.name, self.gradients)
+        #     histogram = tf.summary.histogram(self.gradients.name, self.gradients)
+        #     self.var_summary_list.append(summary)
+        #     self.var_summary_list.append(histogram)
+
         self.accuracy_scalar_summary, self.accuracy_histogram_summary = ops.variable_summaries(self.accuracy,
                                                                                                name='D_acc_summary')
         self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss,

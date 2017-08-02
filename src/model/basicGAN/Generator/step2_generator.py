@@ -152,6 +152,12 @@ class Step2Generator(Model):
         with tf.variable_scope(self.name):
 
             self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
+
+            # with tf.name_scope('G_gradients'):
+            #     summary = tf.summary.tensor_summary(self.gradients.name, self.gradients)
+            #     histogram = tf.summary.histogram(self.gradients.name, self.gradients)
+            #     self.var_summary_list.append(summary)
+            #     self.var_summary_list.append(histogram)
             self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss,
                                                                                            name='G_loss_summary')
 
@@ -263,7 +269,9 @@ class Step2Generator(Model):
 
     def create_training_method(self):
         optimizer = tf.train.AdamOptimizer(learning_rate=self.config.G_LEARNING_RATE)
+
         gradients = optimizer.compute_gradients(loss=self.loss, var_list=self.var_list)
+
         optimize_loss = optimizer.minimize(loss=self.loss, var_list=self.var_list)
 
         return optimizer, gradients, optimize_loss

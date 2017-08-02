@@ -77,11 +77,13 @@ class BasicGAN(Model):
                 count = count + 1
                 image_batch, z_batch = self.data.return_batch_data(batch_size=self.config.BATCH_SIZE,
                                                                    index=j)
+                z_batch_2 = self.data.return_z_batch_data(batch_size=self.config.BATCH_SIZE,
+                                                          index=self.config.BATCH_COUNT - j - 1)
                 D_acc, D_loss, D_real_acc, D_fake_acc = self.update_discriminator(image_batch=image_batch,
                                                                                   z_batch=z_batch)
 
                 G_loss_1 = self.update_generator(z_batch=z_batch)
-                G_loss_2 = self.update_generator(z_batch=z_batch)
+                G_loss_2 = self.update_generator(z_batch=z_batch_2)
 
                 self.run_summary(image_batch=image_batch, z_batch=z_batch, count=count)
 

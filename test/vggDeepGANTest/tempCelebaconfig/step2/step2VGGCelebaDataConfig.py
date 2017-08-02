@@ -14,8 +14,8 @@ class Step2VGGCelebaDataConfig(Config):
     Z_WIDTH = 56
     Z_CHANNEL = 256
 
-    SAMPLE_COUNT = 2000
-    NPY_FILE_COUNT = 20
+    SAMPLE_COUNT = 200
+    NPY_FILE_COUNT = 2
 
     Z_SOURCE = 'import/conv3_3/Relu'
 
