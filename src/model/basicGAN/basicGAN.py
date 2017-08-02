@@ -12,6 +12,8 @@ from src.model.basicGAN.Generator.generatorConfig import GeneratorConfig as Gcon
 from src.model.basicGAN.Generator.step2_generator import Step2Generator
 # from src.model.basicGAN.ganConfig import GANConfig as ganConfig
 from src.model.model import Model
+import numpy as np
+from PIL import Image
 
 
 class BasicGAN(Model):
@@ -105,6 +107,23 @@ class BasicGAN(Model):
             })
             if (i + 1) % self.config.SAVE_MODEL_EVERY_EPOCH == 0:
                 self.save_model(model_path=self.model_dir, epoch=i + 1)
+            if (i + 1) % self.config.TEST_EVERY_EPOCH == 0:
+                image, z = self.data.return_batch_data(20, 0)
+                res = self.eval_tensor(tensor=self.G.output, image_batch=image, z_batch=z)
+                for i in range(5):
+                    data = np.multiply(np.add(res, 1.0), 127.5)
+                    data = np.reshape(data[i:i + 1, ],
+                                      newshape=[224, 224, 3],
+                                      ).astype((np.uint8))
+                    im = Image.fromarray(data, mode='RGB')
+                    im.show()
+                for i in range(5):
+                    # data = np.multiply(np.add(image, 1.0), 127.5)
+                    data = np.reshape(image[i:i + 1, ],
+                                      newshape=[224, 224, 3],
+                                      ).astype((np.uint8))
+                    im = Image.fromarray(data, mode='RGB')
+                    im.show()
 
         with open(self.log_dir + 'loss.json', 'w') as f:
             json.dump(self.loss_log_list, f, indent=4)

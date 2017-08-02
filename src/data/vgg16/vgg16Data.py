@@ -11,13 +11,18 @@ class VGG16Data(Data):
         super(VGG16Data, self).__init__(data_path=data_path, config=config)
         if load_image is True:
             self.image_set = self.load_data()
-            pass
+        else:
+            self.image_set = None
         self.model_file = model_file
 
     def load_data(self):
         image_data = None
         for i in range(self.config.SAMPLE_COUNT):
-            data = misc.imread(name=self.data_path + 'new_cat.' + str(i) + '.jpg')
+            # data = misc.imread(name=self.data_path + 'new_cat.' + str(i) + '.jpg')
+            d = '{0:06}'.format(i + 1)
+            print(i)
+            data = misc.imread(name=self.data_path + d + '.jpg')
+
             data = np.reshape(np.array(data),
                               newshape=[1, self.config.DATA_WIDTH,
                                         self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
@@ -97,3 +102,19 @@ class VGG16Data(Data):
             self.graph = tf.get_default_graph()
             self.sess.run(tf.global_variables_initializer())
 
+
+if __name__ == '__main__':
+    from dataset import DATASET_PATH
+
+    data_path = '/home/mars/ANN/celeba/reshape_224_224/'
+    model_file = DATASET_PATH + '/vgg16.tfmodel'
+    from test.vggDeepGANTest.tempCelebaconfig.step2.step2VGGCelebaDataConfig import Step2VGGCelebaDataConfig
+
+    a = VGG16Data(data_path=data_path, model_file=model_file, config=Step2VGGCelebaDataConfig())
+    # a.init_with_model(model_file=model_file)
+    for i in range(100):
+        print(i)
+        data = a.return_image_batch_data(batch_size=100, index=i)
+        # res = a.eval_tensor_by_name(tensor_name=a.config.Z_SOURCE, image_batch=data)
+        # res = np.reshape(res, newshape=[-1, 56, 56, 256])
+        np.save(file=DATASET_PATH + '/celeba/224_224_3/step1_imagebatch_' + str(i) + '.npy', arr=data)

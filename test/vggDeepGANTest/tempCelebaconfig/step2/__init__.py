@@ -1,0 +1,4 @@
+from step2VGGDCelebaDiscriminatorConfig import Step2VGGCelebaDiscriminatorConfig
+from step2VGGCelebaGANConfig import Step2VGGCelbaeGANConfig
+from step2VGGCelebaGeneratorConfig import Step2VGGCelebaGeneratorConfig
+from step2VGGCelebaDataConfig import Step2VGGCelebaDataConfig

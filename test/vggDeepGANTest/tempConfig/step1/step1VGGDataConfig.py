@@ -1,25 +1,26 @@
 from src.config import Config
 
 
-class Step2VGGDataConfig(Config):
-    IMAGE_HEIGHT = 218
-    IMAGE_WIDTH = 178
-    IMAGE_CHANNEL = 3
+class Step1VGGDataConfig(Config):
+    IMAGE_HEIGHT = 56
+    IMAGE_WIDTH = 56
+    IMAGE_CHANNEL = 256
 
-    DATA_HEIGHT = 218
-    DATA_WIDTH = 178
+    DATA_HEIGHT = 224
+    DATA_WIDTH = 224
     DATA_CHANNEL = 3
 
-    Z_HEIGHT = 56
-    Z_WIDTH = 56
-    Z_CHANNEL = 256
+    Z_HEIGHT = 1
+    Z_WIDTH = 1
+    Z_CHANNEL = 100
 
-    SAMPLE_COUNT = 202599
+    SAMPLE_COUNT = 1000
+
     NPY_FILE_COUNT = 100
 
-    Z_SOURCE = 'import/conv3_3/Relu'
+    IMAGE_SOURCE = 'import/conv3_3/Relu'
 
-    PREFIX = 'STEP2_VGG_DATA_'
+    PREFIX = 'STEP1_VGG_DATA_'
 
     @staticmethod
     def save_to_json(config):
@@ -30,6 +31,6 @@ class Step2VGGDataConfig(Config):
             config.PREFIX + 'Z_HEIGHT': config.Z_HEIGHT,
             config.PREFIX + 'Z_WIDTH': config.Z_WIDTH,
             config.PREFIX + 'Z_CHANNEL': config.Z_CHANNEL,
-            config.PREFIX + 'Z_SOURCE': config.Z_SOURCE,
+            config.PREFIX + 'IMAGE_SOURCE': config.IMAGE_SOURCE,
             config.PREFIX + 'SAMPLE_COUNT': config.SAMPLE_COUNT
         }

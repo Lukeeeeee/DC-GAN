@@ -2,19 +2,19 @@ from src.config import Config
 
 
 class Step2VGGDataConfig(Config):
-    IMAGE_HEIGHT = 218
-    IMAGE_WIDTH = 178
+    IMAGE_HEIGHT = 224
+    IMAGE_WIDTH = 224
     IMAGE_CHANNEL = 3
 
-    DATA_HEIGHT = 218
-    DATA_WIDTH = 178
+    DATA_HEIGHT = 224
+    DATA_WIDTH = 224
     DATA_CHANNEL = 3
 
     Z_HEIGHT = 56
     Z_WIDTH = 56
     Z_CHANNEL = 256
 
-    SAMPLE_COUNT = 202599
+    SAMPLE_COUNT = 1000
     NPY_FILE_COUNT = 100
 
     Z_SOURCE = 'import/conv3_3/Relu'

@@ -108,3 +108,4 @@ demo/mnist
 *.tfmodel
 *.npy
 dataset/deepGANcat
+dataset/celeba
