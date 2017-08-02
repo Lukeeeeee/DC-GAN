@@ -16,7 +16,7 @@ class Step2VGGCelebaDiscriminatorConfig(Config):
 
     CONV_LAYER_2_OUT_CHANNEL = 12
 
-    CONV_LAYER_3_OUT_CHANNEL = 12
+    CONV_LAYER_3_OUT_CHANNEL = 24
 
     CONV_STRIDE = 2
 
@@ -34,6 +34,8 @@ class Step2VGGCelebaDiscriminatorConfig(Config):
     OUTPUT_SIZE = 2
 
     PREFIX = 'Step2VGGCelebaDiscriminator_'
+
+    DEVICE = '/gpu:0'
 
     @staticmethod
     def save_to_json(conf):

@@ -16,6 +16,8 @@ class Step2VGGCelbaeGANConfig(Config):
 
     PREFIX = 'Step2VGGCelebaGAN_'
 
+    DEVICE = '/gpu:0'
+
     @staticmethod
     def save_to_json(config):
         return {
