@@ -5,12 +5,14 @@ class Step3GANConfig(Config):
     TRAINING_EPOCH = 10
     BATCH_SIZE = 200
     # SAMPLE_COUNT = 5000 0
-    SAMPLE_COUNT = 60000  # 0 1
+    SAMPLE_COUNT = 1000  # 0 1
     BATCH_COUNT = int(SAMPLE_COUNT / BATCH_SIZE)
     # BATCH_COUNT = 1
     NAME = 'Step3_GAN'
 
     SAVE_MODEL_EVERY_EPOCH = 5
+
+    TEST_EVERY_EPOCH = 1
 
     PREFIX = 'Step3GAN_'
 

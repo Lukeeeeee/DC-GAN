@@ -116,23 +116,23 @@ class BasicGAN(Model):
             })
             if (i + 1) % self.config.SAVE_MODEL_EVERY_EPOCH == 0:
                 self.save_model(model_path=self.model_dir, epoch=i + 1)
-            if (i + 1) % self.config.TEST_EVERY_EPOCH == 0:
-                image, z = self.data.return_batch_data(50, 0)
-                res = self.eval_tensor(tensor=self.G.output, image_batch=image, z_batch=z)
-                for i in range(5):
-                    data = np.multiply(np.add(res, 1.0), 127.5)
-                    data = np.reshape(data[i:i + 1, ],
-                                      newshape=[224, 224, 3],
-                                      ).astype((np.uint8))
-                    im = Image.fromarray(data, mode='RGB')
-                    im.show()
-                for i in range(5):
-                    # data = np.multiply(np.add(image, 1.0), 127.5)
-                    data = np.reshape(image[i:i + 1, ],
-                                      newshape=[224, 224, 3],
-                                      ).astype((np.uint8))
-                    im = Image.fromarray(data, mode='RGB')
-                    im.show()
+                # if (i + 1) % self.config.TEST_EVERY_EPOCH == 0:
+                #     image, z = self.data.return_batch_data(self.config.BATCH_SIZE, 0)
+                #     res = self.eval_tensor(tensor=self.G.output, image_batch=image, z_batch=z)
+                #     for i in range(5):
+                #         data = np.multiply(np.add(res, 1.0), 127.5)
+                #         data = np.reshape(data[i:i + 1, ],
+                #                           newshape=[28, 28, 1],
+                #                           ).astype((np.uint8))
+                #         im = Image.fromarray(data)
+                #         im.show()
+                #     for i in range(5):
+                #         # data = np.multiply(np.add(image, 1.0), 127.5)
+                #         data = np.reshape(image[i:i + 1, ],
+                #                           newshape=[224, 224, 3],
+                #                           ).astype((np.uint8))
+                #         im = Image.fromarray(data, mode='RGB')
+                #         im.show()
 
         with open(self.log_dir + 'loss.json', 'w') as f:
             json.dump(self.loss_log_list, f, indent=4)
@@ -141,10 +141,10 @@ class BasicGAN(Model):
         pass
 
     def update_generator(self, z_batch):
-        loss, _ = self.sess.run(fetches=[self.G.loss, self.G.optimize_loss],
-                                feed_dict={self.G.input: z_batch,
-                                           self.G.is_training: True,
-                                           self.D.is_training: True})
+        loss, _, out = self.sess.run(fetches=[self.G.loss, self.G.optimize_loss, self.G.output],
+                                     feed_dict={self.G.input: z_batch,
+                                                self.G.is_training: True,
+                                                self.D.is_training: True})
         return loss
 
     def update_discriminator(self, image_batch, z_batch):

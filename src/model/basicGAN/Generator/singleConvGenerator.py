@@ -8,6 +8,8 @@ class SingleConvGenerator(Model):
     def __init__(self, sess, data, config):
         super(SingleConvGenerator, self).__init__(sess=sess, data=data, config=config)
         self.name = 'Generator'
+        self.var_list = []
+        self.var_summary_list = []
         self.variable_dict = {
             'W_1': tf.Variable(tf.truncated_normal(shape=[self.config.FILTER_SIZE,
                                                           self.config.FILTER_SIZE,
@@ -35,8 +37,10 @@ class SingleConvGenerator(Model):
 
             self.is_training = tf.placeholder(tf.bool)
         self.output = self.create_model()
-        self.var_list = []
-        self.var_summary_list = []
+        pic_summary = tf.summary.image(name='Genrator_Step3_Output',
+                                       tensor=self.output,
+                                       max_outputs=1000)
+        self.var_summary_list.append(pic_summary)
         for key, value in self.variable_dict.iteritems():
             self.var_list.append(value)
             with tf.name_scope('G_weight_summary'):
