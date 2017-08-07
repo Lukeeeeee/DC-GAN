@@ -2,20 +2,75 @@ import tensorflow as tf
 
 from dataset import DATASET_PATH
 from demo import DEMO_PATH
-from src.data.deepGAN.step1Data import Step1Data
-from src.data.deepGAN.step1DataConfig import Step1DataConfig
-from src.data.deepGAN.step2Data import Step2Data
-from src.data.deepGAN.step2DataConfig import Step2DataConfig
+from src.data.deepGAN import *
 from src.data.mnistCNN import *
 from src.model.deepGAN.deepGAN import DeepGAN
 from src.model.mnistCNN import *
 from test.mnistDeepGANTest.tempConfig.step1 import *
 from test.mnistDeepGANTest.tempConfig.step2 import *
+from test.mnistDeepGANTest.tempConfig.step3 import *
 
 
-def train(step1_gan, step2_gan):
-    step1_gan.train()
-    step2_gan.train()
+def return_step1_gan(mnist_cnn):
+    data_sess = tf.InteractiveSession()
+    config = Step1DataConfig()
+    step1_data = Step1Data(data_path=DATASET_PATH + '/mnist',
+                           config=config,
+                           sess=data_sess,
+                           mnist_cnn=mnist_cnn)
+
+    step1_sess = tf.InteractiveSession()
+    gan_config = Step1GANConfig()
+    d_config = Step1DiscriminatorConfig()
+    g_config = Step1GeneratorConfig()
+    step1_gan = DeepGAN(config=gan_config,
+                        sess=step1_sess,
+                        data=step1_data,
+                        g_config=g_config,
+                        d_config=d_config)
+    return step1_gan
+
+
+def return_step2_gan(mnist_cnn):
+    data_sess = tf.InteractiveSession()
+    config = Step2DataConfig()
+    step2_data = Step2Data(data_path=DATASET_PATH + '/mnist',
+                           config=config,
+                           sess=data_sess,
+                           mnist_cnn=mnist_cnn)
+
+    step2_sess = tf.InteractiveSession()
+    gan_config = Step2GANConfig()
+    d_config = Step2DiscriminatorConfig()
+    g_config = Step2GeneratorConfig()
+    step2_gan = DeepGAN(config=gan_config,
+                        sess=step2_sess,
+                        data=step2_data,
+                        g_config=g_config,
+                        d_config=d_config)
+    return step2_gan
+
+
+def retutn_step3_gan(mnist_cnn):
+    data_sess = tf.InteractiveSession()
+    config = Step3DataConfig()
+    step2_data = Step3Data(data_path=DATASET_PATH + '/mnist',
+                           config=config,
+                           sess=data_sess,
+                           mnist_cnn=mnist_cnn)
+
+    step2_sess = tf.InteractiveSession()
+    gan_config = Step3GANConfig()
+    d_config = Step3DiscriminatorConfig()
+    g_config = Step3GeneratorConfig()
+    step2_gan = DeepGAN(config=gan_config,
+                        sess=step2_sess,
+                        data=step2_data,
+                        g_config=g_config,
+                        d_config=d_config,
+                        step2_flag=False,
+                        single_flag=True)
+    return step2_gan
 
 
 def test(step1_gan, step2_gan):
@@ -42,43 +97,5 @@ if __name__ == '__main__':
     config = MnistCNNConfig()
     mnist_cnn = MnistCNN(config=config, sess=mnist_cnn_sess, data=data)
     mnist_cnn.load_model(model_path=DEMO_PATH + '/mnist/7-18-18-34-45/model/', epoch=3)
-
-    # Init first GAN
-    data_sess = tf.InteractiveSession()
-    config = Step1DataConfig()
-    step1_data = Step1Data(data_path=DATASET_PATH + '/mnist',
-                           config=config,
-                           sess=data_sess,
-                           mnist_cnn=mnist_cnn)
-
-    step1_sess = tf.InteractiveSession()
-    gan_config = Step1GANConfig()
-    d_config = Step1DiscriminatorConfig()
-    g_config = Step1GeneratorConfig()
-    step1_gan = DeepGAN(config=gan_config,
-                        sess=step1_sess,
-                        data=step1_data,
-                        g_config=g_config,
-                        d_config=d_config)
-
-    # Init second GAN
-
-    config = Step2DataConfig()
-    step2_data = Step2Data(data_path=DATASET_PATH + '/mnist',
-                           config=config,
-                           sess=data_sess,
-                           mnist_cnn=mnist_cnn)
-
-    step2_sess = tf.InteractiveSession()
-    gan_config = Step2GANConfig()
-    d_config = Step2DiscriminatorConfig()
-    g_config = Step2GeneratorConfig()
-    step2_gan = DeepGAN(config=gan_config,
-                        sess=step2_sess,
-                        data=step2_data,
-                        g_config=g_config,
-                        d_config=d_config)
-
-    # Train or Test
-    # test(step1_gan, step2_gan)
-    train(step1_gan, step2_gan)
+    step3 = retutn_step3_gan(mnist_cnn)
+    step3.train()

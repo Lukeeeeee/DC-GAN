@@ -3,7 +3,7 @@ import math
 from src.config import Config
 
 
-class DiscriminatorConfig(Config):
+class Step3DiscriminatorConfig(Config):
     IN_HEIGHT = 28
     IN_WIDTH = 28
     IN_CHANNEL = 1
@@ -12,13 +12,13 @@ class DiscriminatorConfig(Config):
 
     CONV_LAYER_COUNT = 3
 
-    CONV_LAYER_1_OUT_CHANNEL = 3
+    CONV_LAYER_1_OUT_CHANNEL = 4
 
-    CONV_LAYER_2_OUT_CHANNEL = 3
+    CONV_LAYER_2_OUT_CHANNEL = 16
 
-    CONV_LAYER_3_OUT_CHANNEL = 6
+    CONV_LAYER_3_OUT_CHANNEL = 32
 
-    CONV_STRIDE = 2
+    CONV_STRIDE = 1
 
     FILTER_SIZE = 4
 
@@ -33,7 +33,7 @@ class DiscriminatorConfig(Config):
 
     OUTPUT_SIZE = 2
 
-    PREFIX = 'DISCRIMINATOR_'
+    PREFIX = 'Step3Discriminator_'
 
     # D_VARIABLE_DICT = {
     #     "W_1": tf.Variable(tf.truncated_normal([FILTER_SIZE, FILTER_SIZE, IN_CHANNEL, CONV_LAYER_1_OUT_CHANNEL],
@@ -85,5 +85,5 @@ class DiscriminatorConfig(Config):
 
 
 if __name__ == '__main__':
-    a = DiscriminatorConfig()
+    a = Step3DiscriminatorConfig()
     a.log_config('1.json')

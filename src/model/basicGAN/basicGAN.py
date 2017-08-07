@@ -9,15 +9,15 @@ from src.model.basicGAN.Discriminator.discriminator import Discriminator
 from src.model.basicGAN.Discriminator.discriminatorConfig import DiscriminatorConfig as Dconfig
 from src.model.basicGAN.Generator.generator import Generator
 from src.model.basicGAN.Generator.generatorConfig import GeneratorConfig as Gconfig
-from src.model.basicGAN.Generator.step2_generator import Step2Generator
-# from src.model.basicGAN.ganConfig import GANConfig as ganConfig
+from src.model.basicGAN.Generator.step2Generator import Step2Generator
+from src.model.basicGAN.Generator.singleConvGenerator import SingleConvGenerator
 from src.model.model import Model
 import numpy as np
 from PIL import Image
 
 
 class BasicGAN(Model):
-    def __init__(self, sess, data, config, g_config=None, d_config=None, step2_flag=False):
+    def __init__(self, sess, data, config, g_config=None, d_config=None, step2_flag=False, single_flag=False):
         super(BasicGAN, self).__init__(sess=sess, data=data, config=config)
 
         ti = datetime.datetime.now()
@@ -44,6 +44,8 @@ class BasicGAN(Model):
             d_config = Dconfig()
         if step2_flag is True:
             self.G = Step2Generator(sess=sess, data=None, config=g_config)
+        elif single_flag is True:
+            self.G = SingleConvGenerator(sess=sess, data=None, config=g_config)
         else:
             self.G = Generator(sess=sess, data=None, config=g_config)
         self.D = Discriminator(sess=sess, data=None, generator=self.G, config=d_config)
@@ -59,11 +61,8 @@ class BasicGAN(Model):
         #                                         self.D.real_accuracy_scalar_summary,
         #                                         self.D.fake_accuracy_scalar_summary])
         self.summary_writer = tf.summary.FileWriter(self.log_dir + '/train', self.sess.graph)
-        try:
-            with tf.device('/gpu:0'):
-                self.sess.run(tf.global_variables_initializer())
-        except BaseException:
-            self.sess.run(tf.global_variables_initializer())
+
+        self.sess.run(tf.global_variables_initializer())
 
     def train(self):
         count = 0
