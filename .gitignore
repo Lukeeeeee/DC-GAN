@@ -103,8 +103,6 @@ log/*-*
 log/mnist
 # src/data/cat/
 # src/model/vgg/
-demo/*-*
-demo/mnist
 *.tfmodel
 *.npy
 dataset/deepGANcat
