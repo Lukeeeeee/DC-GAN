@@ -6,9 +6,9 @@ class Step3DataConfig(Config):
     IMAGE_WIDTH = 28
     IMAGE_CHANNEL = 1
 
-    Z_HEIGHT = 14
-    Z_WIDTH = 14
-    Z_CHANNEL = 4
+    Z_HEIGHT = 7
+    Z_WIDTH = 7
+    Z_CHANNEL = 16
 
     PREFIX = 'STEP3DATA_'
 

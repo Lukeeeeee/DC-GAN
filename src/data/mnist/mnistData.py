@@ -24,6 +24,7 @@ class MnistData(Data):
                 image_data = data
             else:
                 image_data = np.concatenate((image_data, data))
+        np.random.shuffle(image_data)
         return image_data
 
     def return_z_batch_data(self, batch_size, index=0):

@@ -8,9 +8,17 @@ def conv_out_size_same(size, stride):
 
 
 class Step3GeneratorConfig(Config):
-    IN_HEIGHT = 14
-    IN_WIDTH = 14
-    IN_CHANNEL = 4
+    IN_HEIGHT = 7
+    IN_WIDTH = 7
+    IN_CHANNEL = 16
+
+    LAYER_1_OUT_WIDTH = 14
+    LAYER_1_OUT_HEIGHT = 14
+    LAYER_1_OUT_CHANNEL = 64
+
+    # LAYER_2_OUT_WIDTH = 28
+    # LAYER_2_OUT_HEIGHT = 28
+    # LAYER_2_OUT_CHANNEL = 128
 
     OUT_HEIGHT = 28
     OUT_WIDTH = 28
@@ -18,15 +26,16 @@ class Step3GeneratorConfig(Config):
 
     FILTER_SIZE = 4
 
-    CONV_STRIDE = 2
+    CONV_1_STRIDE = 2
+    CONV_2_STRIDE = 2
 
     G_LEARNING_RATE = 0.003
 
-    BATCH_SIZE = 200
+    BATCH_SIZE = 100
 
     VARIABLE_RANDOM_STANDARD_DEVIATION = 0.02
 
-    BATCH_NORM_MEAN = 1.0
+    BATCH_NORM_MEAN = 0.0
 
     BATCH_STANDARD_DEVIATION = 0.02
 
@@ -51,11 +60,10 @@ class Step3GeneratorConfig(Config):
             conf.PREFIX + 'BATCH_NORM_MEAN': conf.BATCH_NORM_MEAN,
 
             conf.PREFIX + 'FILTER_SIZE': conf.FILTER_SIZE,
-            conf.PREFIX + 'CONV_STRIDE': conf.CONV_STRIDE,
 
         }
 
 
 if __name__ == '__main__':
     a = Step3GeneratorConfig()
-    a.log_config('1.json')
+    # a.log_config('1.json')

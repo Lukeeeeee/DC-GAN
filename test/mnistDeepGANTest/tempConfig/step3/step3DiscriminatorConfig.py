@@ -8,23 +8,23 @@ class Step3DiscriminatorConfig(Config):
     IN_WIDTH = 28
     IN_CHANNEL = 1
 
-    LEARNING_RATE = 0.001
+    LEARNING_RATE = 0.01
 
     CONV_LAYER_COUNT = 3
 
-    CONV_LAYER_1_OUT_CHANNEL = 4
+    CONV_LAYER_1_OUT_CHANNEL = 6
 
-    CONV_LAYER_2_OUT_CHANNEL = 16
+    CONV_LAYER_2_OUT_CHANNEL = 12
 
-    CONV_LAYER_3_OUT_CHANNEL = 32
+    CONV_LAYER_3_OUT_CHANNEL = 24
 
-    CONV_STRIDE = 1
+    CONV_STRIDE = 2
 
-    FILTER_SIZE = 4
+    FILTER_SIZE = 2
 
     VARIABLE_RANDOM_STANDARD_DEVIATION = 0.02
 
-    BATCH_NORM_MEAN = 1.0
+    BATCH_NORM_MEAN = 0.0
 
     BATCH_STANDARD_DEVIATION = 0.02
 
@@ -34,33 +34,6 @@ class Step3DiscriminatorConfig(Config):
     OUTPUT_SIZE = 2
 
     PREFIX = 'Step3Discriminator_'
-
-    # D_VARIABLE_DICT = {
-    #     "W_1": tf.Variable(tf.truncated_normal([FILTER_SIZE, FILTER_SIZE, IN_CHANNEL, CONV_LAYER_1_OUT_CHANNEL],
-    #                                            stddev=VARIABLE_RANDOM_STANDARD_DEVIATION), name='W_1'),
-    #     "B_1": tf.Variable(tf.constant(0.0, shape=[CONV_LAYER_1_OUT_CHANNEL]), name='B_1'),
-    #     'BETA_1': tf.Variable(tf.constant(0.0, shape=[CONV_LAYER_1_OUT_CHANNEL]), name='BETA_1'),
-    #     'GAMMA_1': tf.Variable(tf.random_normal(shape=[CONV_LAYER_1_OUT_CHANNEL], mean=BATCH_NORM_MEAN,
-    #                                             stddev=BATCH_STANDARD_DEVIATION), name='GAMMA_1'),
-    #
-    #     "W_2": tf.Variable(tf.truncated_normal([FILTER_SIZE, FILTER_SIZE, CONV_LAYER_1_OUT_CHANNEL,
-    #                     CONV_LAYER_2_OUT_CHANNEL], stddev=VARIABLE_RANDOM_STANDARD_DEVIATION), name='W_2'),
-    #     "B_2": tf.Variable(tf.constant(0.0, shape=[CONV_LAYER_2_OUT_CHANNEL]), name='B_2'),
-    #     'BETA_2': tf.Variable(tf.constant(0.0, shape=[CONV_LAYER_2_OUT_CHANNEL]), name='BETA_2'),
-    #     'GAMMA_2': tf.Variable(tf.random_normal(shape=[CONV_LAYER_2_OUT_CHANNEL], mean=BATCH_NORM_MEAN,
-    #                                             stddev=BATCH_STANDARD_DEVIATION), name='GAMMA_2'),
-    #
-    #     "W_3": tf.Variable(tf.truncated_normal([FILTER_SIZE, FILTER_SIZE, CONV_LAYER_2_OUT_CHANNEL,
-    #                     CONV_LAYER_3_OUT_CHANNEL], stddev=VARIABLE_RANDOM_STANDARD_DEVIATION), name='W_3'),
-    #     "B_3": tf.Variable(tf.constant(0.0, shape=[CONV_LAYER_3_OUT_CHANNEL]), name='B_3'),
-    #     'BETA_3': tf.Variable(tf.constant(0.0, shape=[CONV_LAYER_3_OUT_CHANNEL]), name='BETA_3'),
-    #     'GAMMA_3': tf.Variable(tf.random_normal(shape=[CONV_LAYER_3_OUT_CHANNEL], mean=BATCH_NORM_MEAN,
-    #                                             stddev=BATCH_STANDARD_DEVIATION), name='GAMMA_3'),
-    #
-    #     "W_4": tf.Variable(tf.truncated_normal([CONV_OUT_HEIGHT * CONV_OUT_WIDTH * CONV_LAYER_3_OUT_CHANNEL, 1],
-    #                                            stddev=VARIABLE_RANDOM_STANDARD_DEVIATION), name='W_4'),
-    #     "B_4": tf.Variable(tf.constant(0.0, shape=[1]), name='b_4')
-    # }
 
     @staticmethod
     def save_to_json(conf):

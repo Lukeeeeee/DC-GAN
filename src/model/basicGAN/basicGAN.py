@@ -42,13 +42,15 @@ class BasicGAN(Model):
             g_config = Gconfig()
         if d_config is None:
             d_config = Dconfig()
-        if step2_flag is True:
-            self.G = Step2Generator(sess=sess, data=None, config=g_config)
-        elif single_flag is True:
-            self.G = SingleConvGenerator(sess=sess, data=None, config=g_config)
-        else:
-            self.G = Generator(sess=sess, data=None, config=g_config)
-        self.D = Discriminator(sess=sess, data=None, generator=self.G, config=d_config)
+        with tf.name_scope('Generator'):
+            if step2_flag is True:
+                self.G = Step2Generator(sess=sess, data=None, config=g_config)
+            elif single_flag is True:
+                self.G = SingleConvGenerator(sess=sess, data=None, config=g_config)
+            else:
+                self.G = Generator(sess=sess, data=None, config=g_config)
+        with tf.name_scope('Discriminator'):
+            self.D = Discriminator(sess=sess, data=None, generator=self.G, config=d_config)
         self.G.loss = self.D.generator_loss
         self.model_saver = tf.train.Saver()
 
@@ -76,15 +78,10 @@ class BasicGAN(Model):
                 count = count + 1
                 image_batch, z_batch = self.data.return_batch_data(batch_size=self.config.BATCH_SIZE,
                                                                    index=j)
-                z_batch_2 = self.data.return_z_batch_data(batch_size=self.config.BATCH_SIZE,
-                                                          index=self.config.BATCH_COUNT - j - 1)
                 D_acc, D_loss, D_real_acc, D_fake_acc = self.update_discriminator(image_batch=image_batch,
                                                                                   z_batch=z_batch)
-
                 G_loss_1 = self.update_generator(z_batch=z_batch)
-                G_loss_2 = self.update_generator(z_batch=z_batch_2)
-
-                self.run_summary(image_batch=image_batch, z_batch=z_batch, count=count)
+                G_loss_2 = self.update_generator(z_batch=z_batch)
 
                 G_loss = (G_loss_1 + G_loss_2) / 2.0
 
@@ -102,10 +99,10 @@ class BasicGAN(Model):
                 # print(self.eval_tensor(tensor=self.D.fake_D, image_batch=image_batch, z_batch=z_batch))
 
                 print(
-                "Epoch %5d, Iter %5d: D acc %.3lf aver acc %.3lf Fake acc %.3lf, Real acc %.3lf, loss %.3lf aver loss %.3lf, G loss %.3lf, "
-                "aver loss %.3lf" % (
-                i, j, D_acc, D_aver_acc, D_aver_fake_acc, D_aver_real_acc, D_loss, D_aver_loss, G_loss, G_aver_loss))
-                # self.run_summary(image_batch, z_batch, count)
+                    "Epoch %5d, Iter %5d: D acc %.3lf aver acc %.3lf Fake acc %.3lf, Real acc %.3lf, "
+                    "loss %.3lf aver loss %.3lf, G loss %.3lf, ""aver loss %.3lf" % (
+                        i, j, D_acc, D_aver_acc, D_aver_fake_acc, D_aver_real_acc, D_loss, D_aver_loss, G_loss, G_aver_loss))
+
             self.loss_log_list.append({
                 'D_accuracy': D_aver_acc,
                 'D_real_accuracy': D_aver_fake_acc,
@@ -114,6 +111,15 @@ class BasicGAN(Model):
                 'G_loss': G_aver_loss,
                 'Epoch': i
             })
+
+            image_batch, z_batch = self.data.return_batch_data(batch_size=self.config.BATCH_SIZE,
+                                                               index=0)
+            self.run_summary(image_batch=image_batch, z_batch=z_batch, count=i)
+            print("Print D real res")
+            print(self.eval_tensor(tensor=self.D.real_D, image_batch=image_batch, z_batch=z_batch))
+            print("Print D fake res")
+            print(self.eval_tensor(tensor=self.D.fake_D, image_batch=image_batch, z_batch=z_batch))
+
             if (i + 1) % self.config.SAVE_MODEL_EVERY_EPOCH == 0:
                 self.save_model(model_path=self.model_dir, epoch=i + 1)
                 # if (i + 1) % self.config.TEST_EVERY_EPOCH == 0:
@@ -144,7 +150,7 @@ class BasicGAN(Model):
         loss, _, out = self.sess.run(fetches=[self.G.loss, self.G.optimize_loss, self.G.output],
                                      feed_dict={self.G.input: z_batch,
                                                 self.G.is_training: True,
-                                                self.D.is_training: True})
+                                                self.D.is_training: False})
         return loss
 
     def update_discriminator(self, image_batch, z_batch):
@@ -155,7 +161,7 @@ class BasicGAN(Model):
                                                                   self.D.minimize_loss],
                                                          feed_dict={self.D.input: image_batch,
                                                                     self.G.input: z_batch,
-                                                                    self.G.is_training: True,
+                                                                    self.G.is_training: False,
                                                                     self.D.is_training: True})
         return acc, loss, real_acc, fake_acc
 
@@ -166,6 +172,7 @@ class BasicGAN(Model):
                                            self.G.is_training: False,
                                            self.D.is_training: False})
         self.summary_writer.add_summary(summary, count)
+        self.summary_writer.flush()
 
     def eval_tensor(self, tensor, image_batch, z_batch):
         res = self.sess.run(tensor, feed_dict={self.D.input: image_batch,

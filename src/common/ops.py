@@ -11,8 +11,6 @@ class ops(object):
     def batch_norm(x, beta, gamma, phase_train, scope='bn', decay=0.9, eps=1e-5):
         # TODO CHANGE BATCH NORM
         with tf.variable_scope(tf.get_variable_scope(), reuse=None):
-            # beta = tf.get_variable(name='beta', shape=[n_out], initializer=tf.constant_initializer(0.0), trainable=True)
-            # gamma = tf.get_variable(name='gamma', shape=[n_out], initializer=tf.random_normal_initializer(1.0, stddev), trainable=True)
             batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2], name='moments')
             ema = tf.train.ExponentialMovingAverage(decay=decay)
 
@@ -36,17 +34,16 @@ class ops(object):
     @staticmethod
     def variable_summaries(var, name='Summmary'):
         """Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
-        with tf.name_scope(name):
-            try:
-                scalar = tf.summary.scalar(var.name, var)
-            except BaseException:
-                scalar = tf.summary.tensor_summary(var.name, var)
+        try:
+            scalar = tf.summary.scalar(var.name, var)
+        except BaseException:
+            scalar = tf.summary.tensor_summary(var.name, var)
 
-            # tf.summary.scalar('mean', mean)
-            # tf.summary.scalar('max', tf.reduce_max(var))
-            # tf.summary.scalar('min', tf.reduce_min(var))
-            histogram = tf.summary.histogram(var.name, var)
-            return scalar, histogram
+        # tf.summary.scalar('mean', mean)
+        # tf.summary.scalar('max', tf.reduce_max(var))
+        # tf.summary.scalar('min', tf.reduce_min(var))
+        histogram = tf.summary.histogram(var.name, var)
+        return scalar, histogram
 
 
 # try:

@@ -1,5 +1,5 @@
 import tensorflow as tf
-
+import numpy as np
 from dataset import DATASET_PATH
 from demo import DEMO_PATH
 from src.data.deepGAN import *
@@ -59,18 +59,18 @@ def retutn_step3_gan(mnist_cnn):
                            sess=data_sess,
                            mnist_cnn=mnist_cnn)
 
-    step2_sess = tf.InteractiveSession()
+    step3_sess = tf.InteractiveSession()
     gan_config = Step3GANConfig()
     d_config = Step3DiscriminatorConfig()
     g_config = Step3GeneratorConfig()
-    step2_gan = DeepGAN(config=gan_config,
-                        sess=step2_sess,
+    step3_gan = DeepGAN(config=gan_config,
+                        sess=step3_sess,
                         data=step2_data,
                         g_config=g_config,
                         d_config=d_config,
                         step2_flag=False,
                         single_flag=True)
-    return step2_gan
+    return step3_gan
 
 
 def test(step1_gan, step2_gan):
@@ -88,6 +88,19 @@ def test(step1_gan, step2_gan):
         step1_gan.data.show_pic(data=res[i * 10])
 
 
+# def generate_step3_numpy_data(mnist_cnn):
+#     data_sess = tf.InteractiveSession()
+#     config = Step3DataConfig()
+#     step3_data = Step3Data(data_path=DATASET_PATH + '/mnist',
+#                            config=config,
+#                            sess=data_sess,
+#                            mnist_cnn=mnist_cnn)
+#     for i in range(10):
+#         data = step3_data.return_z_batch_data(batch_size=6000, index=i)
+#         np.save(file=DATASET_PATH + '/mnist/mnist_7_7_16/' + str(i) + '.npy', arr=data)
+#         pass
+
+
 if __name__ == '__main__':
     mnist_cnn_sess = tf.InteractiveSession()
 
@@ -96,6 +109,6 @@ if __name__ == '__main__':
 
     config = MnistCNNConfig()
     mnist_cnn = MnistCNN(config=config, sess=mnist_cnn_sess, data=data)
-    mnist_cnn.load_model(model_path=DEMO_PATH + '/mnist/7-18-18-34-45/model/', epoch=3)
+    mnist_cnn.load_model(model_path=DEMO_PATH + '/mnist/8-7-22-23-30/model/', epoch=10)
     step3 = retutn_step3_gan(mnist_cnn)
     step3.train()

@@ -15,7 +15,7 @@ class Step3Data(MnistData):
     def return_z_batch_data(self, batch_size, index=None):
         # data = super(Step2Data, self).return_z_batch_data(batch_size)
         image = self.return_image_batch_data(batch_size=batch_size, index=index)
-        data = self.mnist_cnn.eval_tensor(tensor=self.mnist_cnn.conv1,
+        data = self.mnist_cnn.eval_tensor(tensor=self.mnist_cnn.conv2,
                                           image_batch=image,
                                           keep_prob=0.5)
         data = np.reshape(data,

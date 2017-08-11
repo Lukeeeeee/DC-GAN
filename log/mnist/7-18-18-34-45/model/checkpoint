@@ -1,5 +1,0 @@
-model_checkpoint_path: "/Users/Luke/Documents/QAQGAN/log/mnist/7-18-18-34-45/model/model.ckpt-3"
-all_model_checkpoint_paths: "/Users/Luke/Documents/QAQGAN/log/mnist/7-18-18-34-45/model/model.ckpt-0"
-all_model_checkpoint_paths: "/Users/Luke/Documents/QAQGAN/log/mnist/7-18-18-34-45/model/model.ckpt-1"
-all_model_checkpoint_paths: "/Users/Luke/Documents/QAQGAN/log/mnist/7-18-18-34-45/model/model.ckpt-2"
-all_model_checkpoint_paths: "/Users/Luke/Documents/QAQGAN/log/mnist/7-18-18-34-45/model/model.ckpt-3"

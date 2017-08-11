@@ -204,5 +204,5 @@ if __name__ == '__main__':
     data = MnistCNNData(data_path=DATASET_PATH + '/mnist/', config=config)
     config = MnistCNNConfig()
     model = MnistCNN(config=config, sess=sess, data=data)
-    model.load_model(model_path=LOG_PATH + '/mnist/7-18-18-34-45/model/', epoch=3)
-    model.test()
+    # model.load_model(model_path=LOG_PATH + '/mnist/7-18-18-34-45/model/', epoch=3)
+    model.train()
