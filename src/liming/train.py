@@ -6,19 +6,19 @@ from PIL import Image
 from glob import glob
 from model import *
 from pre_data import *
+from log import LOG_PATH
 
 Image_h = 28
 Image_w = 28
-Image_ch = 3
-Noise_h = 14
-Noise_w = 14
-Noise_ch = 4
-Sample_num = 30000
-Epoch_num = 400
-Batch_size = 64
+Image_ch = 1
+Noise_h = 7
+Noise_w = 7
+Noise_ch = 16
+Epoch_num = 500
+Batch_size = 200
 G_learnrate = 1e-3
 D_learnrate = 1e-3
-tensorboad_dir = 'logs6'
+tensorboad_dir = LOG_PATH + '/liming/'
 # Data_dir = 'faces'
 Data_dir = 'CelebA/images'
 Data_pattern = '*.jpg'
@@ -71,9 +71,7 @@ def __main__():
     # loss_train_D = -(d_real + d_fake)
     # loss_train_G = (1 / 2) * (d_fake - 1) ** 2
     # loss_train_D = (1 / 2) * (d_real - 1) ** 2 + (1 / 2) * (d_fake) ** 2
-    # 训练生成器的优化器，对应判别器为不可训练
     g_optimizer = optimizer(loss_train_G, G_learnrate, G_vars, name='opt_train_G')
-    # 训练判别器的优化器
     d_optimizer = optimizer(loss_train_D, D_learnrate, D_vars, name='opt_train_D')
 
     # noise_sample = np.random.uniform(-1,1,[Batch_size,100]).astype('float32')
@@ -84,18 +82,18 @@ def __main__():
         summary_writer = tf.summary.FileWriter(tensorboad_dir, sess.graph)
         # =============================
         sess.run(tf.global_variables_initializer())
-        image_list = get_datalist(Data_dir, Data_pattern)[:Sample_num]
-        image_len = int(len(image_list))
+        image_data, z_data = get_datalist()
+        image_len = 10000
         batch_num = int(image_len / Batch_size)
         count = 0
         for e in range(Epoch_num):
 
             for idx in range(batch_num):
+
                 # prepare data
                 # TODO z data
-                z = np.random.normal(0, 1, [Batch_size, 100]).astype('float32')
-                img_batch_list = image_list[idx * Batch_size:(idx + 1) * Batch_size]
-                img_batch = get_image(img_batch_list, Batch_size, Image_h, Image_w)
+                img_batch = image_data[idx * Batch_size: (idx + 1) * Batch_size, ]
+                z = z_data[idx * Batch_size: (idx + 1) * Batch_size, ]
 
                 _, d_loss = sess.run([d_optimizer, loss_train_D],
                                      feed_dict={
@@ -115,16 +113,14 @@ def __main__():
                       (e + 1, idx, g_loss, d_loss))
 
                 if idx % 10 == 0:
-                    count = count + 1
-                    noise_sample = np.random.normal(0, 1, [Batch_size, 100]).astype('float32')
-
+                    noise_sample = z_data[0 * Batch_size: 1 * Batch_size, ]
                     sumarry_all = sess.run(merged_summary_op, feed_dict={
                         noise_sample_input: noise_sample,
                         noise_input: z,
                         image_input: img_batch,
-
                     })
                     summary_writer.add_summary(sumarry_all, count)
+                    count = count + 1
 
 
 # =================================================================

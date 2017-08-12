@@ -20,7 +20,7 @@ class Step3DiscriminatorConfig(Config):
 
     CONV_STRIDE = 2
 
-    FILTER_SIZE = 2
+    FILTER_SIZE = 5
 
     VARIABLE_RANDOM_STANDARD_DEVIATION = 0.02
 

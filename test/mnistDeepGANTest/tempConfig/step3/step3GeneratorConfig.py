@@ -24,7 +24,7 @@ class Step3GeneratorConfig(Config):
     OUT_WIDTH = 28
     OUT_CHANNEL = 1
 
-    FILTER_SIZE = 4
+    FILTER_SIZE = 5
 
     CONV_1_STRIDE = 2
     CONV_2_STRIDE = 2

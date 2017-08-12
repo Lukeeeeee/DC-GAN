@@ -13,7 +13,7 @@ def get_size(size, stride):
 
 def generate(z, h, w, is_training, reuse, batch_size=64):
     with tf.variable_scope('generator') as scope:
-        h1, w1 = get_size(h, 1), get_size(w, 1)
+        h1, w1 = get_size(h, 2), get_size(w, 2)
         # h2, w2 = get_size(h1, 1), get_size(w1, 1)
         # h3, w3 = get_size(h2, 1), get_size(w2, 1)
         # h4, w4 = get_size(h3, 2), get_size(w3, 2)
@@ -33,23 +33,23 @@ def generate(z, h, w, is_training, reuse, batch_size=64):
         # decon2 = lay.batch_norm_official(decon2, is_training=is_training, reuse=reuse, name='g_bn2')
         # decon2 = tf.nn.relu(decon2)
 
-        decon3 = lay.deconv_2d_layer(z, 'g_decon3', [5, 5, 32, 4], [batch_size, h1, w1, 32],
+        decon3 = lay.deconv_2d_layer(z, 'g_decon3', [5, 5, 128, 16], [batch_size, h1, w1, 128],
                                      strides=[1, 2, 2, 1])
         decon3 = lay.batch_norm_official(decon3, is_training=is_training, reuse=reuse, name='g_bn3')
         decon3 = tf.nn.relu(decon3)
 
-        decon4 = lay.deconv_2d_layer(decon3, 'g_decon4', [5, 5, 1, 32], [batch_size, h, w, 1],
-                                     strides=[1, 1, 1, 1])
+        decon4 = lay.deconv_2d_layer(decon3, 'g_decon4', [5, 5, 1, 128], [batch_size, h, w, 1],
+                                     strides=[1, 2, 2, 1])
         return tf.nn.tanh(decon4)
 
 
 def decrim(x, is_training, reuse, batch_size=64):
     with tf.variable_scope('decriminator') as scope:
-        conv0 = lay.conv_2d_layer(x, 'd_conv0', [5, 5, 1, 16], strides=[1, 2, 2, 1])
+        conv0 = lay.conv_2d_layer(x, 'd_conv0', [5, 5, 1, 4], strides=[1, 2, 2, 1])
         conv0 = lay.batch_norm_official(conv0, is_training=is_training, reuse=reuse, name='d_bn0')
         conv0 = lay.leaky_relu(conv0)
 
-        conv1 = lay.conv_2d_layer(conv0, 'd_conv1', [5, 5, 16, 32], strides=[1, 2, 2, 1])
+        conv1 = lay.conv_2d_layer(conv0, 'd_conv1', [5, 5, 4, 16], strides=[1, 2, 2, 1])
         conv1 = lay.batch_norm_official(conv1, is_training=is_training, reuse=reuse, name='d_bn1')
         conv1 = lay.leaky_relu(conv1)
 
@@ -61,7 +61,7 @@ def decrim(x, is_training, reuse, batch_size=64):
         # conv3 = lay.batch_norm_official(conv3, is_training=is_training, reuse=reuse, name='d_bn3')
         # conv3 = lay.leaky_relu(conv3)
 
-        conv4_flatten = tf.reshape(conv1, [-1, 32 * 7 * 7])
+        conv4_flatten = tf.reshape(conv1, [-1, 16 * 7 * 7])
 
         fc4 = lay.fully_connect_layer(conv4_flatten, 'd_fc4', 1)
 

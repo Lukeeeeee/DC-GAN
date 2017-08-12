@@ -51,13 +51,11 @@ def return_step2_gan(mnist_cnn):
     return step2_gan
 
 
-def retutn_step3_gan(mnist_cnn):
+def retutn_step3_gan():
     data_sess = tf.InteractiveSession()
     config = Step3DataConfig()
-    step2_data = Step3Data(data_path=DATASET_PATH + '/mnist',
-                           config=config,
-                           sess=data_sess,
-                           mnist_cnn=mnist_cnn)
+    step3_data = Step3Data(data_path=DATASET_PATH + '/mnist',
+                           config=config)
 
     step3_sess = tf.InteractiveSession()
     gan_config = Step3GANConfig()
@@ -65,7 +63,7 @@ def retutn_step3_gan(mnist_cnn):
     g_config = Step3GeneratorConfig()
     step3_gan = DeepGAN(config=gan_config,
                         sess=step3_sess,
-                        data=step2_data,
+                        data=step3_data,
                         g_config=g_config,
                         d_config=d_config,
                         step2_flag=False,
@@ -102,13 +100,5 @@ def test(step1_gan, step2_gan):
 
 
 if __name__ == '__main__':
-    mnist_cnn_sess = tf.InteractiveSession()
-
-    config = MnistCNNDataConfig()
-    data = MnistCNNData(data_path=DATASET_PATH + '/mnist/', config=config)
-
-    config = MnistCNNConfig()
-    mnist_cnn = MnistCNN(config=config, sess=mnist_cnn_sess, data=data)
-    mnist_cnn.load_model(model_path=DEMO_PATH + '/mnist/8-7-22-23-30/model/', epoch=10)
-    step3 = retutn_step3_gan(mnist_cnn)
+    step3 = retutn_step3_gan()
     step3.train()

@@ -5,7 +5,7 @@ class Step3GANConfig(Config):
     TRAINING_EPOCH = 100
     BATCH_SIZE = 100
     # SAMPLE_COUNT = 5000 0
-    SAMPLE_COUNT = 10000  # 0 1
+    SAMPLE_COUNT = 5000  # 0 1
     BATCH_COUNT = int(SAMPLE_COUNT / BATCH_SIZE)
     # BATCH_COUNT = 1
     NAME = 'Step3_GAN'
