@@ -1,3 +1,6 @@
+import tensorflow as tf
+
+
 class Model(object):
     def __init__(self, sess, config, data=None):
         self.sess = sess
@@ -34,3 +37,10 @@ class Model(object):
 
     def log_config(self):
         pass
+
+    @staticmethod
+    def transfer_to_pic(tensor):
+        one = tf.ones_like(tensor=tensor)
+        new_tensor = tf.add(tensor, one)
+        new_tensor = tf.scalar_mul(scalar=127.5, x=new_tensor)
+        return new_tensor

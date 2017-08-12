@@ -86,6 +86,10 @@ class Generator(Model):
                                        name='GAMMA_4')
 
             }
+
+        self.optimizer = None
+        self.gradients = None
+        self.optimize_loss = None
         with tf.variable_scope(self.name):
             self.input = tf.placeholder(dtype=tf.float32,
                                         shape=[None, self.config.IN_WIDTH, self.config.IN_HEIGHT,
@@ -95,10 +99,7 @@ class Generator(Model):
 
             self.is_training = tf.placeholder(tf.bool)
         self.output = self.create_model()
-        self.var_list = []
-        for key, value in self.variable_dict.iteritems():
-            self.var_list.append(value)
-            # self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
+        self._var_list = []
 
     @property
     def loss(self):
@@ -109,7 +110,16 @@ class Generator(Model):
         self._loss = new_loss
         self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
         # ops.variable_summaries(self.gradients)
-        self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss)
+        ops.variable_summaries(self.loss)
+
+    @property
+    def var_list(self):
+        return self._var_list
+
+    @var_list.setter
+    def var_list(self, new_list):
+        self._var_list = new_list
+        self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
 
     def create_model(self):
         with tf.variable_scope('Generator', reuse=False), tf.device('/gpu:1'):

@@ -8,8 +8,6 @@ class SingleConvGenerator(Model):
     def __init__(self, sess, data, config):
         super(SingleConvGenerator, self).__init__(sess=sess, data=data, config=config)
         self.name = 'Generator'
-        self.var_list = []
-        self.var_summary_list = []
         self.variable_dict = {
             'W_1': tf.Variable(tf.truncated_normal(shape=[self.config.FILTER_SIZE,
                                                           self.config.FILTER_SIZE,
@@ -48,7 +46,15 @@ class SingleConvGenerator(Model):
                                     shape=[None, self.config.IN_WIDTH, self.config.IN_HEIGHT,
                                            self.config.IN_CHANNEL],
                                     name='G_INPUT')
+        self.input_list = tf.unstack(value=self.input, axis=3, name='UNSTACK_INPUT')
+
+        self._var_list = []
+        self.var_summary_list = []
+
         self._loss = None
+        self.optimizer = None
+        self.optimize_loss = None
+        self.gradients = None
 
         self.is_training = tf.placeholder(tf.bool)
         self.output = self.create_model()
@@ -57,11 +63,7 @@ class SingleConvGenerator(Model):
             pic_summary = tf.summary.image(name='Genrator_Step3_Output',
                                            tensor=self.output_after_transfer,
                                            max_outputs=50)
-        # with tf.name_scope('GeneratorInput'):
-        #     input_summary = tf.summary.image(name='Generator_Step3_Input',
-        #                                      tensor=self.input,
-        #                                      max_outputs=50)
-        # self.var_summary_list.append(input_summary)
+
         self.var_summary_list.append(pic_summary)
         for key, value in self.variable_dict.iteritems():
             self.var_list.append(value)
@@ -80,7 +82,7 @@ class SingleConvGenerator(Model):
         self._loss = new_loss
         self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
         # ops.variable_summaries(self.gradients)
-        self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss)
+        ops.variable_summaries(self.loss)
         with tf.name_scope('G_gradients'):
             for node in self.gradients:
                 try:
@@ -90,6 +92,15 @@ class SingleConvGenerator(Model):
                     self.var_summary_list.append(histogram)
                 except BaseException:
                     print("wrong")
+
+    @property
+    def var_list(self):
+        return self._var_list
+
+    @var_list.setter
+    def var_list(self, new_list):
+        self._var_list = new_list
+        # self.optimizer, self.gradients, self.optimize_loss = self.create_training_method()
 
     def create_model(self):
         tran_conv_1 = tf.nn.conv2d_transpose(value=self.input,
@@ -135,10 +146,3 @@ class SingleConvGenerator(Model):
         optimize_loss = optimizer.minimize(loss=self.loss, var_list=self.var_list)
 
         return optimizer, gradients, optimize_loss
-
-    @staticmethod
-    def transfer_to_pic(tensor):
-        one = tf.ones_like(tensor=tensor)
-        new_tensor = tf.add(tensor, one)
-        new_tensor = tf.scalar_mul(scalar=127.5, x=new_tensor)
-        return new_tensor

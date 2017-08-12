@@ -9,7 +9,6 @@ class Discriminator(Model):
     def __init__(self, sess, data, generator, config):
         super(Discriminator, self).__init__(sess=sess, data=data, config=config)
         self.name = 'Discriminator'
-        self.var_list = []
         self.var_summary_list = []
         self.variable_dict = {
             "W_1": tf.Variable(tf.truncated_normal([self.config.FILTER_SIZE, self.config.FILTER_SIZE,
@@ -79,29 +78,31 @@ class Discriminator(Model):
                                            self.config.IN_HEIGHT, self.config.IN_CHANNEL],
                                     name='D_INPUT')
         self.is_training = tf.placeholder(tf.bool)
+        self.input_transfer_to_pic = self.transfer_to_pic(tensor=self.input)
         with tf.name_scope('OriginalPic'):
             pic_summary = tf.summary.image(name='OriginalPic',
-                                           tensor=self.input,
+                                           tensor=self.input_transfer_to_pic,
                                            max_outputs=50)
         self.var_summary_list.append(pic_summary)
 
         for key, value in self.variable_dict.iteritems():
-            self.var_list.append(value)
             with tf.name_scope('D_weight_summary'):
                 summary = tf.summary.tensor_summary(value.op.name, value)
                 histogram = tf.summary.histogram(value.op.name, value)
                 self.var_summary_list.append(summary)
                 self.var_summary_list.append(histogram)
 
+        self._var_list = []
+
         self.generator = generator
 
         self.real_D, self.real_D_logits = self.create_model(input=self.input)
 
-        self.real_D_predication = tf.argmax(self.real_D, axis=1)
+        self.real_D_predication = tf.round(self.real_D)
 
         self.fake_D, self.fake_D_logits = self.create_model(input=self.generator.output)
 
-        self.fake_D_predication = tf.argmax(self.fake_D, axis=1)
+        self.fake_D_predication = tf.round(self.fake_D)
 
         self.accuracy, self.fake_accuracy, self.real_accuracy, self.loss, self.generator_loss, self.optimizer, \
             self.gradients, self.minimize_loss = self.create_training_method()
@@ -120,6 +121,17 @@ class Discriminator(Model):
         self.loss_scalar_summary, self.loss_histogram_summary = ops.variable_summaries(self.loss,
                                                                                        name='D_loss_summary')
         # ops.variable_summaries(self.gradients)
+
+    @property
+    def var_list(self):
+        return self._var_list
+
+    @var_list.setter
+    def var_list(self, new_list):
+        self._var_list = new_list
+        self.gradients = self.optimizer.compute_gradients(loss=self.loss, var_list=self.var_list)
+
+        self.minimize_loss = self.optimizer.minimize(loss=self.loss, var_list=self.var_list)
 
     def create_model(self, input):
 
@@ -176,24 +188,24 @@ class Discriminator(Model):
 
         final = tf.add(tf.matmul(final, self.variable_dict['W_4']), self.variable_dict['B_4'])
 
-        return tf.nn.softmax(final), final
+        return tf.nn.sigmoid(final), final
 
     def create_training_method(self):
 
-        ones_label = tf.one_hot(tf.ones_like(self.real_D_predication), depth=2)
-        zeros_label = tf.one_hot(tf.zeros_like(self.fake_D_predication), depth=2)
+        ones_label = tf.ones_like(self.real_D_predication)
+        zeros_label = tf.zeros_like(self.fake_D_predication)
 
-        real_loss = tf.nn.softmax_cross_entropy_with_logits(labels=ones_label,
+        real_loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=ones_label,
                                                             logits=self.real_D_logits,
                                                             name='REAL_LOSS')
 
-        fake_loss = tf.nn.softmax_cross_entropy_with_logits(labels=zeros_label,
+        fake_loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=zeros_label,
                                                             logits=self.fake_D_logits,
                                                             name='FAKE_LOSS')
 
-        g_ones_label = tf.one_hot(tf.ones_like(self.fake_D_predication), depth=2)
+        g_ones_label = tf.ones_like(self.fake_D_predication)
 
-        generator_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=g_ones_label,
+        generator_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=g_ones_label,
                                                                                 logits=self.fake_D_logits),
                                         name='G_LOSS')
 
@@ -207,20 +219,19 @@ class Discriminator(Model):
                                                           y=self.fake_D_predication),
                                                dtype=tf.float32),
                                        name='FAKE_ACCURACY')
-        accuracy = tf.div(tf.add(fake_accuracy, real_accuracy), tf.constant(2.0), name='ACCURACY')
+        accuracy = tf.reduce_mean(fake_accuracy + real_accuracy, name='ACCURACY')
 
         optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.config.LEARNING_RATE)
 
-        gradients = optimizer.compute_gradients(loss=loss, var_list=self.var_list)
+        if len(self.var_list) > 0:
+            gradients = optimizer.compute_gradients(loss=loss, var_list=self.var_list)
+            optimize_loss = optimizer.minimize(loss=loss, var_list=self.var_list)
+        else:
+            gradients = []
+            optimize_loss = None
 
-        optimize_loss = optimizer.minimize(loss=loss, var_list=self.var_list)
-
-        self.fake_accuracy_scalar_summary, self.fake_accuracy_histogram_summary = ops.variable_summaries(
-            fake_accuracy,
-            name='D_acc_summary')
-        self.real_accuracy_scalar_summary, self.real_accuracy_histogram_summary = ops.variable_summaries(
-            real_accuracy,
-            name='D_acc_summary')
+        ops.variable_summaries(fake_accuracy, name='D_acc_summary')
+        ops.variable_summaries(real_accuracy, name='D_acc_summary')
 
         return accuracy, fake_accuracy, real_accuracy, loss, generator_loss, optimizer, gradients, optimize_loss
 

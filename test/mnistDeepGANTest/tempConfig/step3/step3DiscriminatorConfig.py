@@ -31,7 +31,7 @@ class Step3DiscriminatorConfig(Config):
     CONV_OUT_HEIGHT = int(math.ceil(float(IN_HEIGHT) / float(math.pow(CONV_STRIDE, CONV_LAYER_COUNT))))
     CONV_OUT_WIDTH = int(math.ceil(float(IN_WIDTH) / float(math.pow(CONV_STRIDE, CONV_LAYER_COUNT))))
 
-    OUTPUT_SIZE = 2
+    OUTPUT_SIZE = 1
 
     PREFIX = 'Step3Discriminator_'
 

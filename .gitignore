@@ -101,6 +101,8 @@ dataset/mnist
 dataset/cat
 log/*-*
 log/mnist
+log/liming
+log/liming_end2end
 # src/data/cat/
 # src/model/vgg/
 *.tfmodel

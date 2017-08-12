@@ -49,9 +49,20 @@ class BasicGAN(Model):
                 self.G = SingleConvGenerator(sess=sess, data=None, config=g_config)
             else:
                 self.G = Generator(sess=sess, data=None, config=g_config)
+        G_vars = tf.trainable_variables()
         with tf.name_scope('Discriminator'):
             self.D = Discriminator(sess=sess, data=None, generator=self.G, config=d_config)
+
+        D_vars = []
+        for item in tf.trainable_variables():
+            if item not in G_vars:
+                D_vars.append(item)
+
+        self.D.var_list = D_vars
         self.G.loss = self.D.generator_loss
+        self.G.var_list = G_vars
+        self.G.config.BATCH_SIZE = self.config.BATCH_SIZE
+
         self.model_saver = tf.train.Saver()
 
         self.loss_log_list = []
