@@ -103,6 +103,9 @@ log/*-*
 log/mnist
 log/liming
 log/liming_end2end
+log/liming_step1
+log/liming_step2
+
 # src/data/cat/
 # src/model/vgg/
 *.tfmodel
