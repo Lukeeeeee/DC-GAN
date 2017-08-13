@@ -38,6 +38,7 @@ def return_step2_gan(mnist_cnn):
                            config=config,
                            sess=data_sess,
                            mnist_cnn=mnist_cnn)
+    step2_data.return_batch_data(batch_size=100, index=0)
 
     step2_sess = tf.InteractiveSession()
     gan_config = Step2GANConfig()
@@ -100,5 +101,12 @@ def test(step1_gan, step2_gan):
 
 
 if __name__ == '__main__':
-    step3 = retutn_step3_gan()
-    step3.train()
+    mnist_cnn_sess = tf.InteractiveSession()
+
+    config = MnistCNNDataConfig()
+    data = MnistCNNData(data_path=DATASET_PATH + '/mnist/', config=config)
+
+    config = MnistCNNConfig()
+    mnist_cnn = MnistCNN(config=config, sess=mnist_cnn_sess, data=data)
+    mnist_cnn.load_model(model_path=DEMO_PATH + '/mnist/8-7-22-23-30/model/', epoch=10)
+    step3 = return_step2_gan(mnist_cnn)

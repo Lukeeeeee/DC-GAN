@@ -141,7 +141,7 @@ class SingleConvGenerator(Model):
         return tran_conv_2
 
     def create_training_method(self):
-        optimizer = tf.train.AdamOptimizer(learning_rate=self.config.G_LEARNING_RATE)
+        optimizer = tf.train.AdamOptimizer(learning_rate=self.config.LEARNING_RATE, beta1=0.5)
         gradients = optimizer.compute_gradients(loss=self.loss, var_list=self.var_list)
         optimize_loss = optimizer.minimize(loss=self.loss, var_list=self.var_list)
 

@@ -221,7 +221,7 @@ class Discriminator(Model):
                                        name='FAKE_ACCURACY')
         accuracy = tf.reduce_mean(fake_accuracy + real_accuracy, name='ACCURACY')
 
-        optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.config.LEARNING_RATE)
+        optimizer = tf.train.AdamOptimizer(learning_rate=self.config.LEARNING_RATE, beta1=0.5)
 
         if len(self.var_list) > 0:
             gradients = optimizer.compute_gradients(loss=loss, var_list=self.var_list)

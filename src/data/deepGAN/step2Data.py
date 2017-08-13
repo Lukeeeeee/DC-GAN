@@ -24,7 +24,7 @@ class Step2Data(MnistData):
 
     def return_image_batch_data(self, batch_size, index):
         image = super(Step2Data, self).return_image_batch_data(batch_size, index)
-        data = self.mnist_cnn.eval_tensor(tensor=self.mnist_cnn.conv2,
+        data = self.mnist_cnn.eval_tensor(tensor=self.mnist_cnn.conv1,
                                           image_batch=image,
                                           keep_prob=0.5,
                                           )

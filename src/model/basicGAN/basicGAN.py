@@ -92,7 +92,8 @@ class BasicGAN(Model):
                 D_acc, D_loss, D_real_acc, D_fake_acc = self.update_discriminator(image_batch=image_batch,
                                                                                   z_batch=z_batch)
                 G_loss_1 = self.update_generator(z_batch=z_batch)
-                G_loss_2 = self.update_generator(z_batch=z_batch)
+                # G_loss_2 = self.update_generator(z_batch=z_batch)
+                G_loss_2 = G_loss_1
 
                 G_loss = (G_loss_1 + G_loss_2) / 2.0
 

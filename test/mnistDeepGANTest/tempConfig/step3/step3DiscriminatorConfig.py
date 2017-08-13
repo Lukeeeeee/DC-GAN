@@ -8,7 +8,7 @@ class Step3DiscriminatorConfig(Config):
     IN_WIDTH = 28
     IN_CHANNEL = 1
 
-    LEARNING_RATE = 0.01
+    LEARNING_RATE = 0.001
 
     CONV_LAYER_COUNT = 3
 

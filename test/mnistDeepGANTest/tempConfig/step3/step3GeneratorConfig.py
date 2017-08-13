@@ -29,7 +29,7 @@ class Step3GeneratorConfig(Config):
     CONV_1_STRIDE = 2
     CONV_2_STRIDE = 2
 
-    G_LEARNING_RATE = 0.003
+    G_LEARNING_RATE = 0.001
 
     BATCH_SIZE = 100
 
