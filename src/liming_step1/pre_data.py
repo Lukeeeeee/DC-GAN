@@ -22,8 +22,8 @@ def get_datalist():
 
     data_path = DATASET_PATH + '/mnist/'
     z_data = None
-    for i in range(10000):
-        data = np.random.uniform(0, 1, [1, 1, 1, 100])
+    for i in range(200):
+        data = np.random.normal(0, 1, [1, 1, 1, 100])
         if i == 0:
             z_data = data
         else:

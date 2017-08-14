@@ -105,6 +105,7 @@ log/liming
 log/liming_end2end
 log/liming_step1
 log/liming_step2
+log/liming_test/
 
 # src/data/cat/
 # src/model/vgg/
