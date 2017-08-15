@@ -27,6 +27,7 @@ Noise_w = 7
 Noise_ch = 16
 Epoch_num = 500
 Batch_size = 200
+Sapmle_count = 60000
 G_learnrate = 1e-3
 D_learnrate = 1e-3
 ti = datetime.datetime.now()
@@ -38,7 +39,6 @@ if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 if not os.path.exists(tensorboad_dir):
     os.makedirs(tensorboad_dir)
-
 
 
 def optimizer(loss, learning_rate, vlist=None, name=None):
@@ -91,7 +91,7 @@ def __main__():
     g_optimizer = optimizer(loss_train_G, G_learnrate, G_vars, name='opt_train_G')
     d_optimizer = optimizer(loss_train_D, D_learnrate, D_vars, name='opt_train_D')
 
-    saver = tf.train.Saver()
+    saver = tf.train.Saver(max_to_keep=50)
 
     # noise_sample = np.random.uniform(-1,1,[Batch_size,100]).astype('float32')
     # ==============================Start training=============================
@@ -102,7 +102,7 @@ def __main__():
         # =============================
         sess.run(tf.global_variables_initializer())
         image_data, z_data = get_datalist()
-        image_len = 10000
+        image_len = Sapmle_count
         batch_num = int(image_len / Batch_size)
         count = 0
         for e in range(Epoch_num):
@@ -121,13 +121,20 @@ def __main__():
 
                                      })
 
-                _, g_loss = sess.run([g_optimizer, loss_train_G],
-                                     feed_dict={
-                                         noise_input: z,
-                                         image_input: img_batch,
+                _, g_loss_1 = sess.run([g_optimizer, loss_train_G],
+                                       feed_dict={
+                                           noise_input: z,
+                                           image_input: img_batch,
 
-                                     })
+                                       })
 
+                _, g_loss_2 = sess.run([g_optimizer, loss_train_G],
+                                       feed_dict={
+                                           noise_input: z,
+                                           image_input: img_batch,
+
+                                       })
+                g_loss = g_loss_1 + g_loss_2
                 print("epoch: %d batch: %d  gloss:%.4f dloss:%.4f" %
                       (e + 1, idx, g_loss, d_loss))
 
@@ -140,10 +147,10 @@ def __main__():
                     })
                     summary_writer.add_summary(sumarry_all, count)
                     count = count + 1
-                if e % 4 == 0:
-                    saver.save(sess=sess,
-                               save_path=model_dir,
-                               global_step=e)
+            if e % 4 == 0:
+                saver.save(sess=sess,
+                           save_path=model_dir + '/model.ckpt',
+                           global_step=e, )
 # =================================================================
 if __name__ == "__main__":
     __main__()

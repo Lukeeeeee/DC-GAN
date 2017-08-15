@@ -1,13 +1,11 @@
 '''
 api of layers
 '''
-import os
 import numpy as np
-from glob import glob
 from PIL import Image
 from dataset import DATASET_PATH
-import scipy.io as sio
-import numpy as np
+from src.liming_step1.train import Noise_w, Noise_h, Noise_ch, Sample_num
+
 
 def get_datalist():
     # mage_list = glob(os.path.join(data_dir, data_pattern))
@@ -22,8 +20,8 @@ def get_datalist():
 
     data_path = DATASET_PATH + '/mnist/'
     z_data = None
-    for i in range(200):
-        data = np.random.normal(0, 1, [1, 1, 1, 100])
+    for i in range(Sample_num):
+        data = np.random.normal(0, 1, [1, Noise_h, Noise_w, Noise_ch])
         if i == 0:
             z_data = data
         else:

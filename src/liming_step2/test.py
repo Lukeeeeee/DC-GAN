@@ -30,10 +30,10 @@ Batch_size = 200
 G_learnrate = 1e-3
 D_learnrate = 1e-3
 ti = datetime.datetime.now()
-log_dir = LOG_PATH + '/liming_test/8-14-17-9-54'
+log_dir = LOG_PATH + '/liming_test/8-15-21-18-16'
 tensorboad_dir = log_dir
-model_dir = LOG_PATH + '/liming_step2/8-13-20-14-34/model'
-model_epoch = 392
+model_dir = LOG_PATH + '/liming_step2/8-15-16-41-7/model'
+model_epoch = 200
 
 
 def optimizer(loss, learning_rate, vlist=None, name=None):

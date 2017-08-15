@@ -1,20 +1,8 @@
 # dcgan by liming @17.7.10
 import os
 import sys
-
-CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-PROJECT_PATH = CURRENT_PATH + '/../../'
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
-
-sys.path.append(CURRENT_PATH)
-sys.path.append(PROJECT_PATH)
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+import json
 import tensorflow as tf
-import numpy as np
-from PIL import Image
-from glob import glob
-from model import *
-from pre_data import *
 from log import LOG_PATH
 import datetime
 
@@ -23,21 +11,52 @@ Image_w = 7
 Image_ch = 16
 Noise_h = 1
 Noise_w = 1
-Noise_ch = 100
-Epoch_num = 5
+Noise_ch = 30
+Epoch_num = 500
 Batch_size = 200
-Sample_num = 10000
+Sample_num = 60000
 G_learnrate = 1e-3
 D_learnrate = 1e-3
+
 ti = datetime.datetime.now()
 log_dir = (LOG_PATH + '/liming_step1/' + str(ti.month) + '-' + str(ti.day) + '-' + str(ti.hour) + '-' + str(ti.minute)
            + '-' + str(ti.second) + '/')
 tensorboad_dir = log_dir
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+PROJECT_PATH = CURRENT_PATH + '/../../'
+sys.path.append(CURRENT_PATH)
+sys.path.append(PROJECT_PATH)
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+
+from model import decrim, generate
+from model import save_log as model_save_log
+from pre_data import get_datalist, restruct_image
+
 model_dir = log_dir + '/model/'
-if not os.path.exists(log_dir):
-    os.makedirs(log_dir)
-if not os.path.exists(model_dir):
-    os.makedirs(model_dir)
+
+
+def save_log(log_dir):
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    json_log = {
+        "Image_h": Image_h,
+        "Image_w": Image_w,
+        "Image_ch": Image_ch,
+        "Noise_h": Noise_h,
+        "Noise_w": Noise_w,
+        "Noise_ch": Noise_ch,
+        "Epoch_num": Epoch_num,
+        "Batch_size": Batch_size,
+        "Sample_num": Sample_num,
+        "G_learnrate": G_learnrate,
+        "D_learnrate": D_learnrate,
+
+    }
+    with open(log_dir + '/train_config.json', 'w') as f:
+        json.dump(json_log, f, indent=4)
+    model_save_log(log_dir)
 
 
 def optimizer(loss, learning_rate, vlist=None, name=None):
@@ -52,6 +71,7 @@ def draw_img(x):
 
 def __main__():
     # noise input
+    save_log(log_dir)
     noise_input = tf.placeholder(tf.float32, shape=[None, Noise_h, Noise_w, Noise_ch], name='noise')
     noise_sample_input = tf.placeholder(tf.float32, shape=[None, Noise_h, Noise_w, Noise_ch], name='noise')
     # real data input
@@ -91,7 +111,7 @@ def __main__():
     g_optimizer = optimizer(loss_train_G, G_learnrate, G_vars, name='opt_train_G')
     d_optimizer = optimizer(loss_train_D, D_learnrate, D_vars, name='opt_train_D')
 
-    saver = tf.train.Saver()
+    saver = tf.train.Saver(max_to_keep=50)
     # noise_sample = np.random.uniform(-1,1,[Batch_size,100]).astype('float32')
     # ==============================Start training=============================
     with tf.Session() as sess:
@@ -120,12 +140,20 @@ def __main__():
 
                                      })
 
-                _, g_loss = sess.run([g_optimizer, loss_train_G],
-                                     feed_dict={
-                                         noise_input: z,
-                                         image_input: img_batch,
+                _, g_loss_1 = sess.run([g_optimizer, loss_train_G],
+                                       feed_dict={
+                                           noise_input: z,
+                                           image_input: img_batch,
 
-                                     })
+                                       })
+
+                # _, g_loss_2 = sess.run([g_optimizer, loss_train_G],
+                #                        feed_dict={
+                #                            noise_input: z,
+                #                            image_input: img_batch,
+                #
+                #                        })
+                g_loss = g_loss_1
 
                 print("epoch: %d batch: %d  gloss:%.4f dloss:%.4f" %
                       (e + 1, idx, g_loss, d_loss))
@@ -139,12 +167,14 @@ def __main__():
                     })
                     summary_writer.add_summary(sumarry_all, count)
                     count = count + 1
-                if e % 4 == 0:
-                    saver.save(sess=sess,
-                               save_path=model_dir,
-                               global_step=e)
+            if e % 4 == 0:
+                if not os.path.exists(model_dir):
+                    os.makedirs(model_dir)
+
+                saver.save(sess=sess,
+                           save_path=model_dir + '/model.ckpt',
+                           global_step=e)
 
 
-# =================================================================
 if __name__ == "__main__":
     __main__()
