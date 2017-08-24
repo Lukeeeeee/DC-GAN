@@ -95,10 +95,16 @@ ENV/
 # Rope project settings
 .ropeproject
 
-.idea/
 *.mat
+*.tfmodel
+*.npy
+.idea/
+
 dataset/mnist
 dataset/cat
+dataset/celeba
+dataset/deepGANcat
+
 log/*-*
 log/mnist
 log/liming
@@ -109,7 +115,5 @@ log/liming_test/
 
 # src/data/cat/
 # src/model/vgg/
-*.tfmodel
-*.npy
-dataset/deepGANcat
-dataset/celeba
+
+

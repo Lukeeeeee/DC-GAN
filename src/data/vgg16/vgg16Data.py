@@ -17,14 +17,10 @@ class VGG16Data(Data):
 
     def load_data(self):
         image_data = None
-        for i in range(self.config.SAMPLE_COUNT):
-            # data = misc.imread(name=self.data_path + 'new_cat.' + str(i) + '.jpg')
-            d = '{0:06}'.format(i + 1)
-            print(i)
-            data = misc.imread(name=self.data_path + d + '.jpg')
-
+        for i in range(self.config.NPY_FILE_COUNT):
+            data = np.load(file=self.data_path + 'step1_imagebatch_' + str(i) + '.npy')
             data = np.reshape(np.array(data),
-                              newshape=[1, self.config.DATA_WIDTH,
+                              newshape=[-1, self.config.DATA_WIDTH,
                                         self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
             if i == 0:
                 image_data = data
@@ -45,7 +41,6 @@ class VGG16Data(Data):
                                           self.config.DATA_HEIGHT, self.config.DATA_CHANNEL],
                                 ).astype(np.float32)
 
-        # TODO NORMAL THE PIC IS NECESSARY?
         # image_data = np.subtract(np.divide(image_data, 127.5), 1.0)
         return image_data
 
@@ -71,23 +66,6 @@ class VGG16Data(Data):
 
         with open(model_file, mode='rb') as f:
             file_content = f.read()
-        try:
-            with tf.device('/gpu:1'):
-                self.graph = tf.GraphDef()
-                self.graph.ParseFromString(file_content)
-                self.graph_input = tf.placeholder(dtype=tf.float32,
-                                                  shape=[None, self.config.DATA_WIDTH,
-                                                         self.config.DATA_HEIGHT, self.config.DATA_CHANNEL])
-                gpu_config = tf.GPUOptions(allow_growth=True)
-
-                config = tf.ConfigProto(gpu_options=gpu_config, log_device_placement=True)
-
-                self.sess = tf.Session(config=config)
-
-                tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
-                self.graph = tf.get_default_graph()
-                self.sess.run(tf.global_variables_initializer())
-        except BaseException:
             self.graph = tf.GraphDef()
             self.graph.ParseFromString(file_content)
             self.graph_input = tf.placeholder(dtype=tf.float32,
@@ -100,21 +78,45 @@ class VGG16Data(Data):
             self.sess = tf.Session(config=config)
             tf.import_graph_def(self.graph, input_map={'images': self.graph_input})
             self.graph = tf.get_default_graph()
+
             self.sess.run(tf.global_variables_initializer())
 
+    @staticmethod
+    def print_all_tensor():
+        tensor = tf.get_default_graph().get_operations()
+        for node in tensor:
+            try:
+                print(node.name, node.outputs)
+            except BaseException:
+                print(node.name)
 
 if __name__ == '__main__':
     from dataset import DATASET_PATH
 
-    data_path = '/home/mars/ANN/celeba/reshape_224_224/'
+    data_path = DATASET_PATH + '/celeba/224_224_3/'
     model_file = DATASET_PATH + '/vgg16.tfmodel'
     from test.vggDeepGANTest.tempCelebaconfig.step2.step2VGGCelebaDataConfig import Step2VGGCelebaDataConfig
 
-    a = VGG16Data(data_path=data_path, model_file=model_file, config=Step2VGGCelebaDataConfig())
-    # a.init_with_model(model_file=model_file)
-    for i in range(100):
+    a = VGG16Data(data_path=data_path, model_file=model_file, config=Step2VGGCelebaDataConfig(), load_image=True)
+    for i in range(Step2VGGCelebaDataConfig().NPY_FILE_COUNT):
         print(i)
         data = a.return_image_batch_data(batch_size=100, index=i)
-        # res = a.eval_tensor_by_name(tensor_name=a.config.Z_SOURCE, image_batch=data)
-        # res = np.reshape(res, newshape=[-1, 56, 56, 256])
-        np.save(file=DATASET_PATH + '/celeba/224_224_3/step1_imagebatch_' + str(i) + '.npy', arr=data)
+        res = a.eval_tensor_by_name(tensor_name='import/pool1', image_batch=data)
+        res = np.reshape(res, newshape=[-1, 112, 112, 64])
+        np.save(file=DATASET_PATH + '/celeba/112_112_64/step1_imagebatch_' + str(i) + '.npy', arr=res)
+
+        res = a.eval_tensor_by_name(tensor_name='import/pool2', image_batch=data)
+        res = np.reshape(res, newshape=[-1, 56, 56, 128])
+        np.save(file=DATASET_PATH + '/celeba/56_56_128/step1_imagebatch_' + str(i) + '.npy', arr=res)
+
+        res = a.eval_tensor_by_name(tensor_name='import/pool3', image_batch=data)
+        res = np.reshape(res, newshape=[-1, 28, 28, 256])
+        np.save(file=DATASET_PATH + '/celeba/28_28_256/step1_imagebatch_' + str(i) + '.npy', arr=res)
+
+        res = a.eval_tensor_by_name(tensor_name='import/pool4', image_batch=data)
+        res = np.reshape(res, newshape=[-1, 14, 14, 512])
+        np.save(file=DATASET_PATH + '/celeba/14_14_512/step1_imagebatch_' + str(i) + '.npy', arr=res)
+
+        res = a.eval_tensor_by_name(tensor_name='import/pool5', image_batch=data)
+        res = np.reshape(res, newshape=[-1, 7, 7, 512])
+        np.save(file=DATASET_PATH + '/celeba/7_7_512/step1_imagebatch_' + str(i) + '.npy', arr=res)
