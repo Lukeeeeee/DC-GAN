@@ -56,31 +56,40 @@ def generate(z, h, w, ch, is_training, reuse, batch_size=200, train_config=None,
         Noise_ch = train_config_Noise_ch
 
     with tf.variable_scope('generator') as scope:
-        h1, w1 = get_size(h, 2), get_size(w, 2)
-        h2, w2 = get_size(h1, 2), get_size(w1, 2)
-        # h3, w3 = get_size(h2, 1), get_size(w2, 1)
-        # h4, w4 = get_size(h3, 2), get_size(w3, 2)
+        h1, w1 = get_size(h, 2), get_size(w, 2)  # 112 112 64
+        h2, w2 = get_size(h1, 2), get_size(w1, 2)  # 56 56 128
+        h3, w3 = get_size(h2, 2), get_size(w2, 2)  # 28 28 256
+        h4, w4 = get_size(h3, 2), get_size(w3, 2)  # 14 14 512
+        h5, w5 = get_size(h4, 2), get_size(w4, 2)  # 7 7 512
+        h6, w6 = get_size(h4, 2), get_size(w4, 2)  # 4 4 512
+
         z = tf.reshape(z, shape=[-1, Noise_ch * Noise_h * Noise_w], name='RESHAPE')
-        fc0 = lay.fully_connect_layer(z, 'g_fc0_lin', h2 * w2 * Fc_Channel)
-        fc0 = tf.reshape(fc0, [-1, h2, w2, Fc_Channel])
+        fc0 = lay.fully_connect_layer(z, 'g_fc0_lin', h6 * w6 * Fc_Channel)
+        fc0 = tf.reshape(fc0, [-1, h6, w6, Fc_Channel])
         fc0 = lay.batch_norm_official(fc0, is_training=is_training, reuse=reuse, name='g_bn0')
         fc0 = tf.nn.relu(fc0)
 
-        # decon1 = lay.deconv_2d_layer(z, 'g_decon1', [5, 5, 32, 4], [batch_size, h3, w3, 32],
-        #                              strides=[1, 2, 2, 1])
-        # decon1 = lay.batch_norm_official(decon1, is_training=is_training, reuse=reuse, name='g_bn1')
-        # decon1 = tf.nn.relu(decon1)
-        #
-        # decon2 = lay.deconv_2d_layer(decon1, 'g_decon2', [5, 5, 64, 32], [batch_size, h2, w2, 64],
-        #                              strides=[1, 1, 1, 1])
-        # decon2 = lay.batch_norm_official(decon2, is_training=is_training, reuse=reuse, name='g_bn2')
-        # decon2 = tf.nn.relu(decon2)
+        decon1 = lay.deconv_2d_layer(fc0, 'g_decon1', [5, 5, 512, 512], [batch_size, h5, w5, 512],
+                                     strides=[1, 2, 2, 1])
+        decon1 = lay.batch_norm_official(decon1, is_training=is_training, reuse=reuse, name='g_bn1')
+        decon1 = tf.nn.relu(decon1)
 
-        decon3 = lay.deconv_2d_layer(fc0, 'g_decon3', [5, 5, De_Conv1_Channel, Fc_Channel],
+        decon2 = lay.deconv_2d_layer(decon1, 'g_decon2', [5, 5, 64, 32], [batch_size, h2, w2, 64],
+                                     strides=[1, 1, 1, 1])
+        decon2 = lay.batch_norm_official(decon2, is_training=is_training, reuse=reuse, name='g_bn2')
+        decon2 = tf.nn.relu(decon2)
+
+        decon3 = lay.deconv_2d_layer(decon2, 'g_decon3', [5, 5, De_Conv1_Channel, Fc_Channel],
                                      [batch_size, h1, w1, De_Conv1_Channel],
                                      strides=[1, 2, 2, 1])
         decon3 = lay.batch_norm_official(decon3, is_training=is_training, reuse=reuse, name='g_bn3')
         decon3 = tf.nn.relu(decon3)
+
+        decon4 = lay.deconv_2d_layer(decon3, 'g_decon', [5, 5, De_Conv1_Channel, Fc_Channel],
+                                     [batch_size, h1, w1, De_Conv1_Channel],
+                                     strides=[1, 2, 2, 1])
+        decon4 = lay.batch_norm_official(decon4, is_training=is_training, reuse=reuse, name='g_bn4')
+        decon4 = tf.nn.relu(decon4)
 
         decon4 = lay.deconv_2d_layer(decon3, 'g_decon4', [5, 5, ch, De_Conv1_Channel], [batch_size, h, w, ch],
                                      strides=[1, 2, 2, 1])

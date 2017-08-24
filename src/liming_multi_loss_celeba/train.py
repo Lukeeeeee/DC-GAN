@@ -40,6 +40,9 @@ Sample_num = 60000
 G_learnrate = 1e-3
 D_learnrate = 1e-3
 
+
+
+
 ti = datetime.datetime.now()
 log_dir = (
 LOG_PATH + '/liming_multi_loss/' + str(ti.month) + '-' + str(ti.day) + '-' + str(ti.hour) + '-' + str(ti.minute)
