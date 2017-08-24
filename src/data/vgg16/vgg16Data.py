@@ -98,25 +98,72 @@ if __name__ == '__main__':
     from test.vggDeepGANTest.tempCelebaconfig.step2.step2VGGCelebaDataConfig import Step2VGGCelebaDataConfig
 
     a = VGG16Data(data_path=data_path, model_file=model_file, config=Step2VGGCelebaDataConfig(), load_image=True)
-    for i in range(Step2VGGCelebaDataConfig().NPY_FILE_COUNT):
+    a.init_with_model(model_file=model_file)
+    save_data2 = None
+    save_data3 = None
+    save_data4 = None
+    save_data5 = None
+    for i in range(Step2VGGCelebaDataConfig().NPY_FILE_COUNT * 10):
         print(i)
-        data = a.return_image_batch_data(batch_size=100, index=i)
-        res = a.eval_tensor_by_name(tensor_name='import/pool1', image_batch=data)
-        res = np.reshape(res, newshape=[-1, 112, 112, 64])
-        np.save(file=DATASET_PATH + '/celeba/112_112_64/step1_imagebatch_' + str(i) + '.npy', arr=res)
+        data = a.return_image_batch_data(batch_size=10, index=i)
+        res2 = a.eval_tensor_by_name(tensor_name='import/pool2', image_batch=data)
+        if i % 10 == 0:
 
-        res = a.eval_tensor_by_name(tensor_name='import/pool2', image_batch=data)
-        res = np.reshape(res, newshape=[-1, 56, 56, 128])
-        np.save(file=DATASET_PATH + '/celeba/56_56_128/step1_imagebatch_' + str(i) + '.npy', arr=res)
+            save_data2 = res2
+        else:
+            save_data2 = np.concatenate((save_data2, res2))
+        if (i + 1) % 10 == 0:
+            if i > 0:
+                np.save(file=DATASET_PATH + '/celeba/56_56_128/step1_imagebatch_' + str(i // 10) + '.npy',
+                        arr=save_data2)
 
-        res = a.eval_tensor_by_name(tensor_name='import/pool3', image_batch=data)
-        res = np.reshape(res, newshape=[-1, 28, 28, 256])
-        np.save(file=DATASET_PATH + '/celeba/28_28_256/step1_imagebatch_' + str(i) + '.npy', arr=res)
+        res3 = a.eval_tensor_by_name(tensor_name='import/pool3', image_batch=data)
+        if i % 10 == 0:
 
-        res = a.eval_tensor_by_name(tensor_name='import/pool4', image_batch=data)
-        res = np.reshape(res, newshape=[-1, 14, 14, 512])
-        np.save(file=DATASET_PATH + '/celeba/14_14_512/step1_imagebatch_' + str(i) + '.npy', arr=res)
+            save_data3 = res3
+        else:
+            save_data3 = np.concatenate((save_data3, res3))
+        if (i + 1) % 10 == 0:
+            if i > 0:
+                np.save(file=DATASET_PATH + '/celeba/28_28_256/step1_imagebatch_' + str(i // 10) + '.npy',
+                        arr=save_data3)
 
-        res = a.eval_tensor_by_name(tensor_name='import/pool5', image_batch=data)
-        res = np.reshape(res, newshape=[-1, 7, 7, 512])
-        np.save(file=DATASET_PATH + '/celeba/7_7_512/step1_imagebatch_' + str(i) + '.npy', arr=res)
+        res4 = a.eval_tensor_by_name(tensor_name='import/pool4', image_batch=data)
+        if i % 10 == 0:
+
+            save_data4 = res4
+        else:
+            save_data4 = np.concatenate((save_data4, res4))
+        if (i + 1) % 10 == 0:
+            if i > 0:
+                np.save(file=DATASET_PATH + '/celeba/14_14_512/step1_imagebatch_' + str(i // 10) + '.npy',
+                        arr=save_data4)
+
+        res5 = a.eval_tensor_by_name(tensor_name='import/pool5', image_batch=data)
+        if i % 10 == 0:
+
+            save_data5 = res5
+        else:
+            save_data = np.concatenate((save_data5, res5))
+        if (i + 1) % 10 == 0:
+            if i > 0:
+                np.save(file=DATASET_PATH + '/celeba/7_7_512/step1_imagebatch_' + str(i // 10) + '.npy',
+                        arr=save_data5)
+
+                # np.save(file=DATASET_PATH + '/celeba/112_112_64/step1_imagebatch_' + str(i) + '.npy', arr=res)
+                #
+                # res = a.eval_tensor_by_name(tensor_name='import/pool2', image_batch=data)
+                # res = np.reshape(res, newshape=[-1, 56, 56, 128])
+                # np.save(file=DATASET_PATH + '/celeba/56_56_128/step1_imagebatch_' + str(i) + '.npy', arr=res)
+                #
+                # res = a.eval_tensor_by_name(tensor_name='import/pool3', image_batch=data)
+                # res = np.reshape(res, newshape=[-1, 28, 28, 256])
+                # np.save(file=DATASET_PATH + '/celeba/28_28_256/step1_imagebatch_' + str(i) + '.npy', arr=res)
+                #
+                # res = a.eval_tensor_by_name(tensor_name='import/pool4', image_batch=data)
+                # res = np.reshape(res, newshape=[-1, 14, 14, 512])
+                # np.save(file=DATASET_PATH + '/celeba/14_14_512/step1_imagebatch_' + str(i) + '.npy', arr=res)
+                #
+                # res = a.eval_tensor_by_name(tensor_name='import/pool5', image_batch=data)
+                # res = np.reshape(res, newshape=[-1, 7, 7, 512])
+                # np.save(file=DATASET_PATH + '/celeba/7_7_512/step1_imagebatch_' + str(i) + '.npy', arr=res)

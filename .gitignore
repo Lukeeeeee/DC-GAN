@@ -98,6 +98,8 @@ ENV/
 *.mat
 *.tfmodel
 *.npy
+*.icloud
+
 .idea/
 
 dataset/mnist

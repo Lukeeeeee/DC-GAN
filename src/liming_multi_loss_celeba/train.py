@@ -6,12 +6,34 @@ import tensorflow as tf
 from log import LOG_PATH
 import datetime
 
-Image_h = 7
-Image_w = 7
-Image_ch = 16
+Image_h = 224
+Image_w = 224
+Image_ch = 3
+
+Pool_1_h = 112
+Pool_1_w = 112
+Pool_1_ch = 64
+
+Pool_2_h = 56
+Pool_2_w = 56
+Pool_2_ch = 128
+
+Pool_3_h = 28
+Pool_3_w = 28
+Pool_3_ch = 256
+
+Pool_4_h = 14
+Pool_4_w = 14
+Pool_4_ch = 512
+
+Pool_5_h = 7
+Pool_5_w = 7
+Pool_5_ch = 512
+
 Noise_h = 1
 Noise_w = 1
 Noise_ch = 30
+
 Epoch_num = 500
 Batch_size = 200
 Sample_num = 60000
@@ -48,6 +70,7 @@ def save_log(log_dir):
         "Noise_h": Noise_h,
         "Noise_w": Noise_w,
         "Noise_ch": Noise_ch,
+
         "Epoch_num": Epoch_num,
         "Batch_size": Batch_size,
         "Sample_num": Sample_num,
