@@ -56,67 +56,85 @@ def generate(z, h, w, ch, is_training, reuse, batch_size=200, train_config=None,
         Noise_ch = train_config_Noise_ch
 
     with tf.variable_scope('generator') as scope:
+        # output 224 224 3
         h1, w1 = get_size(h, 2), get_size(w, 2)  # 112 112 64
         h2, w2 = get_size(h1, 2), get_size(w1, 2)  # 56 56 128
         h3, w3 = get_size(h2, 2), get_size(w2, 2)  # 28 28 256
         h4, w4 = get_size(h3, 2), get_size(w3, 2)  # 14 14 512
         h5, w5 = get_size(h4, 2), get_size(w4, 2)  # 7 7 512
-        h6, w6 = get_size(h4, 2), get_size(w4, 2)  # 4 4 512
+
+        fc_ch = 512
+        deconv1_out_ch = 512
+        deconv2_out_ch = 256
+        deconv3_out_ch = 128
+        deconv4_out_ch = 64
+        deconv5_out_ch = ch
 
         z = tf.reshape(z, shape=[-1, Noise_ch * Noise_h * Noise_w], name='RESHAPE')
-        fc0 = lay.fully_connect_layer(z, 'g_fc0_lin', h6 * w6 * Fc_Channel)
-        fc0 = tf.reshape(fc0, [-1, h6, w6, Fc_Channel])
+        fc0 = lay.fully_connect_layer(z, 'g_fc0_lin', h5 * w5 * fc_ch)
+        fc0 = tf.reshape(fc0, [-1, h5, w5, fc_ch])
         fc0 = lay.batch_norm_official(fc0, is_training=is_training, reuse=reuse, name='g_bn0')
         fc0 = tf.nn.relu(fc0)
 
-        decon1 = lay.deconv_2d_layer(fc0, 'g_decon1', [5, 5, 512, 512], [batch_size, h5, w5, 512],
+        decon1 = lay.deconv_2d_layer(fc0, 'g_decon1', [5, 5, deconv1_out_ch, fc_ch],
+                                     [batch_size, h4, w4, deconv1_out_ch],
                                      strides=[1, 2, 2, 1])
         decon1 = lay.batch_norm_official(decon1, is_training=is_training, reuse=reuse, name='g_bn1')
         decon1 = tf.nn.relu(decon1)
 
-        decon2 = lay.deconv_2d_layer(decon1, 'g_decon2', [5, 5, 64, 32], [batch_size, h2, w2, 64],
-                                     strides=[1, 1, 1, 1])
+        decon2 = lay.deconv_2d_layer(decon1, 'g_decon2', [5, 5, deconv2_out_ch, deconv1_out_ch],
+                                     [batch_size, h3, w3, deconv2_out_ch],
+                                     strides=[1, 2, 2, 1])
         decon2 = lay.batch_norm_official(decon2, is_training=is_training, reuse=reuse, name='g_bn2')
         decon2 = tf.nn.relu(decon2)
 
-        decon3 = lay.deconv_2d_layer(decon2, 'g_decon3', [5, 5, De_Conv1_Channel, Fc_Channel],
-                                     [batch_size, h1, w1, De_Conv1_Channel],
+        decon3 = lay.deconv_2d_layer(decon2, 'g_decon3', [5, 5, deconv3_out_ch, deconv2_out_ch],
+                                     [batch_size, h2, w2, deconv3_out_ch],
                                      strides=[1, 2, 2, 1])
         decon3 = lay.batch_norm_official(decon3, is_training=is_training, reuse=reuse, name='g_bn3')
         decon3 = tf.nn.relu(decon3)
 
-        decon4 = lay.deconv_2d_layer(decon3, 'g_decon', [5, 5, De_Conv1_Channel, Fc_Channel],
-                                     [batch_size, h1, w1, De_Conv1_Channel],
+        decon4 = lay.deconv_2d_layer(decon3, 'g_decon', [5, 5, deconv4_out_ch, deconv3_out_ch],
+                                     [batch_size, h1, w1, deconv4_out_ch],
                                      strides=[1, 2, 2, 1])
         decon4 = lay.batch_norm_official(decon4, is_training=is_training, reuse=reuse, name='g_bn4')
         decon4 = tf.nn.relu(decon4)
 
-        decon4 = lay.deconv_2d_layer(decon3, 'g_decon4', [5, 5, ch, De_Conv1_Channel], [batch_size, h, w, ch],
+        decon5 = lay.deconv_2d_layer(decon4, 'g_decon4', [5, 5, deconv5_out_ch, deconv4_out_ch],
+                                     [batch_size, h, w, deconv5_out_ch],
                                      strides=[1, 2, 2, 1])
-        decon4 = tf.nn.relu(decon4)
-        return decon4
+        decon5 = tf.nn.tanh(decon5)
+        return decon5, decon4, decon3, decon2, decon1
 
 
-def decrim(x, is_training, reuse, batch_size=200):
+def decrim_list(input_list, is_training, reuse):
+    res = []
+    for input in input_list:
+        size = input.get_shape().as_list()
+        h = size[1]
+        w = size[2]
+        ch = size[3]
+        out = decrim(input, w, h, ch, is_training=is_training, reuse=reuse, name=("%s_%s" % (str(h), str(w))))
+        res.append(out)
+    return res
+
+
+def decrim(x, w, h, ch, is_training, reuse, name):
+
     with tf.variable_scope('decriminator') as scope:
-        conv0 = lay.conv_2d_layer(x, 'd_conv0', [5, 5, 16, Conv1_Channel], strides=[1, 2, 2, 1])
-        conv0 = lay.batch_norm_official(conv0, is_training=is_training, reuse=reuse, name='d_bn0')
+        conv0 = lay.conv_2d_layer(x, name + 'd_conv0', [5, 5, ch, ch], strides=[1, 2, 2, 1])
+        conv0 = lay.batch_norm_official(conv0, is_training=is_training, reuse=reuse, name=name + 'd_bn0')
         conv0 = lay.leaky_relu(conv0)
 
-        conv1 = lay.conv_2d_layer(conv0, 'd_conv1', [5, 5, Conv1_Channel, Conv2_Chaneel], strides=[1, 2, 2, 1])
-        conv1 = lay.batch_norm_official(conv1, is_training=is_training, reuse=reuse, name='d_bn1')
+        conv1 = lay.conv_2d_layer(conv0, name + 'd_conv1', [5, 5, ch, ch], strides=[1, 2, 2, 1])
+        conv1 = lay.batch_norm_official(conv1, is_training=is_training, reuse=reuse, name=name + 'd_bn1')
         conv1 = lay.leaky_relu(conv1)
 
-        # conv2 = lay.conv_2d_layer(conv1, 'd_conv2', [5, 5, 128, 256], strides=[1, 2, 2, 1])
-        # conv2 = lay.batch_norm_official(conv2, is_training=is_training, reuse=reuse, name='d_bn2')
-        # conv2 = lay.leaky_relu(conv2)
-        #
-        # conv3 = lay.conv_2d_layer(conv2, 'd_conv3', [5, 5, 256, 512], strides=[1, 2, 2, 1])
-        # conv3 = lay.batch_norm_official(conv3, is_training=is_training, reuse=reuse, name='d_bn3')
-        # conv3 = lay.leaky_relu(conv3)
+        h1, w1 = get_size(h, 2), get_size(w, 2)
+        h2, w2 = get_size(h1, 2), get_size(w1, 2)
 
-        conv4_flatten = tf.reshape(conv1, [-1, Conv2_Chaneel * 2 * 2])
+        conv1_flatten = tf.reshape(conv1, [-1, w2 * h2 * ch])
 
-        fc4 = lay.fully_connect_layer(conv4_flatten, 'd_fc4', 1)
+        fc1 = lay.fully_connect_layer(conv1_flatten, name + 'd_fc1', 1)
 
-        return fc4
+        return fc1

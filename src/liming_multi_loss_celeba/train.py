@@ -40,13 +40,10 @@ Sample_num = 60000
 G_learnrate = 1e-3
 D_learnrate = 1e-3
 
-
-
-
 ti = datetime.datetime.now()
 log_dir = (
-LOG_PATH + '/liming_multi_loss/' + str(ti.month) + '-' + str(ti.day) + '-' + str(ti.hour) + '-' + str(ti.minute)
-+ '-' + str(ti.second) + '/')
+    LOG_PATH + '/liming_multi_loss/' + str(ti.month) + '-' + str(ti.day) + '-' + str(ti.hour) + '-' + str(ti.minute)
+    + '-' + str(ti.second) + '/')
 tensorboad_dir = log_dir
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -56,7 +53,7 @@ sys.path.append(PROJECT_PATH)
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
-from model import decrim, generate
+from model import decrim_list, generate
 from model import save_log as model_save_log
 from pre_data import get_datalist, restruct_image
 
@@ -96,58 +93,77 @@ def draw_img(x):
     pass
 
 
+# output 224 224 3
+# 112 112 64
+# 56 56 128
+# 28 28 256
+# 14 14 512
+# 7 7 512
+
+
 def __main__():
-    # noise input
-    save_log(log_dir)
+    # save_log(log_dir)
+
     noise_input = tf.placeholder(tf.float32, shape=[None, Noise_h, Noise_w, Noise_ch], name='noise')
     noise_sample_input = tf.placeholder(tf.float32, shape=[None, Noise_h, Noise_w, Noise_ch], name='noise')
-    # real data input
-    image_input = tf.placeholder(tf.float32, shape=[None, Image_h, Image_w, Image_ch], name='image')
 
-    # generate G
-    G = generate(z=noise_input, h=Image_h, w=Image_w, ch=Image_ch, is_training=True, reuse=None, batch_size=Batch_size)
-    # param of G
+    image_input = tf.placeholder(tf.float32, shape=[None, Image_h, Image_w, Image_ch], name='image')
+    image_112_112_64 = tf.placeholder(tf.float32, shape=[None, 112, 112, 64], name='image112_112_64')
+    image_56_56_128 = tf.placeholder(tf.float32, shape=[None, 56, 56, 128], name='image56_56_128')
+    image_28_28_256 = tf.placeholder(tf.float32, shape=[None, 28, 28, 256], name='image28_28_256')
+    image_14_14_512 = tf.placeholder(tf.float32, shape=[None, 14, 14, 512], name='image_14_14_512')
+
+    image_input_list = [image_input, image_112_112_64, image_56_56_128, image_28_28_256, image_14_14_512]
+    G_conv_list = generate(z=noise_input, h=Image_h, w=Image_w, ch=Image_ch, is_training=True, reuse=None,
+                           batch_size=Batch_size)
     G_vars = tf.trainable_variables()
 
     G_sample = generate(z=noise_sample_input, h=Image_h, w=Image_w, ch=Image_ch, is_training=False, reuse=True,
                         batch_size=Batch_size)
-    # img_sample = restruct_image(G_sample, Batch_size)
-    # tf.summary.image('generated image', img_sample, Batch_size)
-    # decrim
-    D = decrim(image_input, True, None, batch_size=Batch_size)
-    # param of d
+    img_sample = restruct_image(G_sample[0], Batch_size)
+    tf.summary.image('generated image', img_sample, Batch_size)
+
+    D_list = decrim_list(image_input_list, True, None)
     D_vars = []
     for item in tf.trainable_variables():
         if item not in G_vars:
             D_vars.append(item)
 
-    d_real = D
-    d_fake = decrim(G, True, True)
+    d_real_list = D_list
+    d_fake_list = decrim_list(G_conv_list, True, True)
+    d_loss_list = []
 
-    loss_train_D = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=d_real, labels=tf.ones_like(d_real))) \
-                   + tf.reduce_mean(
-        tf.nn.sigmoid_cross_entropy_with_logits(logits=d_fake, labels=tf.zeros_like(d_fake)))
-    tf.summary.scalar('d_loss', loss_train_D)
+    for d_real, d_fake in zip(d_real_list, d_fake_list):
+        loss_train_D = tf.reduce_mean(
+            tf.nn.sigmoid_cross_entropy_with_logits(logits=d_real, labels=tf.ones_like(d_real))) \
+                       + tf.reduce_mean(
+            tf.nn.sigmoid_cross_entropy_with_logits(logits=d_fake, labels=tf.zeros_like(d_fake)))
+        d_loss_list.append(loss_train_D)
+        tf.summary.scalar('d_loss', loss_train_D)
 
-    loss_train_G = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=d_fake, labels=tf.ones_like(d_fake)))
-    tf.summary.scalar('g_loss', loss_train_G)
-    # loss_train_G = d_fake
-    # loss_train_D = -(d_real + d_fake)
-    # loss_train_G = (1 / 2) * (d_fake - 1) ** 2
-    # loss_train_D = (1 / 2) * (d_real - 1) ** 2 + (1 / 2) * (d_fake) ** 2
-    g_optimizer = optimizer(loss_train_G, G_learnrate, G_vars, name='opt_train_G')
-    d_optimizer = optimizer(loss_train_D, D_learnrate, D_vars, name='opt_train_D')
+    d_loss = tf.add_n(d_loss_list)
+    tf.summary.scalar('d_loss_sum', d_loss)
+
+    g_loss_list = []
+
+    for d_fake in d_fake_list:
+        loss_train_G = tf.reduce_mean(
+            tf.nn.sigmoid_cross_entropy_with_logits(logits=d_fake, labels=tf.ones_like(d_fake)))
+        tf.summary.scalar('g_loss', loss_train_G)
+        g_loss_list.append(loss_train_G)
+    g_loss = tf.add_n(g_loss_list)
+    tf.summary.scalar('g_loss_sum', g_loss)
+
+    g_optimizer = optimizer(g_loss, G_learnrate, G_vars, name='opt_train_G')
+    d_optimizer = optimizer(d_loss, D_learnrate, D_vars, name='opt_train_D')
 
     saver = tf.train.Saver(max_to_keep=50)
-    # noise_sample = np.random.uniform(-1,1,[Batch_size,100]).astype('float32')
-    # ==============================Start training=============================
+
     with tf.Session() as sess:
-        # =====tensorboard=============
         merged_summary_op = tf.summary.merge_all()
         summary_writer = tf.summary.FileWriter(tensorboad_dir, sess.graph)
-        # =============================
         sess.run(tf.global_variables_initializer())
-        image_data, z_data = get_datalist()
+        image_data, image_14_data, image_28_data, image_56_data, image_112_data, z_data = get_datalist()
         image_len = Sample_num
         batch_num = int(image_len / Batch_size)
         count = 0
@@ -155,24 +171,34 @@ def __main__():
 
             for idx in range(batch_num):
 
-                # prepare data
-                # TODO z data
                 img_batch = image_data[idx * Batch_size: (idx + 1) * Batch_size, ]
+                img_14_batch = image_14_data[idx * Batch_size: (idx + 1) * Batch_size, ]
+                img_28_batch = image_28_data[idx * Batch_size: (idx + 1) * Batch_size, ]
+                img_56_batch = image_56_data[idx * Batch_size: (idx + 1) * Batch_size, ]
+                img_112_batch = image_112_data[idx * Batch_size: (idx + 1) * Batch_size, ]
+
                 z = z_data[idx * Batch_size: (idx + 1) * Batch_size, ]
 
-                _, d_loss = sess.run([d_optimizer, loss_train_D],
-                                     feed_dict={
-                                         noise_input: z,
-                                         image_input: img_batch,
+                _, d_loss_res = sess.run([d_optimizer, d_loss],
+                                         feed_dict={
+                                             noise_input: z,
+                                             image_input: img_batch,
+                                             image_14_14_512: img_14_batch,
+                                             image_28_28_256: img_28_batch,
+                                             image_56_56_128: img_56_batch,
+                                             image_112_112_64: img_112_batch
+                                         })
 
-                                     })
+                _, g_loss_res = sess.run([g_optimizer, g_loss],
+                                         feed_dict={
+                                             noise_input: z,
+                                             image_input: img_batch,
+                                             image_14_14_512: img_14_batch,
+                                             image_28_28_256: img_28_batch,
+                                             image_56_56_128: img_56_batch,
+                                             image_112_112_64: img_112_batch
 
-                _, g_loss_1 = sess.run([g_optimizer, loss_train_G],
-                                       feed_dict={
-                                           noise_input: z,
-                                           image_input: img_batch,
-
-                                       })
+                                         })
 
                 # _, g_loss_2 = sess.run([g_optimizer, loss_train_G],
                 #                        feed_dict={
@@ -180,10 +206,9 @@ def __main__():
                 #                            image_input: img_batch,
                 #
                 #                        })
-                g_loss = g_loss_1
 
                 print("epoch: %d batch: %d  gloss:%.4f dloss:%.4f" %
-                      (e + 1, idx, g_loss, d_loss))
+                      (e + 1, idx, g_loss_res, d_loss_res))
 
                 if idx % 10 == 0:
                     noise_sample = z_data[0 * Batch_size: 1 * Batch_size, ]
@@ -191,6 +216,10 @@ def __main__():
                         noise_sample_input: noise_sample,
                         noise_input: z,
                         image_input: img_batch,
+                        image_14_14_512: img_14_batch,
+                        image_28_28_256: img_28_batch,
+                        image_56_56_128: img_56_batch,
+                        image_112_112_64: img_112_batch
                     })
                     summary_writer.add_summary(sumarry_all, count)
                     count = count + 1

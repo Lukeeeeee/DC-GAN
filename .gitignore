@@ -114,6 +114,7 @@ log/liming_end2end
 log/liming_step1
 log/liming_step2
 log/liming_test/
+log/liming_multi_loss
 
 # src/data/cat/
 # src/model/vgg/
