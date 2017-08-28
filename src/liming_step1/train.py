@@ -60,7 +60,8 @@ def save_log(log_dir):
 
 
 def optimizer(loss, learning_rate, vlist=None, name=None):
-    with tf.variable_scope(name):
+    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+    with tf.control_dependencies(update_ops), tf.variable_scope(name):
         opt = tf.train.AdamOptimizer(learning_rate=learning_rate, beta1=0.5, name=name + '/Adam')
         return opt.minimize(loss, var_list=vlist, name=name + '/opt')
 
