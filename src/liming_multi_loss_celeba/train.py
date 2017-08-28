@@ -35,8 +35,8 @@ Noise_w = 1
 Noise_ch = 30
 
 Epoch_num = 500
-Batch_size = 200
-Sample_num = 60000
+Batch_size = 50
+Sample_num = 1000
 G_learnrate = 1e-3
 D_learnrate = 1e-3
 
@@ -84,7 +84,8 @@ def save_log(log_dir):
 
 
 def optimizer(loss, learning_rate, vlist=None, name=None):
-    with tf.variable_scope(name):
+    update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+    with tf.control_dependencies(update_ops), tf.variable_scope(name):
         opt = tf.train.AdamOptimizer(learning_rate=learning_rate, beta1=0.5, name=name + '/Adam')
         return opt.minimize(loss, var_list=vlist, name=name + '/opt')
 
@@ -102,7 +103,7 @@ def draw_img(x):
 
 
 def __main__():
-    # save_log(log_dir)
+    save_log(log_dir)
 
     noise_input = tf.placeholder(tf.float32, shape=[None, Noise_h, Noise_w, Noise_ch], name='noise')
     noise_sample_input = tf.placeholder(tf.float32, shape=[None, Noise_h, Noise_w, Noise_ch], name='noise')
@@ -199,6 +200,26 @@ def __main__():
                                              image_112_112_64: img_112_batch
 
                                          })
+                a = sess.run(G_conv_list,
+                             feed_dict={
+                                 noise_input: z,
+                                 image_input: img_batch,
+                                 image_14_14_512: img_14_batch,
+                                 image_28_28_256: img_28_batch,
+                                 image_56_56_128: img_56_batch,
+                                 image_112_112_64: img_112_batch
+
+                             })
+                b = sess.run(image_input_list,
+                             feed_dict={
+                                 noise_input: z,
+                                 image_input: img_batch,
+                                 image_14_14_512: img_14_batch,
+                                 image_28_28_256: img_28_batch,
+                                 image_56_56_128: img_56_batch,
+                                 image_112_112_64: img_112_batch
+
+                             })
 
                 # _, g_loss_2 = sess.run([g_optimizer, loss_train_G],
                 #                        feed_dict={
@@ -223,7 +244,7 @@ def __main__():
                     })
                     summary_writer.add_summary(sumarry_all, count)
                     count = count + 1
-            if e % 4 == 0:
+            if (e + 1) % 10 == 0:
                 if not os.path.exists(model_dir):
                     os.makedirs(model_dir)
 

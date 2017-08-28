@@ -103,6 +103,7 @@ def generate(z, h, w, ch, is_training, reuse, batch_size=200, train_config=None,
         decon5 = lay.deconv_2d_layer(decon4, 'g_decon4', [5, 5, deconv5_out_ch, deconv4_out_ch],
                                      [batch_size, h, w, deconv5_out_ch],
                                      strides=[1, 2, 2, 1])
+        decon5 = lay.batch_norm_official(decon5, is_training=is_training, reuse=reuse, name='g_bn5')
         decon5 = tf.nn.tanh(decon5)
         return decon5, decon4, decon3, decon2, decon1
 

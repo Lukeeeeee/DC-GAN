@@ -7,24 +7,26 @@ from dataset import DATASET_PATH
 from src.liming_step1.train import Noise_w, Noise_h, Noise_ch, Sample_num
 
 
-def load_celeba_image(path):
+def load_celeba_image(path, h, w, ch):
     image_data = None
     for i in range(10):
-        res = np.load(path + str(i) + '.npy')
+        res = np.load(path + 'step1_imagebatch_' + str(i) + '.npy')
         if i == 0:
             image_data = res
         else:
             image_data = np.concatenate((image_data, res))
+    image_data = np.reshape(image_data, newshape=[-1, h, w, ch])
     np.random.shuffle(image_data)
     return image_data
 
 
 def get_datalist():
-    image_data = load_celeba_image(DATASET_PATH + '/celeba/224_224_3/')
-    image_14_data = load_celeba_image(DATASET_PATH + '/celeba/14_14_512/')
-    image_28_data = load_celeba_image(DATASET_PATH + '/celeba/28_28_256/')
-    image_56_data = load_celeba_image(DATASET_PATH + '/celeba/56_56_128/')
-    image_112_data = load_celeba_image(DATASET_PATH + '/celeba/112_112_64/')
+    image_data = load_celeba_image(DATASET_PATH + '/celeba/224_224_3/', 224, 224, 3)
+    image_data = image_data / 127.5 - 1.0
+    image_14_data = load_celeba_image(DATASET_PATH + '/celeba/14_14_512/', 14, 14, 512)
+    image_28_data = load_celeba_image(DATASET_PATH + '/celeba/28_28_256/', 28, 28, 256)
+    image_56_data = load_celeba_image(DATASET_PATH + '/celeba/56_56_128/', 56,  56, 128)
+    image_112_data = load_celeba_image(DATASET_PATH + '/celeba/112_112_64/', 112, 112, 64)
 
     z_data = None
     for i in range(Sample_num):
